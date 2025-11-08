@@ -1,0 +1,42 @@
+[
+  {
+    "produto": "Dorflex",
+    "indicacao": ["dor de cabeça", "dor muscular", "tensão", "enxaqueca"]
+  },
+  {
+    "produto": "Neosaldina",
+    "indicacao": ["dor de cabeça", "enxaqueca"]
+  },
+  {
+    "produto": "Buscopan Composto",
+    "indicacao": ["dor de barriga", "cólica", "mal-estar abdominal", "desconforto abdominal"]
+  },
+  {
+    "produto": "Engov",
+    "indicacao": ["ressaca", "mal-estar", "dor de cabeça", "náusea"]
+  },
+  {
+    "produto": "Dramin B6",
+    "indicacao": ["náusea", "enjoo", "vômito", "tontura"]
+  },
+  {
+    "produto": "Sal de Fruta Eno",
+    "indicacao": ["azia", "má digestão", "queimação", "estômago pesado"]
+  },
+  {
+    "produto": "Gelol",
+    "indicacao": ["dor muscular", "torção", "batida", "pancada", "dor no joelho", "torcicolo"]
+  },
+  {
+    "produto": "Floratil",
+    "indicacao": ["diarreia", "desarranjo", "flora intestinal"]
+  },
+  {
+    "produto": "Bolsa de água quente",
+    "indicacao": ["cólica", "dor muscular", "tensão", "dor lombar"]
+  },
+  {
+    "produto": "Soro de reidratação (Pedialyte)",
+    "indicacao": ["diarreia", "vômito", "desidratação"]
+  }
+]

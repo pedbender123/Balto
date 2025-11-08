@@ -1,0 +1,10 @@
+# 1. ARQUIVO DE SEGREDOS - NUNCA SUBIR
+.env
+
+# 2. Banco de dados (não deve ir pro git)
+*.db
+dados/
+
+# 3. Cache do Python
+__pycache__/
+*.pyc

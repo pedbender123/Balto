@@ -1,0 +1,10 @@
+# Cache do Python (gerado em runtime)
+__pycache__/
+*.pyc
+
+# Arquivos de ambiente local (NÃO devem ir para a imagem)
+.env
+
+# Git
+.git
+.gitignore

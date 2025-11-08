@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  # Define o nosso serviço "server"
+  server:
+    # Manda ele "buildar" a imagem usando o Dockerfile da pasta ./server
+    build: ./server
+    container_name: balto-server-prod
+    ports:
+      # Expõe a porta 8765 do contêiner para a porta 8765 da máquina
+      # (Necessário para o WSS e o SSL que você vai configurar)
+      - "8765:8765"
+    volumes:
+      # Este é o ponto crucial:
+      # Mapeia o volume "balto-dados" para a pasta /app/dados dentro do contêiner
+      # Onde o .env (fonte 139) disse que o DB estaria.
+      - balto-dados:/app/dados
+    env_file:
+      # Carrega as variáveis de ambiente (sua OPENAI_API_KEY)
+      # do arquivo .env que está dentro da pasta ./server
+      - ./server/.env
+    restart: unless-stopped
+
+# Define o "Volume" que vai persistir os dados
+volumes:
+  balto-dados:
