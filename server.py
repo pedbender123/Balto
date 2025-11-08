@@ -79,11 +79,6 @@ async def handle_client(websocket): # <-- CORREÇÃO: Removemos o ', path'
         async for message in websocket:
             
             if isinstance(message, bytes):
-                # 1. Mensagem é ÁUDIO (fonte 12)
-                
-                # --- NOSSO TESTE DE DEBUG ---
-                print(f"[{client_id}] Recebi {len(message)} bytes de áudio.")
-                # --- FIM DO TESTE ---
 
                 # Passa o chunk para o VAD (fonte 83)
                 speech_segment = client_vad.process(message)
