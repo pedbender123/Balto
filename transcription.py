@@ -1,9 +1,9 @@
 import os
 import io
 import wave
-from elevenlabs.client import ElevenLabs # <-- MUDANÇA
+from elevenlabs.client import ElevenLabs # <-- Biblioteca nova
 
-# Inicializa o cliente ElevenLabs (nova)
+# Inicializa o cliente ElevenLabs
 try:
     client = ElevenLabs(api_key=os.environ.get("ELEVENLABS_API_KEY"))
 except Exception as e:
@@ -35,11 +35,10 @@ def transcrever(audio_bytes: bytes) -> str:
         wav_buffer.name = "audio.wav"
         # --- Fim da lógica do .wav ---
 
-        # --- MUDANÇA: Chamando a API do ElevenLabs ---
-        # Em vez de client.audio.transcriptions.create...
+        # --- A CORREÇÃO ESTÁ AQUI ---
+        # Trocamos 'audio=wav_buffer' por 'files=wav_buffer'
         response = client.speech_to_text.convert(
-            audio=wav_buffer
-            # model_id="eleven_multilingual_v2" # (Opcional, ele usa o padrão)
+            files=wav_buffer 
         )
         
         return response.text
