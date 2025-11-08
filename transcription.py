@@ -38,7 +38,7 @@ def transcrever(audio_bytes: bytes) -> str:
         # --- A CORREÇÃO ESTÁ AQUI ---
         # Trocamos 'audio=wav_buffer' por 'files=wav_buffer'
         response = client.speech_to_text.convert(
-            files=wav_buffer 
+            audio=wav_buffer 
         )
         
         return response.text
