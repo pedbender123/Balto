@@ -39,7 +39,7 @@ def transcrever(audio_bytes: bytes) -> str:
         # Trocamos 'audio=wav_buffer' por 'files=wav_buffer'
         response = client.speech_to_text.convert(
             file=wav_buffer,
-            model_id="eleven_multilingual_v2"
+            model_id="scribe_v1"
         )
         
         return response.text
