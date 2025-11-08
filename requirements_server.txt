@@ -5,7 +5,7 @@ websockets
 webrtcvad-wheels
 
 # Para a Transcrição (ElevenLabs)
-elevenlabs
+elevenlabs>=1.0.0
 
 # Para a Análise (Grok-mini usa a biblioteca do OpenAI)
 openai
