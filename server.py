@@ -6,7 +6,7 @@ import uuid
 from dotenv import load_dotenv
 
 # Importa os módulos de HTTP da lib websockets
-from websockets.http import HTTPStatus
+from http import HTTPStatus  # <-- ESTA É A CORREÇÃO (linha 9)
 from websockets.server import Serve # Para type hint
 
 # Importa os módulos locais
@@ -77,7 +77,7 @@ async def http_handler(path, request_headers):
     if path in ["/cadastro/cliente", "/cadastro/balcao"]:
         if request_headers["Method"] != "POST":
             return (
-                HTTPStatus.METHOD_NOT_ALLOWED,
+                HTTPStatus.METHOD_NOT_ALLOWED, # <-- HTTPStatus agora é da lib nativa 'http'
                 headers,
                 json.dumps({"error": "Método POST requerido"}).encode("utf-8")
             )
