@@ -6,8 +6,8 @@ import uuid
 from dotenv import load_dotenv
 
 # Importa os módulos de HTTP da lib websockets
-from http import HTTPStatus  # <-- ESTA É A CORREÇÃO (linha 9)
-from websockets.server import Serve # Para type hint
+from http import HTTPStatus  # <-- Correção anterior (linha 9), está OK
+# Linha 10 (import Serve) foi REMOVIDA
 
 # Importa os módulos locais
 import db
