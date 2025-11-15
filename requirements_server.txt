@@ -3,3 +3,4 @@ webrtcvad-wheels
 elevenlabs
 openai
 python-dotenv
+aiohttp
