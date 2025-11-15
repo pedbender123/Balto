@@ -1,14 +1,5 @@
-# Para o servidor WebSocket
-websockets
-
-# Para a Detecção de Atividade de Voz (VAD)
+websockets>=11.0
 webrtcvad-wheels
-
-# Para a Transcrição (ElevenLabs)
 elevenlabs
-
-# Para a Análise (Grok-mini usa a biblioteca do OpenAI)
 openai
-
-# Para carregar as chaves de API do .env
 python-dotenv
