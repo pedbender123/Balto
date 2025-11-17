@@ -1,48 +1,187 @@
-Servidor Balto - BackendServiço de backend em Python (WebSocket + HTTP) para a pipeline de análise de áudio Balto.1. Pré-requisitosDockerDocker ComposeGit2.
+🤖 Balto Server Backend
 
-# Configurações do Servidor
-PORT=8765
-DB_FILE=./dados/registro.db
-3. Executando (Docker)Com o Docker e o Docker Compose instalados, execute:# Constrói e inicia o contêiner em modo 'detached' (background)
+Serviço de backend em Python (WebSockets + HTTP) responsável por toda a pipeline de análise de áudio em tempo real do sistema Balto, que inclui: Detecção de Atividade de Voz (VAD), Transcrição e Análise de IA para sugestões de produtos em farmácias.
+
+⚙️ Pré-requisitos
+
+Para executar o servidor Balto, é essencial ter:
+
+Docker
+
+Docker Compose
+
+Git
+
+🔑 Configuração (Variáveis de Ambiente)
+
+O servidor depende de variáveis de ambiente para inicialização e acesso às APIs de terceiros. Estas devem ser configuradas no arquivo .env na raiz do projeto server/.
+
+Variável
+
+Uso
+
+Descrição
+
+OPENAI_API_KEY
+
+🧠 Análise (Grok)
+
+Chave da API para o modelo Grok-mini (via xAI).
+
+ELEVENLABS_API_KEY
+
+🎤 Transcrição
+
+Chave da API para o serviço de Speech-to-Text.
+
+DB_FILE
+
+💾 Banco de Dados
+
+Caminho local do arquivo SQLite (./dados/registro_vendas.db).
+
+PORT
+
+🌐 Servidor
+
+Porta para a comunicação HTTP e WebSocket (Padrão: 8765).
+
+🚀 Executando o Servidor com Docker Compose
+
+Siga estes passos para colocar o servidor no ar de forma isolada e fácil:
+
+1. Iniciar (Build e Run)
+
+Este comando constrói a imagem Docker, cria o volume para o banco de dados (balto-dados) e inicia o contêiner em segundo plano (-d).
+
 docker-compose up -d --build
-Para ver os logs do servidor:docker-compose logs -f
-Para parar o servidor:docker-compose down
-4. Referência da APIO servidor expõe endpoints HTTP e WebSocket na porta definida (ex: 8765).Endpoints HTTP (para Cadastro)POST /cadastro/clienteRegistra uma nova entidade "Cliente" (ex: rede de farmácias).Request Body:{
+
+
+2. Monitorar os Logs
+
+Para diagnosticar ou acompanhar o funcionamento da pipeline:
+
+docker-compose logs -f
+
+
+3. Parar o Serviço
+
+Para encerrar e remover o contêiner (mas manter o volume de dados):
+
+docker-compose down
+
+
+📡 Referência da API
+
+O servidor utiliza portas distintas para operações de cadastro (HTTP) e comunicação em tempo real (WebSocket).
+
+A. Endpoints HTTP (Cadastro)
+
+POST /cadastro/cliente
+
+Cria um registro para o cliente (e.g., a rede de farmácias).
+
+Payload de Exemplo
+
+{
   "email": "contato@redepharma.com",
   "razao_social": "Rede Pharma LTDA",
   "telefone": "11999998888"
 }
-Response (201/CREATED):{
+
+
+Resposta de Sucesso (201 Created)
+
+{
   "codigo": "123456"
 }
-Response (409/CONFLICT):{
-  "error": "Email ou código já existe..."
-}
-POST /cadastro/balcaoRegistra um "Balcão" (ponto de venda) vinculado a um Cliente.Request Body:{
+
+
+POST /cadastro/balcao
+
+Cria um ponto de venda (balcão) e gera a chave de autenticação (API Key).
+
+Payload de Exemplo
+
+{
   "nome_balcao": "Loja 01 - Centro",
-  "user_codigo": "123456"
+  "user_codigo": "123456" 
 }
-Response (201/CREATED):{
+
+
+Resposta de Sucesso (201 Created)
+
+{
   "api_key": "a1b2c3d4-e5f6-7890-abcd-1234567890ef"
 }
-Response (400/BAD REQUEST):{
-  "error": "Código de usuário inválido"
-}
-Protocolo WebSocketEndpoint: wss://[seu-domino]/wsO cliente deve seguir este fluxo:1. Conexão e Autenticação (Cliente -> Servidor)Imediatamente após a conexão ser estabelecida, o cliente DEVE enviar:{
-  "comando": "auth",
-  "api_key": "a1b2c3d4-e5f6-7890-abcd-1234567890ef"
-}
-Se esta mensagem não for enviada ou a api_key for inválida, o servidor encerrará a conexão.2. Stream de Áudio (Cliente -> Servidor)O cliente envia bytes de áudio (formato esperado: 16kHz, 16-bit PCM, mono).3. Recomendação (Servidor -> Cliente)Quando uma oportunidade é detectada, o servidor envia:{
+
+
+B. Protocolo WebSocket
+
+Endpoint: wss://[seu-domino]:8765/ws
+
+O cliente front-end deve seguir rigorosamente o seguinte protocolo:
+
+Passo
+
+Direção
+
+Comando
+
+Detalhes
+
+1
+
+➡️ Cliente -> Servidor
+
+auth
+
+Enviar imediatamente a API Key no formato JSON.
+
+2
+
+➡️ Cliente -> Servidor
+
+Binary Data
+
+Envio contínuo de chunks de áudio (16kHz, 16-bit PCM).
+
+3
+
+⬅️ Servidor -> Cliente
+
+recomendar
+
+Mensagem de IA com uma sugestão de produto e id_interacao.
+
+4
+
+➡️ Cliente -> Servidor
+
+feedback
+
+Reportar o resultado da interação (venda_realizada ou venda_perdida).
+
+Exemplo de Recomendação (Passo 3):
+
+{
   "comando": "recomendar",
-  "mensagem": "Sugerir Dorflex",
+  "mensagem": "Sugerir Gelol",
   "id_interacao": "b1c2d3e4-..."
 }
-4. Feedback (Cliente -> Servidor)Após a interação, o cliente DEVE reportar o resultado:{
-  "comando": "feedback",
-  "id_interacao": "b1c2d3e4-...",
-  "resultado": "venda_realizada" 
-}
-Resultados válidos: venda_realizada ou venda_perdida.5. TestandoPara testar a API ponta-a-ponta, use o script auto_test.py (localizado no repositório de testes).Navegue até a pasta do script de teste.Crie um ambiente virtual (recomendado):python3 -m venv venv
-source venv/bin/activate
-Instale as dependências de teste:pip install requests websockets
-Edite a BASE_URL no script auto_test.py para apontar para seu servidor.Execute o teste:python auto_test.py
+
+
+🧪 Teste Ponta-a-Ponta
+
+Para garantir que o servidor está operando corretamente, utilize o script de teste automatizado (auto_test.py no seu repositório de testes).
+
+Instale as dependências de teste:
+
+pip install requests websockets
+
+
+Aponte a URL: Configure a variável BASE_URL no script auto_test.py para a URL do seu servidor.
+
+Execute:
+
+python auto_test.py
