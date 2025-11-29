@@ -1,8 +1,8 @@
 import os
 import json
-from openai import OpenAI # <-- Mantemos isso!
+from openai import OpenAI
 
-# --- MUDANÇA: Carregar a base de dados ---
+# --- Carregar a base de dados (Mantido igual) ---
 PRODUTOS_DB_PATH = "produtos.json"
 try:
     with open(PRODUTOS_DB_PATH, 'r', encoding='utf-8') as f:
@@ -16,18 +16,17 @@ except json.JSONDecodeError:
     BASE_DE_PRODUTOS = []
 
 
-# --- MUDANÇA: Inicializar o cliente para xAI (Grok) ---
+# --- MUDANÇA: Inicializar o cliente para OpenAI (GPT) ---
 try:
+    # Removemos a base_url da xAI e trocamos a chave para a da OpenAI
     client = OpenAI(
-        api_key=os.environ.get("XAI_API_KEY"),
-        base_url="https://api.x.ai/v1", # <-- URL da API do Grok
+        api_key=os.environ.get("OPENAI_API_KEY")
     )
 except Exception as e:
-    print(f"Erro ao inicializar cliente xAI (Grok): {e}. Verifique sua XAI_API_KEY.")
+    print(f"Erro ao inicializar cliente OpenAI: {e}. Verifique sua OPENAI_API_KEY.")
     client = None
 
-# --- MUDANÇA: Novo Prompt Engineering ---
-# (Fonte 153: agora pode receitar fármacos e usa a base)
+# --- Prompt Engineering (Mantido igual, funciona bem com GPT) ---
 SYSTEM_PROMPT_TEMPLATE = """
 Você é um assistente de farmácia especialista. Sua única função é analisar a transcrição de um cliente e, se aplicável, sugerir UM ÚNICO produto da lista de produtos permitidos.
 
@@ -58,7 +57,7 @@ Sua Resposta: (string vazia)
 def analisar_texto(texto: str) -> str | None:
     """
     Analisa o texto e identifica oportunidades de recomendação
-    usando a base de produtos e o Grok-mini.
+    usando a base de produtos e o GPT-4o-mini.
     """
     if not client or not BASE_DE_PRODUTOS:
         return None
@@ -71,7 +70,7 @@ def analisar_texto(texto: str) -> str | None:
         prompt_final = SYSTEM_PROMPT_TEMPLATE.format(json_produtos=produtos_json_str)
 
         response = client.chat.completions.create(
-            model="grok-3-mini", # <-- MUDANÇA: Usando Grok-mini
+            model="gpt-4o-mini", # <-- MUDANÇA: Substituindo grok-3-mini por gpt-4o-mini
             messages=[
                 {"role": "system", "content": prompt_final},
                 {"role": "user", "content": texto}
@@ -82,7 +81,7 @@ def analisar_texto(texto: str) -> str | None:
         
         recomendacao = response.choices[0].message.content.strip()
         
-        # Se o Grok retornar vazio ou "nada", consideramos None
+        # Se o modelo retornar vazio ou "nada", consideramos None
         if not recomendacao or recomendacao.lower() == "nada":
             return None
             
@@ -90,5 +89,5 @@ def analisar_texto(texto: str) -> str | None:
         return f"Sugerir {recomendacao}"
 
     except Exception as e:
-        print(f"Erro na API de Análise (Grok): {e}")
+        print(f"Erro na API de Análise (OpenAI): {e}")
         return None
