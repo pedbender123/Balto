@@ -36,7 +36,7 @@ class VAD:
         # 300-800: Conversa normal perto do mic.
         # > 1000: Apenas voz muito alta/colada.
         # Pode ser ajustado via variável de ambiente.
-        self.energy_threshold = int(os.environ.get("VAD_ENERGY_THRESHOLD", 300))
+        self.energy_threshold = int(os.environ.get("VAD_ENERGY_THRESHOLD", 150))
 
     def _calculate_energy(self, frame):
         """Calcula a energia (RMS) do frame de áudio."""
