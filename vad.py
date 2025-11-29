@@ -27,16 +27,11 @@ class VAD:
         self.triggered = False
         
         # Configurações de Silêncio
-        self.silence_frames_needed = 15  # Aprox 450ms de silêncio para cortar a frase
+        self.silence_frames_needed = 15  
         self.silence_frames_count = 0
         
-        # --- FILTRO DE PROXIMIDADE (Energy Gate) ---
-        # Valor de RMS mínimo.
-        # < 300: Pega sussurros e fundo.
-        # 300-800: Conversa normal perto do mic.
-        # > 1000: Apenas voz muito alta/colada.
-        # Pode ser ajustado via variável de ambiente.
-        self.energy_threshold = int(os.environ.get("VAD_ENERGY_THRESHOLD", 150))
+
+        self.energy_threshold = int(os.environ.get("VAD_ENERGY_THRESHOLD", 300))
 
     def _calculate_energy(self, frame):
         """Calcula a energia (RMS) do frame de áudio."""

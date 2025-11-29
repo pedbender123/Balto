@@ -3,16 +3,16 @@ import io
 import wave
 import numpy as np
 import noisereduce as nr
-from elevenlabs.client import ElevenLabs
+from openai import OpenAI
 
-# Inicializa o cliente ElevenLabs
+# Inicializa o cliente OpenAI (requer OPENAI_API_KEY no .env)
 try:
-    client = ElevenLabs(api_key=os.environ.get("ELEVENLABS_API_KEY"))
+    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 except Exception as e:
-    print(f"Erro ao inicializar cliente ElevenLabs: {e}. Verifique sua ELEVENLABS_API_KEY.")
+    print(f"Erro ao inicializar cliente OpenAI: {e}. Verifique sua OPENAI_API_KEY.")
     client = None
 
-# Constantes do áudio
+# Constantes do áudio (mantidas do original)
 RATE = 16000
 CHANNELS = 1
 SAMPWIDTH = 2 # 16-bit
@@ -26,14 +26,14 @@ def _clean_audio(audio_bytes: bytes) -> bytes:
         # 1. Converte bytes para array numpy (int16)
         audio_data = np.frombuffer(audio_bytes, dtype=np.int16)
         
-        # 2. Aplica redução de ruído (stationary=True é mais rápido e bom para ruído constante)
-        # prop_decrease=0.8 mantém 20% do "som ambiente" para não soar artificial demais
+        # 2. Aplica redução de ruído
+        # stationary=True é mais rápido e bom para ruído constante
         reduced_noise_data = nr.reduce_noise(
             y=audio_data, 
             sr=RATE, 
             stationary=True, 
             prop_decrease=0.8,
-            n_jobs=1 # 1 thread para não travar o servidor se tiver muitos requests
+            n_jobs=1 
         )
         
         # 3. Converte de volta para bytes
@@ -44,17 +44,18 @@ def _clean_audio(audio_bytes: bytes) -> bytes:
 
 def transcrever(audio_bytes: bytes) -> str:
     """
-    Limpa o áudio e converte em texto usando ElevenLabs.
+    Limpa o áudio e converte em texto usando OpenAI Whisper.
     """
     if not client:
-        return "[ERRO: Cliente ElevenLabs não inicializado]"
+        return "[ERRO: Cliente OpenAI não inicializado]"
 
     try:
-        # --- PASSO NOVO: LIMPEZA ---
+        # --- LIMPEZA ---
         # Abafa sons de fundo antes de enviar para a IA
         clean_bytes = _clean_audio(audio_bytes)
         
         # --- Preparação do Arquivo WAV ---
+        # O Whisper exige um arquivo nomeado (ex: audio.wav)
         wav_buffer = io.BytesIO()
         with wave.open(wav_buffer, 'wb') as wf:
             wf.setnchannels(CHANNELS)
@@ -63,16 +64,17 @@ def transcrever(audio_bytes: bytes) -> str:
             wf.writeframes(clean_bytes)
         
         wav_buffer.seek(0)
-        wav_buffer.name = "audio.wav"
+        wav_buffer.name = "audio.wav" 
 
-        # --- Envio para ElevenLabs ---
-        response = client.speech_to_text.convert(
+        # --- Envio para OpenAI (Whisper) ---
+        response = client.audio.transcriptions.create(
+            model="whisper-1",
             file=wav_buffer,
-            model_id="scribe_v1"
+            language="pt" # Força o português para evitar erros de detecção
         )
         
         return response.text
         
     except Exception as e:
-        print(f"Erro na API de Transcrição: {e}")
+        print(f"Erro na API de Transcrição (Whisper): {e}")
         return f"[Erro na transcrição: {e}]"
