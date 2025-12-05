@@ -7,7 +7,7 @@ class VAD:
     """
     Implementa Detecção de Atividade de Voz (VAD) com Filtro de Proximidade (Energy Gate).
     
-    1. Energy Gate: Ignora sons baixos (distantes).
+    1. Energy Gate: Ignora sons baixos (distantes) baseado no .env.
     2. WebRTC VAD: Identifica se o som alto é voz humana ou barulho.
     """
     
@@ -30,8 +30,18 @@ class VAD:
         self.silence_frames_needed = 15  
         self.silence_frames_count = 0
         
-
-        self.energy_threshold = int(os.environ.get("VAD_ENERGY_THRESHOLD", 300))
+        # --- ATUALIZAÇÃO: Carrega Configuração do .env com Log ---
+        try:
+            env_threshold = os.environ.get("VAD_ENERGY_THRESHOLD")
+            if env_threshold:
+                self.energy_threshold = int(env_threshold)
+                print(f"[VAD] Inicializado. Sensibilidade (Energy Threshold): {self.energy_threshold}")
+            else:
+                self.energy_threshold = 300
+                print(f"[VAD] Aviso: VAD_ENERGY_THRESHOLD não definido no .env. Usando padrão: {self.energy_threshold}")
+        except ValueError:
+            self.energy_threshold = 300
+            print(f"[VAD] Erro: VAD_ENERGY_THRESHOLD inválido. Revertendo para padrão: {self.energy_threshold}")
 
     def _calculate_energy(self, frame):
         """Calcula a energia (RMS) do frame de áudio."""
@@ -86,8 +96,7 @@ class VAD:
                     self.speech_buffer.clear()
                     return speech_segment
             else:
-                # Silêncio contínuo e não disparado -> mantém buffer limpo ou 
-                # guarda um pequeno buffer de pré-roll (opcional, aqui limpamos para economizar memória)
+                # Silêncio contínuo
                 pass
         
         return None

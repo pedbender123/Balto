@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balto Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <div id="login-screen" class="flex items-center justify-center h-screen">
+        <div class="bg-white p-8 rounded shadow-md w-96">
+            <h1 class="text-2xl font-bold mb-4 text-center">Balto Admin</h1>
+            <input type="password" id="password" placeholder="Senha Mestra" 
+                   class="w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button onclick="login()" 
+                    class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Entrar</button>
+            <p id="error-msg" class="text-red-500 text-sm mt-2 hidden">Senha incorreta.</p>
+        </div>
+    </div>
+
+    <div id="dashboard" class="hidden">
+        <nav class="bg-blue-800 text-white p-4 flex justify-between items-center">
+            <span class="font-bold text-xl">🤖 Balto Dashboard</span>
+            <div>
+                <button onclick="logout()" class="text-sm bg-blue-700 px-3 py-1 rounded">Sair</button>
+            </div>
+        </nav>
+
+        <div class="container mx-auto p-4">
+            <div class="flex gap-4 mb-4 border-b pb-2">
+                <button onclick="loadTable('users')" class="px-4 py-2 bg-white rounded shadow hover:bg-gray-50 active:bg-blue-50">Usuários</button>
+                <button onclick="loadTable('balcoes')" class="px-4 py-2 bg-white rounded shadow hover:bg-gray-50 active:bg-blue-50">Balcões</button>
+                <button onclick="loadTable('interacoes')" class="px-4 py-2 bg-white rounded shadow hover:bg-gray-50 active:bg-blue-50">Interações</button>
+            </div>
+
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="table-title" class="text-xl font-semibold capitalize">Selecione uma tabela</h2>
+                <button onclick="downloadCSV()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center gap-2">
+                    ⬇ Baixar CSV
+                </button>
+            </div>
+
+            <div class="bg-white rounded shadow overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-200">
+                        <tr id="table-head"></tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+                <p id="loading" class="text-center p-4 text-gray-500 hidden">Carregando...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentData = [];
+        let currentTable = '';
+
+        async function login() {
+            const pwd = document.getElementById('password').value;
+            const res = await fetch('/admin/login', {
+                method: 'POST',
+                body: JSON.stringify({ password: pwd })
+            });
+            if (res.ok) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                loadTable('interacoes'); // Default
+            } else {
+                document.getElementById('error-msg').classList.remove('hidden');
+            }
+        }
+
+        async function loadTable(table) {
+            currentTable = table;
+            document.getElementById('table-title').innerText = table;
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('table-body').innerHTML = '';
+            
+            try {
+                const res = await fetch(`/api/data/${table}`);
+                if (!res.ok) throw new Error('Falha ao carregar');
+                
+                const data = await res.json();
+                currentData = data;
+                renderTable(data);
+            } catch (e) {
+                alert(e.message);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        function renderTable(data) {
+            const thead = document.getElementById('table-head');
+            const tbody = document.getElementById('table-body');
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td class="p-4">Sem dados.</td></tr>';
+                return;
+            }
+
+            // Headers
+            const keys = Object.keys(data[0]);
+            keys.forEach(k => {
+                const th = document.createElement('th');
+                th.className = "p-3 border-b border-gray-300";
+                th.innerText = k;
+                thead.appendChild(th);
+            });
+
+            // Rows
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50";
+                keys.forEach(k => {
+                    const td = document.createElement('td');
+                    td.className = "p-3 border-b border-gray-200 text-sm";
+                    td.innerText = row[k] !== null ? row[k] : '-';
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        function downloadCSV() {
+            if (!currentData.length) return alert("Nada para exportar");
+            const keys = Object.keys(currentData[0]);
+            let csv = keys.join(",") + "\n";
+            
+            currentData.forEach(row => {
+                const values = keys.map(k => {
+                    let val = row[k] ? String(row[k]) : "";
+                    return `"${val.replace(/"/g, '""')}"`; // Escape quotes
+                });
+                csv += values.join(",") + "\n";
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `balto_${currentTable}.csv`;
+            a.click();
+        }
+
+        function logout() {
+            document.cookie = "admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            location.reload();
+        }
+    </script>
+</body>
+</html>
