@@ -1,19 +1,14 @@
-# A 'version' foi removida (corrige o WARN)
-
 services:
   server:
-    # CORREÇÃO 1: O build é o diretório atual ('.')
-    # O Dockerfile está em /root/Balto
-    build: .
+    build: ./backend
     container_name: balto-server-prod
     ports:
       - "8765:8765"
     volumes:
-      # Isso está correto, cria um volume para a pasta /app/dados do contêiner
-      - balto-dados:/app/dados
+      # Mantém o banco de dados seguro
+      - balto-dados:/backend/app/dados
     env_file:
-      # CORREÇÃO 2: O .env está no diretório atual ('.')
-      - ./.env
+      - ./backend/.env
     restart: unless-stopped
 
 volumes:
