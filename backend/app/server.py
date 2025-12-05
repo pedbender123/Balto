@@ -180,6 +180,10 @@ async def websocket_handler(request):
     print("Websocket fechado")
     return ws
 
+async def root_handler(request):
+    """Redireciona a raiz '/' para '/admin'"""
+    raise web.HTTPFound('/admin')
+
 # --- MAIN ---
 if __name__ == "__main__":
     db.inicializar_db()
