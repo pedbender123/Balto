@@ -1,187 +1,109 @@
 🤖 Balto Server Backend
 
-Serviço de backend em Python (WebSockets + HTTP) responsável por toda a pipeline de análise de áudio em tempo real do sistema Balto, que inclui: Detecção de Atividade de Voz (VAD), Transcrição e Análise de IA para sugestões de produtos em farmácias.
+Serviço de backend em Python (AIOHTTP + WebSockets) responsável pela pipeline de inteligência artificial do sistema Balto. O sistema processa áudio em tempo real, gerencia transações e fornece sugestões farmacêuticas baseadas em sintomas.
 
-⚙️ Pré-requisitos
+📋 Stack Tecnológica
 
-Para executar o servidor Balto, é essencial ter:
+Linguagem: Python 3.10
 
-Docker
+Server: AIOHTTP (Async)
 
-Docker Compose
+VAD (Voice Activity Detection): WebRTCVAD + Energy Gate (Filtro de ruído e silêncio)
 
-Git
+STT (Speech-to-Text): ElevenLabs (Scribe)
 
-🔑 Configuração (Variáveis de Ambiente)
+LLM (Inteligência): xAI (Grok Beta)
 
-O servidor depende de variáveis de ambiente para inicialização e acesso às APIs de terceiros. Estas devem ser configuradas no arquivo .env na raiz do projeto server/.
+Infra: Docker & Docker Compose
 
-Variável
+⚙️ Estrutura do Projeto
 
-Uso
+O projeto foi reorganizado para maior escalabilidade:
 
-Descrição
-
-OPENAI_API_KEY
-
-🧠 Análise (Grok)
-
-Chave da API para o modelo Grok-mini (via xAI).
-
-ELEVENLABS_API_KEY
-
-🎤 Transcrição
-
-Chave da API para o serviço de Speech-to-Text.
-
-DB_FILE
-
-💾 Banco de Dados
-
-Caminho local do arquivo SQLite (./dados/registro_vendas.db).
-
-PORT
-
-🌐 Servidor
-
-Porta para a comunicação HTTP e WebSocket (Padrão: 8765).
-
-🚀 Executando o Servidor com Docker Compose
-
-Siga estes passos para colocar o servidor no ar de forma isolada e fácil:
-
-1. Iniciar (Build e Run)
-
-Este comando constrói a imagem Docker, cria o volume para o banco de dados (balto-dados) e inicia o contêiner em segundo plano (-d).
-
-docker-compose up -d --build
+/
+├── backend/
+│   ├── app/           # Código fonte da aplicação
+│   ├── Dockerfile     # Definição da imagem
+│   └── .env           # Variáveis (NÃO COMITAR)
+├── docker-compose.yml # Orquestração dos containers
+└── README.md
 
 
-2. Monitorar os Logs
+🚀 Como Rodar (Localmente ou Servidor)
 
-Para diagnosticar ou acompanhar o funcionamento da pipeline:
+IMPORTANTE: Não tente rodar comandos docker run manuais. O projeto utiliza volumes gerenciados e redes internas configuradas no docker-compose.
+
+1. Configuração de Ambiente (.env)
+
+Crie um arquivo .env dentro da pasta backend/ com as seguintes chaves:
+
+# Chaves de API (Obrigatórias)
+XAI_API_KEY="sua-chave-grok-aqui"
+ELEVENLABS_API_KEY="sua-chave-elevenlabs-aqui"
+
+# Configurações do Sistema
+PORT=8765
+DB_FILE="/backend/app/dados/registro.db"
+
+# Ajuste de Sensibilidade do VAD (Opcional, Padrão: 300)
+# Aumente se houver muito ruído de fundo, diminua se a voz estiver cortando.
+VAD_ENERGY_THRESHOLD=300
+
+
+2. Execução
+
+Na raiz do projeto (onde está o docker-compose.yml), execute:
+
+docker-compose up --build -d
+
+
+Este comando irá:
+
+Construir a imagem baseada no Dockerfile correto.
+
+Montar o volume balto-dados para que o banco de dados não seja perdido ao reiniciar.
+
+Iniciar o servidor na porta 8765.
+
+Para ver os logs:
 
 docker-compose logs -f
 
 
-3. Parar o Serviço
+📡 Protocolo de Comunicação (WebSocket)
 
-Para encerrar e remover o contêiner (mas manter o volume de dados):
+Endpoint: ws://localhost:8765/ws (ou IP do servidor)
 
-docker-compose down
+Fluxo de Dados
 
+Autenticação (Cliente -> Servidor)
 
-📡 Referência da API
+Assim que conectar, envie:
 
-O servidor utiliza portas distintas para operações de cadastro (HTTP) e comunicação em tempo real (WebSocket).
-
-A. Endpoints HTTP (Cadastro)
-
-POST /cadastro/cliente
-
-Cria um registro para o cliente (e.g., a rede de farmácias).
-
-Payload de Exemplo
-
-{
-  "email": "contato@redepharma.com",
-  "razao_social": "Rede Pharma LTDA",
-  "telefone": "11999998888"
-}
+{ "comando": "auth", "api_key": "sua-api-key-do-balcao" }
 
 
-Resposta de Sucesso (201 Created)
+Envio de Áudio (Cliente -> Servidor)
 
-{
-  "codigo": "123456"
-}
+Envie chunks de áudio binário (16kHz, 16-bit, Mono) continuamente.
 
+O sistema possui um Denoiser e VAD Integrados: Ele automaticamente descarta silêncio e ruído de fundo antes de processar, economizando custos de API.
 
-POST /cadastro/balcao
+Recomendação (Servidor -> Cliente)
 
-Cria um ponto de venda (balcão) e gera a chave de autenticação (API Key).
-
-Payload de Exemplo
-
-{
-  "nome_balcao": "Loja 01 - Centro",
-  "user_codigo": "123456" 
-}
-
-
-Resposta de Sucesso (201 Created)
-
-{
-  "api_key": "a1b2c3d4-e5f6-7890-abcd-1234567890ef"
-}
-
-
-B. Protocolo WebSocket
-
-Endpoint: wss://[seu-domino]:8765/ws
-
-O cliente front-end deve seguir rigorosamente o seguinte protocolo:
-
-Passo
-
-Direção
-
-Comando
-
-Detalhes
-
-1
-
-➡️ Cliente -> Servidor
-
-auth
-
-Enviar imediatamente a API Key no formato JSON.
-
-2
-
-➡️ Cliente -> Servidor
-
-Binary Data
-
-Envio contínuo de chunks de áudio (16kHz, 16-bit PCM).
-
-3
-
-⬅️ Servidor -> Cliente
-
-recomendar
-
-Mensagem de IA com uma sugestão de produto e id_interacao.
-
-4
-
-➡️ Cliente -> Servidor
-
-feedback
-
-Reportar o resultado da interação (venda_realizada ou venda_perdida).
-
-Exemplo de Recomendação (Passo 3):
+Quando uma sugestão é identificada, o servidor envia:
 
 {
   "comando": "recomendar",
-  "mensagem": "Sugerir Gelol",
-  "id_interacao": "b1c2d3e4-..."
+  "produto": "Nome do Produto",
+  "explicacao": "Breve motivo da sugestão baseado nos sintomas.",
+  "transcricao_base": "Texto original transcrito para auditoria"
 }
 
 
-🧪 Teste Ponta-a-Ponta
+Nota: Se não houver produto relevante, o servidor não envia nada.
 
-Para garantir que o servidor está operando corretamente, utilize o script de teste automatizado (auto_test.py no seu repositório de testes).
+🛠️ Manutenção e Banco de Dados
 
-Instale as dependências de teste:
-
-pip install requests websockets
-
-
-Aponte a URL: Configure a variável BASE_URL no script auto_test.py para a URL do seu servidor.
-
-Execute:
-
-python auto_test.py
+O banco de dados SQLite é persistido no volume Docker balto-dados.
+Para fazer backup ou acessar o arquivo .db diretamente, ele está mapeado internamente no container em /backend/app/dados/registro.db.
