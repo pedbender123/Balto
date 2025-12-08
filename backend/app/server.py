@@ -5,6 +5,28 @@ import uuid
 from dotenv import load_dotenv
 from aiohttp import web, WSMsgType
 
+# --- CORS MIDDLEWARE ---
+@web.middleware
+async def cors_middleware(request, handler):
+    # Trata o preflight (OPTIONS) antes de chegar no handler
+    if request.method == 'OPTIONS':
+        resp = web.Response()
+    else:
+        resp = await handler(request)
+
+    # Em dev você pode liberar o origin que estiver chamando
+    origin = request.headers.get("Origin")
+    if origin:
+        resp.headers['Access-Control-Allow-Origin'] = origin
+    # Se preferir fixo em dev:
+    # resp.headers['Access-Control-Allow-Origin'] = 'http://localhost:8000'
+
+    resp.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
+    resp.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    resp.headers['Access-Control-Allow-Credentials'] = 'true'
+    return resp
+
+
 # Ajuste de imports
 from app import db, vad, transcription, analysis
 
@@ -188,7 +210,7 @@ async def root_handler(request):
 if __name__ == "__main__":
     db.inicializar_db()
     
-    app = web.Application()
+    app = web.Application(middlewares=[cors_middleware])
     
     # Rotas API Pública
     app.router.add_post('/cadastro/cliente', handle_cadastro_cliente)
