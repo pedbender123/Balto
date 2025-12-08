@@ -8,3 +8,6 @@ dados/
 # 3. Cache do Python
 __pycache__/
 *.pyc
+
+# 4. Pasta de arquivos de áudio quando MOCK_MODE=1 (usado para teste local)
+.audio_dumps

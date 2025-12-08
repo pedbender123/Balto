@@ -5,8 +5,11 @@ services:
     ports:
       - "8765:8765"
     volumes:
-      # Mantém o banco de dados seguro
+      # Banco (já existia)
       - balto-dados:/backend/app/dados
+
+      # NOVO: pasta de áudios mapeada para o host
+      - ./audio_dumps:/backend/app/audio_dumps
     env_file:
       - ./backend/.env
     restart: unless-stopped

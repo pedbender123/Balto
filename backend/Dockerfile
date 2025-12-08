@@ -1,7 +1,12 @@
 FROM python:3.10-slim
 
 # Instala libs de sistema (sndfile é vital para audio)
-RUN apt-get update && apt-get install -y libsndfile1 gcc && rm -rf /var/lib/apt/lists/*
+# Instala libs de sistema (sndfile + ffmpeg + gcc)
+RUN apt-get update && apt-get install -y \
+    libsndfile1 \
+    gcc \
+    ffmpeg \
+ && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /backend
 
