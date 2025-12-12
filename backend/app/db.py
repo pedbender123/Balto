@@ -1,192 +1,120 @@
 import sqlite3
 import os
 import uuid
-import random
 from datetime import datetime
 
-# Pega o caminho do DB do .env, com um padrão
 DB_FILE = os.environ.get("DB_FILE", "registro.db")
 
-def _generate_6_digit_code(cursor):
-    """
-    Helper interno para gerar um código de 6 dígitos numérico único
-    para um novo usuário.
-    """
-    while True:
-        # Gera um código como string, ex: "123456"
-        code = str(random.randint(100000, 999999))
-        # Verifica se já existe na tabela de usuários
-        cursor.execute("SELECT 1 FROM users WHERE codigo_6_digitos = ?", (code,))
-        if cursor.fetchone() is None:
-            # Se não existir, retorna o código
-            return code
-
 def inicializar_db():
-    """
-    Cria as tabelas (se não existirem) para usuários, balcões e interações.
-    """
-    # Garante que o diretório de dados exista
     os.makedirs(os.path.dirname(DB_FILE), exist_ok=True)
-    
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     
-    # Tabela 1: Usuários (Clientes, e.g., redes de farmácia)
+    # 1. Tabela Users
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
         user_id TEXT PRIMARY KEY,
-        email TEXT UNIQUE NOT NULL,
-        razao_social TEXT NOT NULL,
+        email TEXT UNIQUE,
+        razao_social TEXT,
         telefone TEXT,
-        codigo_6_digitos TEXT UNIQUE NOT NULL
+        codigo_6_digitos TEXT UNIQUE
     )
     """)
     
-    # Tabela 2: Balcões (Pontos de Venda/Conexões)
+    # 2. Tabela Balcões
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS balcoes (
         balcao_id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        nome_balcao TEXT NOT NULL,
-        api_key TEXT UNIQUE NOT NULL,
+        user_id TEXT,
+        nome_balcao TEXT,
+        api_key TEXT UNIQUE,
         FOREIGN KEY (user_id) REFERENCES users (user_id)
     )
     """)
 
-    # Tabela 3: Interações (Modificada para incluir balcao_id)
+    # 3. Tabela Funcionários (Fase 3 - Speaker ID)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS funcionarios (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT,
+        nome TEXT,
+        embedding BLOB,
+        criado_em DATETIME,
+        FOREIGN KEY (user_id) REFERENCES users (user_id)
+    )
+    """)
+
+    # 4. Tabela Interações (Analytics Expandido)
+    # Verifica colunas novas para migração
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS interacoes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        balcao_id TEXT NOT NULL,
-        timestamp DATETIME NOT NULL,
+        balcao_id TEXT,
+        timestamp DATETIME,
         transcricao_completa TEXT,
         recomendacao_gerada TEXT,
         resultado_feedback TEXT,
+        funcionario_id INTEGER,
+        modelo_stt TEXT,
+        custo_estimado REAL,
         FOREIGN KEY (balcao_id) REFERENCES balcoes (balcao_id)
     )
     """)
     
-    # Bloco de migração: Adiciona a coluna 'balcao_id' se ela não existir
-    # Isso evita que o banco de dados antigo quebre
+    # Migração simples (adiciona colunas se faltarem)
     try:
-        cursor.execute("SELECT balcao_id FROM interacoes LIMIT 1")
+        cursor.execute("SELECT modelo_stt FROM interacoes LIMIT 1")
     except sqlite3.OperationalError:
-        print("Migrando tabela 'interacoes', adicionando 'balcao_id'...")
-        cursor.execute("ALTER TABLE interacoes ADD COLUMN balcao_id TEXT")
+        print("[DB] Migrando tabela interacoes...")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN funcionario_id INTEGER")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN modelo_stt TEXT")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN custo_estimado REAL")
     
     conn.commit()
     conn.close()
-    print(f"Banco de dados inicializado em {DB_FILE}")
 
-def add_user(email: str, razao_social: str, telefone: str):
-    """
-    Cadastra um novo usuário (cliente).
-    Retorna o código de 6 dígitos ou um erro.
-    """
-    try:
-        conn = sqlite3.connect(DB_FILE)
-        cursor = conn.cursor()
-        
-        user_id = str(uuid.uuid4())
-        code = _generate_6_digit_code(cursor)
-        
-        cursor.execute("""
-        INSERT INTO users (user_id, email, razao_social, telefone, codigo_6_digitos)
-        VALUES (?, ?, ?, ?, ?)
-        """, (user_id, email, razao_social, telefone, code))
-        
-        conn.commit()
-        conn.close()
-        # Sucesso
-        return {"success": True, "codigo": code}
-    except sqlite3.IntegrityError as e:
-        # Erro de 'UNIQUE' (email ou código já existe)
-        conn.close()
-        return {"success": False, "error": f"Email ou código já existe: {e}"}
-    except Exception as e:
-        conn.close()
-        return {"success": False, "error": str(e)}
+# --- Funções Auxiliares ---
 
-def add_balcao(nome_balcao: str, user_codigo: str):
-    """
-    Cadastra um novo balcão, atrelando-o a um usuário
-    pelo código de 6 dígitos.
-    Retorna a API key do balcão ou um erro.
-    """
-    try:
-        conn = sqlite3.connect(DB_FILE)
-        cursor = conn.cursor()
-        
-        # 1. Encontrar o user_id pelo código de 6 dígitos
-        cursor.execute("SELECT user_id FROM users WHERE codigo_6_digitos = ?", (user_codigo,))
-        result = cursor.fetchone()
-        
-        if result is None:
-            conn.close()
-            return {"success": False, "error": "Código de usuário inválido"}
-            
-        user_id = result[0]
-        
-        # 2. Gerar dados do balcão
-        balcao_id = str(uuid.uuid4())
-        api_key = str(uuid.uuid4()) # Chave para autenticação do WebSocket
-        
-        cursor.execute("""
-        INSERT INTO balcoes (balcao_id, user_id, nome_balcao, api_key)
-        VALUES (?, ?, ?, ?)
-        """, (balcao_id, user_id, nome_balcao, api_key))
-        
-        conn.commit()
-        conn.close()
-        # Sucesso
-        return {"success": True, "api_key": api_key}
-        
-    except Exception as e:
-        conn.close()
-        return {"success": False, "error": str(e)}
+def validate_api_key(api_key):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("SELECT balcao_id FROM balcoes WHERE api_key = ?", (api_key,))
+    res = cursor.fetchone()
+    conn.close()
+    return res[0] if res else None
 
-def validate_api_key(api_key: str):
-    """
-    Valida uma API key e retorna o ID do balcão (balcao_id) se for válida.
-    Retorna None se inválida.
-    """
-    if not api_key:
-        return None
-        
-    try:
-        conn = sqlite3.connect(DB_FILE)
-        cursor = conn.cursor()
-        
-        cursor.execute("SELECT balcao_id FROM balcoes WHERE api_key = ?", (api_key,))
-        result = cursor.fetchone()
-        
-        conn.close()
-        
-        if result:
-            return result[0] # Retorna o balcao_id
-        return None
-        
-    except Exception as e:
-        print(f"Erro ao validar API key: {e}")
-        return None
+def registrar_interacao(balcao_id, transcricao, recomendacao, resultado, funcionario_id=None, modelo_stt=None, custo=0.0):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("""
+    INSERT INTO interacoes (balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback, funcionario_id, modelo_stt, custo_estimado)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (balcao_id, datetime.now(), transcricao, recomendacao, resultado, funcionario_id, modelo_stt, custo))
+    conn.commit()
+    conn.close()
 
-def registrar_interacao(balcao_id: str, transcricao: str, recomendacao: str, resultado: str):
+def adicionar_funcionario(user_id, nome, embedding_blob):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO funcionarios (user_id, nome, embedding, criado_em) VALUES (?, ?, ?, ?)",
+                   (user_id, nome, embedding_blob, datetime.now()))
+    conn.commit()
+    conn.close()
+
+def listar_funcionarios_por_balcao(balcao_id):
+    """Retorna lista de funcionarios do dono do balcão."""
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    # Join para achar o user_id através do balcao_id
+    query = """
+    SELECT f.id, f.nome, f.embedding 
+    FROM funcionarios f
+    JOIN balcoes b ON f.user_id = b.user_id
+    WHERE b.balcao_id = ?
     """
-    Insere um registro completo da interação, agora com balcao_id.
-    """
-    try:
-        conn = sqlite3.connect(DB_FILE)
-        cursor = conn.cursor()
-        
-        timestamp = datetime.now()
-        
-        # Insere os dados (fonte 129)
-        cursor.execute("""
-        INSERT INTO interacoes (balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback)
-        VALUES (?, ?, ?, ?, ?)
-        """, (balcao_id, timestamp, transcricao, recomendacao, resultado))
-        
-        conn.commit()
-        conn.close()
-    except sqlite3.Error as e:
-        print(f"Erro ao registrar interação no DB: {e}")
+    cursor.execute(query, (balcao_id,))
+    rows = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return rows

@@ -1,20 +1,28 @@
 FROM python:3.10-slim
 
-# Instala libs de sistema (sndfile é vital para audio)
-RUN apt-get update && apt-get install -y libsndfile1 gcc && rm -rf /var/lib/apt/lists/*
+# Instalação de dependências do sistema
+# libsndfile1: necessário para processamento de áudio (soundfile/librosa)
+# ffmpeg: necessário para decodificação de áudio (pydub/subprocess)
+# gcc, g++: necessários para compilar bibliotecas numéricas ou de áudio
+RUN apt-get update && apt-get install -y \
+    libsndfile1 \
+    ffmpeg \
+    gcc \
+    g++ \
+    make \
+ && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /backend
 
-# Copia requirements e instala
+# Copia e instala dependências Python
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia todo o código da pasta backend
+# Copia o código fonte
 COPY . .
 
-# Expõe porta
-EXPOSE 8765
-
-# Ajuste no PYTHONPATH para ele achar o módulo 'app' e rodar o server
+# Define o PYTHONPATH para garantir que imports 'from app...' funcionem
 ENV PYTHONPATH=/backend
+
+# Executa o servidor em modo unbuffered (logs aparecem instantaneamente)
 CMD ["python", "-u", "app/server.py"]

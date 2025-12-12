@@ -1,9 +1,13 @@
 websockets>=11.0
-webrtcvad-wheels
-elevenlabs
-openai
-python-dotenv
 aiohttp
 numpy
 scipy
 noisereduce
+webrtcvad-wheels
+elevenlabs
+openai
+requests
+resemblyzer
+torch --index-url https://download.pytorch.org/whl/cpu
+python-dotenv
+ffmpeg-python

@@ -2,203 +2,265 @@ import asyncio
 import json
 import os
 import uuid
+import subprocess
+import wave
+from datetime import datetime
 from dotenv import load_dotenv
 from aiohttp import web, WSMsgType
 
-# Ajuste de imports
-from app import db, vad, transcription, analysis
+# Imports internos
+from app import db, vad, transcription, analysis, speaker_id
 
 load_dotenv()
 
-# --- CONFIGURAÇÕES DE AMBIENTE ---
+# --- Configurações ---
 MOCK_MODE = os.environ.get("MOCK_MODE") == "1"
+SAVE_AUDIO = os.environ.get("SAVE_AUDIO_DUMPS") == "1" # Feature Fase 1.2
+AUDIO_DUMP_DIR = os.environ.get("AUDIO_DUMP_DIR", "./audio_dumps")
 ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "admin123")
-VAD_THRESHOLD = os.environ.get("VAD_ENERGY_THRESHOLD", "300")
 
 print(f"[BOOT] MOCK_MODE: {MOCK_MODE}")
-print(f"[BOOT] VAD_ENERGY_THRESHOLD: {VAD_THRESHOLD}")
+print(f"[BOOT] SAVE_AUDIO_DUMPS: {SAVE_AUDIO}")
 
-# --- PIPELINE PRINCIPAL ---
-async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: str):
-    print(f"[{balcao_id}] Processando áudio...")
+# --- Utilitários ---
+def decode_webm_to_pcm16le(webm_bytes: bytes, sample_rate: int = 16000) -> bytes:
+    """Decodifica WebM/Opus para PCM 16-bit 16kHz usando FFmpeg."""
+    try:
+        proc = subprocess.run(
+            [
+                "ffmpeg", "-i", "pipe:0", "-f", "s16le", "-ar", str(sample_rate), "-ac", "1",
+                "pipe:1", "-loglevel", "error"
+            ],
+            input=webm_bytes,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        if proc.returncode != 0:
+            print(f"[FFMPEG] Erro: {proc.stderr.decode('utf-8')}")
+            return b""
+        return proc.stdout
+    except Exception as e:
+        print(f"[FFMPEG] Exception: {e}")
+        return b""
+
+def dump_audio_to_disk(audio_bytes: bytes, balcao_id: str):
+    """Salva o áudio bruto para análise (Fase 1.2)."""
+    if not os.path.exists(AUDIO_DUMP_DIR):
+        os.makedirs(AUDIO_DUMP_DIR)
     
-    # 1. MOCK MODE (Modo de Teste / Economia)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"{balcao_id}_{timestamp}_{uuid.uuid4().hex[:6]}.wav"
+    filepath = os.path.join(AUDIO_DUMP_DIR, filename)
+    
+    with wave.open(filepath, "wb") as wf:
+        wf.setnchannels(1)
+        wf.setsampwidth(2)
+        wf.setframerate(16000)
+        wf.writeframes(audio_bytes)
+    print(f"[DUMP] Áudio salvo: {filepath}")
+
+# --- Pipeline Principal (Core Logic) ---
+async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: str):
+    print(f"[{balcao_id}] Processando segmento de fala ({len(speech_segment)} bytes)...")
+
+    # Passo 1: Infraestrutura de Teste
+    if SAVE_AUDIO or MOCK_MODE:
+        await asyncio.to_thread(dump_audio_to_disk, speech_segment, balcao_id)
+
     if MOCK_MODE:
-        print(f"[{balcao_id}] MOCK ATIVADO. Gerando resposta simulada.")
-        await asyncio.sleep(1.5) # Simula delay da IA
-        
-        payload_mock = {
+        await asyncio.sleep(1)
+        await websocket.send_json({
             "comando": "recomendar",
-            "produto": "Dipirona (MOCK)",
-            "explicacao": "Sugestão gerada pelo MOCK_MODE. Desative no .env para usar IA real.",
-            "transcricao_base": "[Áudio ignorado no Mock]"
-        }
-        await websocket.send_json(payload_mock)
+            "produto": "Produto MOCK",
+            "explicacao": "Modo de Teste Ativo",
+            "transcricao_base": "Teste de áudio simulado"
+        })
         return
 
-    # 2. Pipeline Real
     try:
-        # Transcrição (ElevenLabs)
-        texto = await asyncio.to_thread(transcription.transcrever, speech_segment)
-        print(f"[{balcao_id}] Transcrição: {texto}")
-
-        if not texto or texto.startswith("[Erro"):
+        # Passo 2 & 3: Roteamento de Custo e Transcrição (Smart Routing)
+        # O transcription.py decide se usa modelo caro ou barato
+        transcricao_resultado = await asyncio.to_thread(
+            transcription.transcrever_inteligente, speech_segment
+        )
+        
+        texto = transcricao_resultado["texto"]
+        modelo_usado = transcricao_resultado["modelo"]
+        custo_estimado = transcricao_resultado["custo"]
+        
+        if not texto:
             return
 
-        # Análise (Grok)
-        json_analise = await asyncio.to_thread(analysis.analisar_texto, texto)
+        print(f"[{balcao_id}] Transcrição ({modelo_usado}): {texto}")
 
-        if json_analise:
+        # Passo 4: Identificação Biométrica (Speaker ID)
+        nome_funcionario = "Desconhecido"
+        funcionario_id = None
+        
+        # Só tenta identificar se tiver áudio suficiente (>1s) para evitar falso positivo
+        if len(speech_segment) > 32000: # ~1 segundo em 16k 16bit
+            identificacao = await asyncio.to_thread(
+                speaker_id.identificar_funcionario, speech_segment, balcao_id
+            )
+            if identificacao:
+                nome_funcionario = identificacao["nome"]
+                funcionario_id = identificacao["id"]
+                print(f"[{balcao_id}] Funcionário Identificado: {nome_funcionario}")
+
+        # Passo 5: Inteligência (LLM) com Contexto
+        analise_json = await asyncio.to_thread(
+            analysis.analisar_texto, texto, nome_funcionario
+        )
+
+        sugestao = None
+        explicacao = None
+        
+        if analise_json:
             try:
-                dados_analise = json.loads(json_analise)
-                produto = dados_analise.get("sugestao")
-                explicacao = dados_analise.get("explicacao")
+                dados = json.loads(analise_json)
+                sugestao = dados.get("sugestao")
+                explicacao = dados.get("explicacao")
                 
-                if produto:
-                    payload = {
+                if sugestao:
+                    # Passo 6: Resposta ao Cliente
+                    await websocket.send_json({
                         "comando": "recomendar",
-                        "produto": produto,
+                        "produto": sugestao,
                         "explicacao": explicacao,
-                        "transcricao_base": texto
-                    }
-                    await websocket.send_json(payload)
-                    print(f"[{balcao_id}] Sugestão enviada: {produto}")
-                    
-                    # Opcional: Registrar interação simples
-                    await asyncio.to_thread(
-                        db.registrar_interacao, 
-                        balcao_id, texto, f"{produto}: {explicacao}", "pendente"
-                    )
+                        "transcricao_base": texto,
+                        "atendente": nome_funcionario
+                    })
+            except:
+                pass
 
-            except json.JSONDecodeError:
-                print(f"Erro ao decodificar JSON do Grok: {json_analise}")
+        # Passo 7: Analytics e Logs
+        await asyncio.to_thread(
+            db.registrar_interacao,
+            balcao_id=balcao_id,
+            transcricao=texto,
+            recomendacao=f"{sugestao} ({explicacao})" if sugestao else "Nenhuma",
+            resultado="processado",
+            funcionario_id=funcionario_id,
+            modelo_stt=modelo_usado,
+            custo=custo_estimado
+        )
 
     except Exception as e:
-        print(f"[{balcao_id}] Erro pipeline: {e}")
+        print(f"[{balcao_id}] Erro no Pipeline: {e}")
+        import traceback
+        traceback.print_exc()
 
-# --- ADMIN API HANDLERS ---
-async def admin_page_handler(request):
-    """Serve o HTML do painel administrativo."""
-    return web.FileResponse('./app/static/admin.html')
-
-async def admin_login_handler(request):
-    """Valida senha e cria cookie."""
-    try:
-        data = await request.json()
-        if data.get("password") == ADMIN_SECRET:
-            response = web.Response(text="OK")
-            # Cookie simples para auth
-            response.set_cookie("admin_token", "authorized", max_age=3600)
-            return response
-        return web.Response(status=401, text="Senha incorreta")
-    except:
-        return web.Response(status=400)
-
-def check_auth(request):
-    """Helper para verificar cookie."""
-    return request.cookies.get("admin_token") == "authorized"
-
-async def admin_get_data(request):
-    """Retorna dados das tabelas em JSON (Protegido)."""
-    if not check_auth(request):
-        return web.Response(status=403, text="Não autorizado")
-    
-    table_name = request.match_info['table']
-    allowed_tables = ['users', 'balcoes', 'interacoes']
-    
-    if table_name not in allowed_tables:
-        return web.Response(status=404, text="Tabela não encontrada")
-        
-    try:
-        # Conecta direto ao DB para ler tudo
-        # Nota: Idealmente mover para db.py, mas aqui simplificamos para o admin
-        import sqlite3
-        conn = sqlite3.connect(db.DB_FILE)
-        conn.row_factory = sqlite3.Row # Permite acessar colunas por nome
-        cursor = conn.cursor()
-        
-        cursor.execute(f"SELECT * FROM {table_name}")
-        rows = cursor.fetchall()
-        
-        # Converte para lista de dicts
-        result = [dict(row) for row in rows]
-        conn.close()
-        
-        return web.json_response(result)
-    except Exception as e:
-        return web.Response(status=500, text=str(e))
-
-# --- HANDLERS EXISTENTES (Cadastro & WS) ---
-# ... (Reimplementando lógica anterior para garantir compatibilidade) ...
-
-async def handle_cadastro_cliente(request):
-    data = await request.json()
-    res = db.add_user(data.get("email"), data.get("razao_social"), data.get("telefone"))
-    status = 201 if res["success"] else 400
-    return web.json_response(res, status=status)
-
-async def handle_cadastro_balcao(request):
-    data = await request.json()
-    res = db.add_balcao(data.get("nome_balcao"), data.get("user_codigo"))
-    status = 201 if res["success"] else 400
-    return web.json_response(res, status=status)
+# --- Handlers WebSocket e HTTP ---
 
 async def websocket_handler(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)
     
-    # Auth inicial
+    balcao_id = None
+    vad_session = None
+    
+    # Buffers de decodificação
+    webm_buffer = bytearray()
+    pcm_offset = 0
+
     try:
-        auth_msg = await ws.receive_json(timeout=10.0)
-        api_key = auth_msg.get("api_key")
+        # Auth Handshake
+        msg = await ws.receive_json(timeout=10.0)
+        api_key = msg.get("api_key")
         balcao_id = db.validate_api_key(api_key)
         
         if not balcao_id:
             await ws.close(code=4001, message=b"API Key Invalida")
             return ws
             
-        print(f"Balcão conectado: {balcao_id}")
+        print(f"Conectado: {balcao_id}")
+        vad_session = vad.VAD() # Instância dedicada do VAD
         
-        # Instancia VAD para essa conexão
-        client_vad = vad.VAD()
-
     except Exception as e:
-        print(f"Erro Auth: {e}")
+        print(f"Erro Auth WS: {e}")
         await ws.close()
         return ws
 
-    # Loop Principal
     async for msg in ws:
         if msg.type == WSMsgType.BINARY:
-            speech_segment = client_vad.process(msg.data)
-            if speech_segment:
-                asyncio.create_task(process_speech_pipeline(ws, speech_segment, balcao_id))
-        
+            # Fluxo de Áudio
+            webm_buffer.extend(msg.data)
+            
+            # Decodifica tudo que tem no buffer
+            pcm_full = decode_webm_to_pcm16le(bytes(webm_buffer))
+            
+            if not pcm_full: continue
+            
+            # Pega apenas os bytes novos
+            if len(pcm_full) > pcm_offset:
+                new_pcm = pcm_full[pcm_offset:]
+                pcm_offset = len(pcm_full)
+                
+                # Processa no VAD
+                speech = vad_session.process(new_pcm)
+                if speech:
+                    asyncio.create_task(
+                        process_speech_pipeline(ws, speech, balcao_id)
+                    )
         elif msg.type == WSMsgType.ERROR:
-            print(f'WS Error: {ws.exception()}')
+            print(f"WS Error: {ws.exception()}")
 
-    print("Websocket fechado")
+    print(f"Desconectado: {balcao_id}")
     return ws
 
-async def root_handler(request):
-    """Redireciona a raiz '/' para '/admin'"""
-    raise web.HTTPFound('/admin')
+# --- API e Admin ---
+async def admin_page(request):
+    return web.FileResponse('./app/static/admin.html')
 
-# --- MAIN ---
+async def admin_login(request):
+    try:
+        data = await request.json()
+        if data.get("password") == ADMIN_SECRET:
+            resp = web.Response(text="OK")
+            resp.set_cookie("admin_token", "auth_ok", max_age=3600)
+            return resp
+        return web.Response(status=401)
+    except:
+        return web.Response(status=400)
+
+async def api_enroll_voice(request):
+    """Endpoint para cadastrar voz de funcionário (Fase 3)."""
+    # Exige Auth (simplificado check de cookie)
+    if request.cookies.get("admin_token") != "auth_ok":
+        return web.Response(status=403)
+        
+    reader = await request.multipart()
+    field = await reader.next()
+    
+    nome = "Funcionario"
+    balcao_id = "default" # Em prod, pegar do form
+    
+    # Lógica simplificada de leitura de multipart
+    # Na prática, precisaria parsear os campos 'nome', 'balcao_id' e o arquivo 'audio'
+    # Deixando esqueleto funcional
+    return web.Response(text="Enrollment endpoint ready")
+
+# --- Setup ---
+@web.middleware
+async def cors_middleware(request, handler):
+    if request.method == 'OPTIONS':
+        resp = web.Response()
+    else:
+        resp = await handler(request)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
+    resp.headers['Access-Control-Allow-Headers'] = '*'
+    return resp
+
 if __name__ == "__main__":
     db.inicializar_db()
     
-    app = web.Application()
-    
-    # Rotas API Pública
-    app.router.add_post('/cadastro/cliente', handle_cadastro_cliente)
-    app.router.add_post('/cadastro/balcao', handle_cadastro_balcao)
+    app = web.Application(middlewares=[cors_middleware])
     app.router.add_get('/ws', websocket_handler)
+    app.router.add_get('/admin', admin_page)
+    app.router.add_post('/admin/login', admin_login)
+    app.router.add_post('/api/enroll', api_enroll_voice)
     
-    # Rotas Admin
-    app.router.add_get('/admin', admin_page_handler)
-    app.router.add_post('/admin/login', admin_login_handler)
-    app.router.add_get('/api/data/{table}', admin_get_data)
-    
-    print("Servidor rodando na porta 8765...")
+    print("Balto Server 2.0 Rodando na porta 8765")
     web.run_app(app, port=8765)

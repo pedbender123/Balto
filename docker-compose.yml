@@ -5,11 +5,17 @@ services:
     ports:
       - "8765:8765"
     volumes:
-      # Mantém o banco de dados seguro
+      # Persistência do Banco de Dados
       - balto-dados:/backend/app/dados
+      
+      # Infraestrutura de Teste (Fase 1): Salvar áudios no host para calibração
+      - ./audio_dumps:/backend/app/audio_dumps
     env_file:
       - ./backend/.env
     restart: unless-stopped
+    # Garante que o container tenha acesso a recursos de áudio se necessário (opcional)
+    devices:
+      - /dev/snd:/dev/snd
 
 volumes:
   balto-dados:
