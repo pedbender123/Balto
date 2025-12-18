@@ -71,6 +71,12 @@ class VAD:
             
             # 4. Gate de Energia (Fase 1 Limpeza)
             is_loud_enough = energy > dynamic_threshold
+
+            # Debug Log (Opcional: Controlar via env ou verbosidade)
+            # Formato: [VAD] E: {energy:.1f} | N: {noise:.1f} | T: {thresh:.1f} | Speech? {is_loud}
+            # Imprimir a cada X frames para não floodar o console
+            # if self.silence_frames_count % 10 == 0:
+            print(f"[VAD LOG] Energy: {energy:6.1f} | NoiseFlr: {self.noise_level:6.1f} | DynThresh: {dynamic_threshold:6.1f} | Gate: {'OPEN' if is_loud_enough else 'shut'}")
             
             is_speech = False
             
@@ -83,6 +89,7 @@ class VAD:
             
             # 5. Máquina de Estados
             if is_speech:
+                print(f"   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)")
                 self.speech_buffer.append(frame)
                 self.triggered = True
                 self.silence_frames_count = 0
@@ -91,8 +98,11 @@ class VAD:
                 self.silence_frames_count += 1
                 self.speech_buffer.append(frame) # Mantém o "rabicho" do áudio
                 
+                print(f"   ... [VAD] Silence Hold ({self.silence_frames_count}/{self.silence_frames_needed})")
+
                 if self.silence_frames_count >= self.silence_frames_needed:
                     # Fim de frase confirmado
+                    print(f"   <<< [VAD] SEGMENT FINISHED")
                     self.triggered = False
                     self.silence_frames_count = 0
                     

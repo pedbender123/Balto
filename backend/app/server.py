@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from aiohttp import web, WSMsgType
 
 # Imports internos
-from app import db, vad, transcription, analysis, speaker_id
+from app import db, vad, transcription, analysis, speaker_id, audio_processor
 
 load_dotenv()
 
@@ -176,6 +176,7 @@ async def websocket_handler(request):
             
         print(f"Conectado: {balcao_id}")
         vad_session = vad.VAD() # Instância dedicada do VAD
+        audio_cleaner = audio_processor.AudioCleaner() # Instância dedicada do Cleaner
         
     except Exception as e:
         print(f"Erro Auth WS: {e}")
@@ -198,7 +199,12 @@ async def websocket_handler(request):
                 pcm_offset = len(pcm_full)
                 
                 # Processa no VAD
-                speech = vad_session.process(new_pcm)
+                # 1. Limpeza de Áudio (Fase 1)
+                cleaned_pcm = audio_cleaner.process(new_pcm)
+                
+                # 2. VAD Adaptativo com áudio limpo
+                speech = vad_session.process(cleaned_pcm)
+                
                 if speech:
                     asyncio.create_task(
                         process_speech_pipeline(ws, speech, balcao_id)
