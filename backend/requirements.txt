@@ -8,3 +8,6 @@ numpy
 scipy
 noisereduce
 ffmpeg
+librosa
+torch
+resemblyzer

@@ -11,3 +11,9 @@ __pycache__/
 
 # 4. Pasta de arquivos de áudio quando MOCK_MODE=1 (usado para teste local)
 .audio_dumps
+
+# 5. Cadastro de voz dos balconistas
+.cadastros_voz/*
+
+# 6. Vozes de testes para simulação de atendimentos/conversas
+.testes_voiceid/*

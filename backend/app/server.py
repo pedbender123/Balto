@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from aiohttp import web, WSMsgType
 import subprocess
 import wave
+from app import db, vad, transcription, analysis, speaker_id
 
 
 # --- CORS MIDDLEWARE ---
@@ -28,10 +29,6 @@ async def cors_middleware(request, handler):
     resp.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
     resp.headers['Access-Control-Allow-Credentials'] = 'true'
     return resp
-
-
-# Ajuste de imports
-from app import db, vad, transcription, analysis
 
 load_dotenv()
 
@@ -255,6 +252,9 @@ async def websocket_handler(request):
         # Instancia VAD para essa conexão (espera PCM 16k)
         client_vad = vad.VAD(sample_rate=16000)
 
+        # NOVO: instância do identificador de voz em streaming
+        voice_tracker = speaker_id.StreamVoiceIdentifier()
+
     except Exception as e:
         print(f"Erro Auth: {e}")
         await ws.close()
@@ -295,6 +295,9 @@ async def websocket_handler(request):
                 asyncio.create_task(
                     process_speech_pipeline(ws, speech_segment, balcao_id)
                 )
+
+                # Alimenta o tracker de voice-ID com esse segmento
+                voice_tracker.add_segment(balcao_id, speech_segment)
         
         elif msg.type == WSMsgType.ERROR:
             print(f'WS Error: {ws.exception()}')
@@ -306,6 +309,70 @@ async def root_handler(request):
     """Redireciona a raiz '/' para '/admin'"""
     raise web.HTTPFound('/admin')
 
+
+async def handle_cadastro_voz(request):
+    """
+    Cadastra a voz de um balconista.
+    Espera um POST multipart/form-data com:
+      - campo de texto 'balconista_id'
+      - campo de arquivo 'audio' (WebM, WAV, etc. que o ffmpeg entenda)
+    """
+    try:
+        reader = await request.multipart()
+
+        balconista_id = None
+        audio_bytes = None
+
+        async for part in reader:
+            if part.name == "balconista_id":
+                balconista_id = (await part.text()).strip()
+            elif part.name == "audio":
+                audio_bytes = await part.read()
+
+        if not balconista_id:
+            return web.json_response(
+                {"success": False, "error": "Campo 'balconista_id' é obrigatório."},
+                status=400,
+            )
+
+        if not audio_bytes:
+            return web.json_response(
+                {"success": False, "error": "Arquivo de áudio ('audio') é obrigatório."},
+                status=400,
+            )
+
+        # Converte qualquer coisa que o ffmpeg entenda (WebM, WAV, etc.) para PCM16 16k mono
+        pcm16 = decode_webm_to_pcm16le(audio_bytes, sample_rate=16000)
+        if not pcm16:
+            return web.json_response(
+                {"success": False, "error": "Falha ao decodificar o áudio para PCM16."},
+                status=400,
+            )
+
+        # Chama o módulo de speaker_id para salvar arquivo + vetor no banco
+        filepath = speaker_id.salvar_arquivo_cadastro_e_registrar(
+            balconista_id=balconista_id,
+            audio_pcm16=pcm16,
+            sample_rate=16000,
+        )
+
+        return web.json_response(
+            {
+                "success": True,
+                "balconista_id": balconista_id,
+                "arquivo_salvo": filepath,
+            },
+            status=201,
+        )
+
+    except Exception as e:
+        print(f"[CADASTRO_VOZ] Erro: {e}")
+        return web.json_response(
+            {"success": False, "error": str(e)},
+            status=500,
+        )
+
+
 # --- MAIN ---
 if __name__ == "__main__":
     db.inicializar_db()
@@ -316,7 +383,10 @@ if __name__ == "__main__":
     app.router.add_post('/cadastro/cliente', handle_cadastro_cliente)
     app.router.add_post('/cadastro/balcao', handle_cadastro_balcao)
     app.router.add_get('/ws', websocket_handler)
-    
+
+    # Rota cadastro de voz
+    app.router.add_post('/cadastro/voz', handle_cadastro_voz)
+
     # Rotas Admin
     app.router.add_get('/admin', admin_page_handler)
     app.router.add_post('/admin/login', admin_login_handler)

@@ -80,6 +80,7 @@ DB_FILE="/backend/app/dados/registro.db"
 VAD_ENERGY_THRESHOLD=300
 ADMIN_SECRET=x9PeHTY7ouQNvzJH
 MOCK_MODE=0
+SPEAKER_ID_ENABLED=0
 AUDIO_DUMP_DIR=/backend/app/audio_dumps
 
 2. Rodando com Docker (Recomendado)
