@@ -279,7 +279,6 @@ if __name__ == "__main__":
     app.router.add_get('/ws', websocket_handler)
     app.router.add_get('/admin', admin_page)
     app.router.add_post('/admin/login', admin_login)
-    app.router.add_post('/admin/login', admin_login)
     app.router.add_post('/api/enroll', api_enroll_voice)
     app.router.add_get('/api/batch_status', api_batch_status)
     
