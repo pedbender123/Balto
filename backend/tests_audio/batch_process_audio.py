@@ -2,174 +2,138 @@ import os
 import sys
 import subprocess
 import wave
+import json
+import torch
 import numpy as np
 
-# Adicionar o diretório pai ao path para importar 'app'
+# Adicionar o diretório pai ao path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from app import audio_processor, vad
+from app import silero_vad
 
-def check_ffmpeg():
-    """Verifica se o ffmpeg está instalado e acessível."""
+# Configurações
+STATUS_FILE = os.path.join(os.path.dirname(__file__), '..', 'app', 'static', 'batch_status.json')
+AUDIO_DIR = os.path.join(os.path.dirname(__file__), 'audios_brutos')
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), 'trechos_fala')
+SAMPLE_RATE = 16000
+CHUNK_SIZE = 512 # Recomendado para Silero (32ms em 16kHz)
+
+def update_status(data):
     try:
-        subprocess.run(["ffmpeg", "-version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        return True
-    except FileNotFoundError:
-        return False
+        os.makedirs(os.path.dirname(STATUS_FILE), exist_ok=True)
+        with open(STATUS_FILE, 'w') as f:
+            json.dump(data, f)
+    except:
+        pass
 
-def convert_webm_to_pcm(input_path):
-    """
-    Converte .webm (ou qualquer formato suportado pelo ffmpeg) para PCM 16kHz 16bit mono bytes.
-    Retorna os bytes crus do áudio.
-    """
+def convert_webm_stream(input_path):
+    """Gera chunks de bytes (PCM 16le 16kHz) a partir de um arquivo usando ffmpeg."""
     cmd = [
-        "ffmpeg",
-        "-i", input_path,
-        "-f", "s16le",       # Formato PCM 16-bit little-endian
-        "-acodec", "pcm_s16le",
-        "-ac", "1",          # 1 canal (mono)
-        "-ar", "16000",      # 16kHz
-        "-"                  # Output para stdout
+        "ffmpeg", "-i", input_path,
+        "-f", "s16le", "-acodec", "pcm_s16le", "-ac", "1", "-ar", "16000",
+        "-loglevel", "error", "-"
     ]
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
     
-    try:
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = process.communicate()
+    while True:
+        # Lê EXATAMENTE 1024 bytes (512 samples de 2 bytes)
+        # Necessário para o Silero aceitar o tensor flat correto
+        chunk = process.stdout.read(CHUNK_SIZE * 2)
+        if not chunk:
+            break
+        yield chunk
         
-        if process.returncode != 0:
-            print(f"Erro no ffmpeg ao converter {input_path}: {err.decode('utf-8')}")
-            return None
-            
-        return out
-    except Exception as e:
-        print(f"Erro ao executar ffmpeg: {e}")
-        return None
+    process.wait()
 
-def batch_process():
-    base_dir = os.path.dirname(__file__)
-    input_dir = os.path.join(base_dir, 'audios_brutos')
-    segments_dir = os.path.join(base_dir, 'trechos_fala')
-
-    # Garantir que diretórios existam
-    os.makedirs(segments_dir, exist_ok=True)
-
-    if not check_ffmpeg():
-        print("ERRO: 'ffmpeg' não encontrado no sistema.")
-        print("Por favor, instale o ffmpeg para processar arquivos .webm.")
-        print("Comando sugerido: sudo apt install ffmpeg")
-        return
-
-    # Buscar arquivos suportados
-    extensions = ('.webm', '.wav', '.mp3', '.ogg', '.m4a')
-    files = [f for f in os.listdir(input_dir) if f.lower().endswith(extensions)]
+def batch_process_streaming():
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
     
-    if not files:
-        print(f"Nenhum arquivo de áudio encontrado em {input_dir}")
-        print(f"Extensões procuradas: {extensions}")
-        return
-
-    import json
-
-    status_file = os.path.join(base_dir, '..', 'app', 'static', 'batch_status.json')
-    # Garantir que diretório static existe (pode ser redundante mas seguro)
-    os.makedirs(os.path.dirname(status_file), exist_ok=True)
-
-    print(f"Encontrados {len(files)} arquivos para processar.")
+    # 1. Carregar Modelo
+    print("--- Inicializando Silero VAD ---")
+    vad = silero_vad.SileroVAD(threshold=0.5) 
+    vad_iterator = vad.get_iterator()
     
+    # 2. Listar Arquivos
+    files = sorted([f for f in os.listdir(AUDIO_DIR) if f.endswith('.webm')])
     total_files = len(files)
-
+    
+    print(f"--- Iniciando processamento contínuo de {total_files} arquivos ---")
+    
+    current_speech_buffer = [] # Lista de chunks (bytes)
+    segment_count = 0
+    is_speaking = False
+    
     for idx, file_name in enumerate(files):
         # Update Status
-        status_data = {
+        update_status({
             "total": total_files,
             "current": idx + 1,
             "percent": int(((idx + 1) / total_files) * 100),
             "current_file": file_name,
             "status": "processing"
-        }
-        with open(status_file, 'w') as f:
-            json.dump(status_data, f)
-            
-        input_path = os.path.join(input_dir, file_name)
-        print(f"\n--- Processando [{idx+1}/{total_files}]: {file_name} ---")
-
-        # 1. Converter/Ler Áudio
-        print("   -> Convertendo/Lendo áudio...")
-        raw_audio = convert_webm_to_pcm(input_path)
+        })
+        print(f"[{idx+1}/{total_files}] Lendo: {file_name}")
         
-        if not raw_audio:
-            print("   -> Falha na leitura do áudio. Pulando.")
-            continue
-
-        # Inicializar processadores
-        # CLEANING: prop_decrease=0.95 (Extrema redução de ruído, quase silêncio total no fundo)
-        cleaner = audio_processor.AudioCleaner(prop_decrease=0.95)
+        input_path = os.path.join(AUDIO_DIR, file_name)
         
-        # VAD: Agressividade máxima (3) e o VAD interno já está com thresholds de 500 / 2.0x
-        vad_session = vad.VAD(vad_aggressiveness=3) 
-
-        # Configurações de processamento em chunks
-        chunk_duration_ms = 30 
-        sample_rate = 16000
-        bytes_per_sample = 2 # 16-bit
-        chunk_size = int(sample_rate * (chunk_duration_ms / 1000.0) * bytes_per_sample)
+        # Generator de chunks do arquivo atual
+        stream = convert_webm_stream(input_path)
         
-        total_len = len(raw_audio)
-        offset = 0
-        segment_counter = 0
-
-        print(f"   -> Iniciando VAD e Limpeza (Total: {total_len} bytes)...")
-        
-        while offset < total_len:
-            # Pegar chunk
-            chunk = raw_audio[offset : offset + chunk_size]
-            offset += chunk_size
-            
-            # Se chunk final for menor que o esperado, preencher com silêncio ou processar como está?
-            # VAD pode reclamar de tamanho incorreto. Melhor ignorar sobras muito pequenas.
-            if len(chunk) < chunk_size:
-                continue
-
-            # 2. Limpeza
-            # Aplicar limpeza em chunks pode introduzir artefatos nas bordas se não tiver overlap/estado.
-            # O AudioCleaner atual é stateless mas usa noisereduce que recomenda sinais maiores.
-            # Para o batch, talvez fosse melhor limpar o arquivo inteiro primeiro se a memória permitir.
-            # Mas vamos manter a lógica de stream para consistência com o server.
-            cleaned_chunk = cleaner.process(chunk)
-            
-            # 3. VAD
-            speech_segment = vad_session.process(cleaned_chunk)
-
-            if speech_segment:
-                # FILTER: Descartar segmentos menores que 1 segundo (32000 bytes em 16kHz 16bit)
-                if len(speech_segment) < 32000:
-                    print(f"      [Ignorado] Segmento muito curto ({len(speech_segment)/32000:.2f}s < 1.0s)")
-                    continue
-
-                segment_counter += 1
-                base_name = os.path.splitext(file_name)[0]
-                seg_name = f"{base_name}_seg_{segment_counter:02d}.wav"
-                seg_path = os.path.join(segments_dir, seg_name)
+        for pcm_bytes in stream:
+            if len(pcm_bytes) != CHUNK_SIZE * 2:
+                continue # Pula chunks quebrados (final de arquivo)
                 
-                with wave.open(seg_path, 'wb') as seg_wf:
-                    seg_wf.setnchannels(1)
-                    seg_wf.setsampwidth(2)
-                    seg_wf.setframerate(16000)
-                    seg_wf.writeframes(speech_segment)
-                
-                print(f"      [Salvo] {seg_name} ({len(speech_segment)/32000:.2f}s)")
-
-    # Final Status
-    with open(status_file, 'w') as f:
-        json.dump({
-            "total": total_files,
-            "current": total_files,
-            "percent": 100,
-            "current_file": "Concluído!",
-            "status": "done"
-        }, f)
-
-    print("\nProcessamento em lote concluído!")
+            # Converter para Tensor float32
+            # Copiar bytes para evitar erro de buffer não alinhado ou negativo striding
+            audio_int16 = np.frombuffer(pcm_bytes, dtype=np.int16)
+            
+            # Normalização (int16 -> float32 -1..1)
+            audio_float32 = audio_int16.astype(np.float32) / 32768.0
+            tensor_chunk = torch.Tensor(audio_float32)
+            
+            # Reset de estado não é chamado entre arquivos propositalmente para manter contiguidade
+            
+            # Processar no VAD
+            speech_dict = vad_iterator(tensor_chunk, return_seconds=False)
+            
+            if speech_dict:
+                if 'start' in speech_dict:
+                    # Início de fala detectado
+                    # print("   >>> Fala iniciada")
+                    is_speaking = True
+                    current_speech_buffer.append(pcm_bytes)
+                    
+                elif 'end' in speech_dict:
+                    # Fim de fala detectado
+                    # print("   <<< Fala encerrada")
+                    is_speaking = False
+                    current_speech_buffer.append(pcm_bytes)
+                    
+                    # Salvar Segmento
+                    full_audio = b''.join(current_speech_buffer)
+                    
+                    # Filtro de Duração (Ex: descartar < 0.5s)
+                    if len(full_audio) > 16000: # > 0.5s
+                        segment_count += 1
+                        out_name = f"speech_seg_{segment_count:03d}.wav"
+                        out_path = os.path.join(OUTPUT_DIR, out_name)
+                        
+                        with wave.open(out_path, 'wb') as wf:
+                            wf.setnchannels(1)
+                            wf.setsampwidth(2)
+                            wf.setframerate(SAMPLE_RATE)
+                            wf.writeframes(full_audio)
+                        
+                        # print(f"      Salvo: {out_name} ({len(full_audio)/32000:.2f}s)")
+                        
+                    current_speech_buffer = []
+            else:
+                # Se não houve evento, mas estamos falando, acumula
+                if is_speaking:
+                    current_speech_buffer.append(pcm_bytes)
+                    
+    update_status({"percent": 100, "status": "done", "current_file": "Concluído"})
+    print(f"\n--- Processamento Finalizado. {segment_count} segmentos gerados. ---")
 
 if __name__ == "__main__":
-    batch_process()
+    batch_process_streaming()
