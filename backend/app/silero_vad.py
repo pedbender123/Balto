@@ -1,4 +1,5 @@
 import torch
+import os
 import numpy as np
 
 class SileroVAD:
@@ -7,10 +8,35 @@ class SileroVAD:
         self.threshold = threshold
         
         print("[SileroVAD] Carregando modelo...")
-        self.model, utils = torch.hub.load(repo_or_dir='snakers4/silero-vad',
-                                           model='silero_vad',
-                                           force_reload=False,
-                                           trust_repo=True)
+        # Tenta carregar do diretório vendor local primeiro
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        local_model_dir = os.path.join(base_dir, 'vendor', 'silero-vad')
+        
+        repo_or_dir = 'snakers4/silero-vad'
+        source = 'github'
+        trust_repo = True
+        
+        if os.path.exists(local_model_dir):
+            print(f"Carregando Silero VAD localmente de: {local_model_dir}")
+            repo_or_dir = local_model_dir
+            source = 'local'
+            # trust_repo is not a valid argument for local source in older torch versions, but let's check.
+            # actually torch.hub.load(source='local', ...) uses _load_local which doesn't take trust_repo usually, 
+            # but hub.load might pass kwargs. Let's keep it but handle if it fails? 
+            # No, safest to just pass it, hoping it ignores it or it's needed.
+            # Wait, for source='local', trust_repo is not needed/used same way.
+        else:
+            print("Carregando Silero VAD do GitHub (cache)")
+
+        # Prepare kwargs
+        kwargs = {
+            'model': 'silero_vad',
+            'force_reload': False,
+        }
+        if source == 'github':
+             kwargs['trust_repo'] = True
+        
+        self.model, utils = torch.hub.load(repo_or_dir=repo_or_dir, source=source, **kwargs)
         
         (self.get_speech_timestamps, 
          self.save_audio, 
