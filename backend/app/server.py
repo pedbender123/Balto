@@ -247,6 +247,19 @@ async def api_enroll_voice(request):
     # Deixando esqueleto funcional
     return web.Response(text="Enrollment endpoint ready")
 
+async def api_batch_status(request):
+    """Endpoint para checar status do processamento em lote."""
+    try:
+        status_path = './app/static/batch_status.json'
+        if os.path.exists(status_path):
+            with open(status_path, 'r') as f:
+                data = json.load(f)
+            return web.json_response(data)
+        else:
+            return web.json_response({"percent": 0, "status": "idle"})
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)
+
 # --- Setup ---
 @web.middleware
 async def cors_middleware(request, handler):
@@ -266,7 +279,9 @@ if __name__ == "__main__":
     app.router.add_get('/ws', websocket_handler)
     app.router.add_get('/admin', admin_page)
     app.router.add_post('/admin/login', admin_login)
+    app.router.add_post('/admin/login', admin_login)
     app.router.add_post('/api/enroll', api_enroll_voice)
+    app.router.add_get('/api/batch_status', api_batch_status)
     
     print("Balto Server 2.0 Rodando na porta 8765")
     web.run_app(app, port=8765)

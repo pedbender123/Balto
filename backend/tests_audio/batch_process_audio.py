@@ -68,11 +68,30 @@ def batch_process():
         print(f"Extensões procuradas: {extensions}")
         return
 
-    print(f"Encontrados {len(files)} arquivos para processar.")
+    import json
 
-    for file_name in files:
+    status_file = os.path.join(base_dir, '..', 'app', 'static', 'batch_status.json')
+    # Garantir que diretório static existe (pode ser redundante mas seguro)
+    os.makedirs(os.path.dirname(status_file), exist_ok=True)
+
+    print(f"Encontrados {len(files)} arquivos para processar.")
+    
+    total_files = len(files)
+
+    for idx, file_name in enumerate(files):
+        # Update Status
+        status_data = {
+            "total": total_files,
+            "current": idx + 1,
+            "percent": int(((idx + 1) / total_files) * 100),
+            "current_file": file_name,
+            "status": "processing"
+        }
+        with open(status_file, 'w') as f:
+            json.dump(status_data, f)
+            
         input_path = os.path.join(input_dir, file_name)
-        print(f"\n--- Processando: {file_name} ---")
+        print(f"\n--- Processando [{idx+1}/{total_files}]: {file_name} ---")
 
         # 1. Converter/Ler Áudio
         print("   -> Convertendo/Lendo áudio...")
@@ -131,6 +150,16 @@ def batch_process():
                     seg_wf.writeframes(speech_segment)
                 
                 print(f"      [Salvo] {seg_name} ({len(speech_segment)/32000:.2f}s)")
+
+    # Final Status
+    with open(status_file, 'w') as f:
+        json.dump({
+            "total": total_files,
+            "current": total_files,
+            "percent": 100,
+            "current_file": "Concluído!",
+            "status": "done"
+        }, f)
 
     print("\nProcessamento em lote concluído!")
 
