@@ -16,9 +16,12 @@ services:
     env_file:
       - ./backend/.env
     restart: unless-stopped
-    # Garante que o container tenha acesso a recursos de áudio se necessário (opcional)
-    devices:
-      - /dev/snd:/dev/snd
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+    # Devices removido para evitar erro em VPS sem placa de som
+    # devices:
+    #   - /dev/snd:/dev/snd
 
 volumes:
   balto-dados:
