@@ -50,6 +50,8 @@ def batch_process_streaming():
     
     # 1. Carregar Modelo
     print("--- Inicializando Silero VAD ---")
+    print("AVISO: Você pode ver vários avisos 'Could not initialize NNPACK'.")
+    print("Isso é NORMAL e esperado em CPUs sem aceleração específica. IGNORE e aguarde.")
     vad = silero_vad.SileroVAD(threshold=0.5) 
     vad_iterator = vad.get_iterator()
     
