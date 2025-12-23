@@ -16,9 +16,6 @@ services:
     env_file:
       - ./backend/.env
     restart: unless-stopped
-    env_file:
-      - ./backend/.env
-    restart: unless-stopped
     # Devices removido para evitar erro em VPS sem placa de som
     # devices:
     #   - /dev/snd:/dev/snd
