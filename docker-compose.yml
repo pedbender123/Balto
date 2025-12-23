@@ -10,6 +10,9 @@ services:
       
       # Infraestrutura de Teste (Fase 1): Salvar áudios no host para calibração
       - ./audio_dumps:/backend/app/audio_dumps
+      
+      # Sincronização de Código e Status (Importante para o Batch UI funcionar)
+      - ./backend:/backend
     env_file:
       - ./backend/.env
     restart: unless-stopped
