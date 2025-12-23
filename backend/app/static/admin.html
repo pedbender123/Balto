@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Balto 2.0 Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100 min-h-screen text-gray-800">
 
     <!-- Login -->
     <div id="login-screen" class="flex items-center justify-center h-screen">
         <div class="bg-white p-8 rounded shadow-lg w-96">
             <h1 class="text-3xl font-bold mb-6 text-center text-blue-600">Balto Admin</h1>
-            <input type="password" id="password" placeholder="Senha Mestra" 
-                   class="w-full p-3 border rounded mb-4 focus:ring-2 focus:ring-blue-500 outline-none">
-            <button onclick="login()" 
-                    class="w-full bg-blue-600 text-white p-3 rounded font-bold hover:bg-blue-700 transition">Entrar</button>
+            <input type="password" id="password" placeholder="Senha Mestra"
+                class="w-full p-3 border rounded mb-4 focus:ring-2 focus:ring-blue-500 outline-none">
+            <button onclick="login()"
+                class="w-full bg-blue-600 text-white p-3 rounded font-bold hover:bg-blue-700 transition">Entrar</button>
             <p id="error-msg" class="text-red-500 text-sm mt-3 hidden text-center">Acesso Negado.</p>
         </div>
     </div>
@@ -27,7 +29,8 @@
                 <span class="text-2xl">💊</span>
                 <span class="font-bold text-xl">Balto Control Center</span>
             </div>
-            <button onclick="logout()" class="text-sm bg-blue-800 hover:bg-blue-700 px-4 py-2 rounded transition">Sair</button>
+            <button onclick="logout()"
+                class="text-sm bg-blue-800 hover:bg-blue-700 px-4 py-2 rounded transition">Sair</button>
         </nav>
 
         <div class="container mx-auto p-6">
@@ -50,12 +53,41 @@
 
             <!-- Controles -->
             <div class="flex gap-4 mb-6 border-b pb-4 overflow-x-auto">
-                <button onclick="loadTable('interacoes')" class="tab-btn px-6 py-2 bg-white rounded shadow hover:bg-gray-50 font-medium text-blue-600">Interações</button>
-                <button onclick="loadTable('funcionarios')" class="tab-btn px-6 py-2 bg-white rounded shadow hover:bg-gray-50 font-medium text-gray-600">Funcionários</button>
-                <button onclick="loadTable('balcoes')" class="tab-btn px-6 py-2 bg-white rounded shadow hover:bg-gray-50 font-medium text-gray-600">Balcões</button>
-                <button onclick="showEnrollment()" class="ml-auto bg-purple-600 text-white px-6 py-2 rounded shadow hover:bg-purple-700 font-bold flex items-center gap-2">
+                <button onclick="loadTable('interacoes')"
+                    class="tab-btn px-6 py-2 bg-white rounded shadow hover:bg-gray-50 font-medium text-blue-600">Interações</button>
+                <button onclick="loadTable('funcionarios')"
+                    class="tab-btn px-6 py-2 bg-white rounded shadow hover:bg-gray-50 font-medium text-gray-600">Funcionários</button>
+                <button onclick="loadTable('balcoes')"
+                    class="tab-btn px-6 py-2 bg-white rounded shadow hover:bg-gray-50 font-medium text-gray-600">Balcões</button>
+                <button onclick="loadBatchTab()"
+                    class="tab-btn px-6 py-2 bg-white rounded shadow hover:bg-gray-50 font-medium text-gray-600">Processamento
+                    em Lote</button>
+                <button onclick="showEnrollment()"
+                    class="ml-auto bg-purple-600 text-white px-6 py-2 rounded shadow hover:bg-purple-700 font-bold flex items-center gap-2">
                     🎙️ Cadastrar Voz
                 </button>
+            </div>
+
+            <!-- Batch Progress (Hidden by default) -->
+            <div id="batch-container" class="hidden bg-white rounded shadow p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    🔄 Status do Processamento
+                    <span id="batch-status-badge" class="text-xs bg-gray-200 px-2 py-1 rounded uppercase">Idle</span>
+                </h2>
+
+                <div class="w-full bg-gray-200 rounded-full h-4 mb-2">
+                    <div id="batch-progress-bar" class="bg-blue-600 h-4 rounded-full transition-all duration-500"
+                        style="width: 0%"></div>
+                </div>
+
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span id="batch-percent">0%</span>
+                    <span id="batch-counts">0/0</span>
+                </div>
+
+                <div class="mt-4 p-4 bg-gray-50 border rounded font-mono text-sm text-gray-700">
+                    <span class="font-bold">Arquivo Atual:</span> <span id="batch-current-file">...</span>
+                </div>
             </div>
 
             <!-- Tabela -->
@@ -73,18 +105,20 @@
                 </div>
                 <p id="loading" class="text-center p-8 text-gray-500 hidden">Carregando dados...</p>
             </div>
-            
+
             <!-- Modal Cadastro Voz (Simples) -->
             <div id="enroll-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                 <div class="bg-white p-8 rounded shadow-xl w-96">
                     <h2 class="text-xl font-bold mb-4">Novo Funcionário</h2>
-                    <input type="text" id="func-name" placeholder="Nome Completo" class="w-full border p-2 mb-4 rounded">
+                    <input type="text" id="func-name" placeholder="Nome Completo"
+                        class="w-full border p-2 mb-4 rounded">
                     <div class="mb-4 p-4 bg-gray-100 rounded text-center">
                         <p class="text-sm text-gray-500 mb-2">Grave 30s de áudio</p>
                         <button class="bg-red-500 text-white w-12 h-12 rounded-full shadow hover:bg-red-600">●</button>
                     </div>
                     <div class="flex justify-end gap-2">
-                        <button onclick="document.getElementById('enroll-modal').classList.add('hidden')" class="px-4 py-2 text-gray-600">Cancelar</button>
+                        <button onclick="document.getElementById('enroll-modal').classList.add('hidden')"
+                            class="px-4 py-2 text-gray-600">Cancelar</button>
                         <button class="px-4 py-2 bg-blue-600 text-white rounded">Salvar</button>
                     </div>
                 </div>
@@ -110,10 +144,13 @@
         }
 
         async function loadTable(table) {
+            document.getElementById('batch-container').classList.add('hidden');
+            document.getElementById('table-container').classList.remove('hidden');
+
             document.getElementById('loading').classList.remove('hidden');
             document.getElementById('table-body').innerHTML = '';
             document.getElementById('table-title').innerText = table;
-            
+
             // Em prod, mover fetch para endpoint real /api/data/{table}
             // Aqui simulamos delay
             setTimeout(() => {
@@ -123,11 +160,47 @@
             }, 500);
         }
 
+        // --- Batch Processing Logic ---
+        let batchInterval = null;
+
+        function loadBatchTab() {
+            document.getElementById('table-container').classList.add('hidden');
+            document.getElementById('batch-container').classList.remove('hidden');
+
+            if (!batchInterval) {
+                fetchBatchStatus();
+                batchInterval = setInterval(fetchBatchStatus, 2000);
+            }
+        }
+
+        async function fetchBatchStatus() {
+            try {
+                const res = await fetch('/api/batch_status');
+                const data = await res.json();
+
+                document.getElementById('batch-progress-bar').style.width = data.percent + "%";
+                document.getElementById('batch-percent').innerText = data.percent + "%";
+                document.getElementById('batch-counts').innerText = `${data.current}/${data.total}`;
+                document.getElementById('batch-current-file').innerText = data.current_file;
+                document.getElementById('batch-status-badge').innerText = data.status;
+
+                if (data.status === 'processing') {
+                    document.getElementById('batch-status-badge').className = "text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded uppercase";
+                } else if (data.status === 'done') {
+                    document.getElementById('batch-status-badge').className = "text-xs bg-green-200 text-green-800 px-2 py-1 rounded uppercase";
+                }
+
+            } catch (e) {
+                console.error("Erro ao buscar status:", e);
+            }
+        }
+
         function showEnrollment() {
             document.getElementById('enroll-modal').classList.remove('hidden');
         }
-        
+
         function logout() { location.reload(); }
     </script>
 </body>
+
 </html>
