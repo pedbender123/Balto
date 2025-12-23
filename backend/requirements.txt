@@ -8,6 +8,7 @@ elevenlabs
 openai
 requests
 resemblyzer
-torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+torch --index-url https://download.pytorch.org/whl/cpu
+torchaudio --index-url https://download.pytorch.org/whl/cpu
 python-dotenv
 ffmpeg-python
