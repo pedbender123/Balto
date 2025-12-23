@@ -102,8 +102,11 @@ def batch_process():
             continue
 
         # Inicializar processadores
-        cleaner = audio_processor.AudioCleaner()
-        vad_session = vad.VAD(vad_aggressiveness=3) # Modo agressivo para garantir apenas fala limpa
+        # CLEANING: prop_decrease=0.95 (Extrema redução de ruído, quase silêncio total no fundo)
+        cleaner = audio_processor.AudioCleaner(prop_decrease=0.95)
+        
+        # VAD: Agressividade máxima (3) e o VAD interno já está com thresholds de 500 / 2.0x
+        vad_session = vad.VAD(vad_aggressiveness=3) 
 
         # Configurações de processamento em chunks
         chunk_duration_ms = 30 
@@ -138,6 +141,11 @@ def batch_process():
             speech_segment = vad_session.process(cleaned_chunk)
 
             if speech_segment:
+                # FILTER: Descartar segmentos menores que 1 segundo (32000 bytes em 16kHz 16bit)
+                if len(speech_segment) < 32000:
+                    print(f"      [Ignorado] Segmento muito curto ({len(speech_segment)/32000:.2f}s < 1.0s)")
+                    continue
+
                 segment_counter += 1
                 base_name = os.path.splitext(file_name)[0]
                 seg_name = f"{base_name}_seg_{segment_counter:02d}.wav"

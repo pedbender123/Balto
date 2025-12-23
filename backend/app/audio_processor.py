@@ -6,9 +6,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 class AudioCleaner:
-    def __init__(self, sample_rate=16000, stationary=True):
+    def __init__(self, sample_rate=16000, stationary=True, prop_decrease=0.75):
         self.sample_rate = sample_rate
         self.stationary = stationary
+        self.prop_decrease = prop_decrease
         # Buffer opcional se precisarmos de contexto (por enquanto, stateless per chunk para performance)
         # No futuro, pode-se manter um perfil de ruído persistente
 
@@ -34,7 +35,7 @@ class AudioCleaner:
                 y=audio_data, 
                 sr=self.sample_rate, 
                 stationary=self.stationary,
-                prop_decrease=0.75, # Agressividade da limpeza
+                prop_decrease=self.prop_decrease, # Agressividade da limpeza
                 n_fft=1024,         # FFT menor para performance em chunks menores
                 n_std_thresh_stationary=1.5
             )

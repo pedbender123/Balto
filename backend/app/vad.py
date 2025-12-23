@@ -37,10 +37,10 @@ class VAD:
         # 0.05 = adaptação lenta (bom para ruído de fundo constante)
         self.alpha = 0.05
         # Fator de Segurança: Voz tem que ser X vezes mais alta que o ruído
-        self.threshold_multiplier = 1.5
+        self.threshold_multiplier = 2.0 # Era 1.5. Aumentado para evitar falsos positivos.
         
         # Limite mínimo absoluto para evitar ativar com silêncio total
-        self.min_energy_threshold = 200
+        self.min_energy_threshold = 500 # Era 200. Subindo a régua.
 
     def _calculate_energy(self, frame):
         """Calcula a energia RMS (Root Mean Square) do frame."""
