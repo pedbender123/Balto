@@ -17,6 +17,23 @@ INPUT_DIR = os.path.join(BASE_DIR, 'audios_brutos')
 OUTPUT_SEGMENTS_DIR = os.path.join(BASE_DIR, 'trechos_fala')
 REPORT_FILE = os.path.join(BASE_DIR, 'relatorio_comparativo.csv')
 
+import subprocess
+
+def decode_audio_to_pcm(file_path):
+    """Decodifica áudio (wav/webm) para PCM 16-bit 16kHz Mono usando FFmpeg."""
+    try:
+        cmd = [
+            "ffmpeg", "-i", file_path,
+            "-f", "s16le", "-acodec", "pcm_s16le", "-ac", "1", "-ar", "16000",
+            "-loglevel", "error", "-"
+        ]
+        # Executa e pega todo o output
+        process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        return process.stdout
+    except Exception as e:
+        print(f"Erro FFmpeg ao decodificar {file_path}: {e}")
+        return None
+
 def run_comparison_report():
     print("--- Iniciando Geração de Relatório Comparativo ---")
     
@@ -51,60 +68,50 @@ def run_comparison_report():
             print(f"\n[{datetime.now().strftime('%H:%M:%S')}] Processando: {file_name}")
             file_path = os.path.join(INPUT_DIR, file_name)
             
-            # 1. Carregar Áudio Original Completo
+            # 1. Carregar Áudio Original Completo (Bytes crus do arquivo para ElevenLabs)
             try:
-                # Ler arquivo completo como bytes
                 with open(file_path, 'rb') as f:
-                    full_audio_bytes = f.read()
+                    full_file_bytes = f.read()
             except Exception as e:
                 print(f"Erro ao ler arquivo {file_name}: {e}")
                 continue
 
-            # 2. Transcrever Original (ElevenLabs) - Apenas uma vez por arquivo
-            # Nota: Isso pode gastar bastante quota se os arquivos forem grandes.
+            # 2. Transcrever Original
             print("   -> Transcrevendo arquivo completo (Reference)...")
-            # Para o report, precisamos converter webm para wav se for o caso, 
-            # mas a função transcrever_elevenlabs espera bytes e o serviço suporta varios formatos,
-            # porém nossa função interna wrapa em 'audio.wav'.
-            # Se o input é .webm, o header estar errado pode dar ruim no ElevenLabs se a extensão for .wav
-            # Idealmente deveriamos converter pra wav antes.
-            # O script batch_process_audio.py usa ffmpeg. Vamos assumir que aqui os inputs são .wav 
-            # (conforme run_simulation.py) ou se for webm, o ffmpeg converte.
-            # Vamos simplificar: se for .wav, manda bala.
-            
-            original_transcription = transcription.transcrever_elevenlabs(full_audio_bytes)
+            original_transcription = transcription.transcrever_elevenlabs(full_file_bytes)
             print(f"      Original: {original_transcription[:50]}...")
             
             # 3. Processamento de Stream (Simulação)
-            # Precisamos simular o VAD e Split
-            
+            # Decodificar para PCM 16k para VAD/Cleaning
+            pcm_bytes = decode_audio_to_pcm(file_path)
+            if not pcm_bytes:
+                print("   -> Falha na decodificação PCM. Pulando.")
+                continue
+                
             # Inicializar processadores
             cleaner = audio_processor.AudioCleaner()
             vad_session = vad.VAD()
             
-            # Ler áudio frame a frame (como em run_simulation.py)
-            try:
-                wf = wave.open(file_path, 'rb')
-            except:
-                # Se falhar wave.open (ex: webm), vamos pular por enquanto ou exigir wav
-                # O run_simulation.py exigia wav. Vamos manter exigencia ou usar ffmpeg se precisarmos.
-                # O user falou "audios saindo o trecho...".
-                print("   -> Arquivo não é WAV padrão ou erro ao abrir. Pulando simulação de segmentos.")
-                continue
-
-            if wf.getnchannels() != 1 or wf.getsampwidth() != 2 or wf.getframerate() != 16000:
-                 print("   -> Formato inválido (requer WAV Mono 16kHz).")
-                 continue
-                 
-            frames_per_chunk = 480 # 30ms
-            segment_counter = 0
+            # Simular chunks
+            frames_per_chunk = 480 # 30ms (480 samples * 2 bytes = 960 bytes)
+            chunk_size_bytes = frames_per_chunk * 2 
             
-            while True:
-                data = wf.readframes(frames_per_chunk)
-                if not data: break
+            segment_counter = 0
+            offset = 0
+            total_bytes = len(pcm_bytes)
+            
+            while offset < total_bytes:
+                chunk = pcm_bytes[offset : offset + chunk_size_bytes]
+                offset += chunk_size_bytes
+                
+                if not chunk: break
+                
+                # Se chunk final for menor, padding ou processar assim mesmo?
+                # VAD e Cleaner geralmente lidam bem ou precisamos completar.
+                # Cleaner precisa de tamanho consistente as vezes? Vamos passar direto.
                 
                 # Clean
-                cleaned_chunk = cleaner.process(data)
+                cleaned_chunk = cleaner.process(chunk)
                 
                 # VAD
                 speech_segment = vad_session.process(cleaned_chunk)
@@ -116,7 +123,6 @@ def run_comparison_report():
                     duracao = len(speech_segment) / 32000.0
                     
                     # Nome solicitado: QNT_SEGUNDOS_speech_seg_ARQUIVO_ORIGINAL
-                    # Adicionamos contador para garantir unicidade se houver multiplos segmentos
                     clean_filename = os.path.splitext(file_name)[0].replace(" ", "_")
                     seg_name = f"{duracao:.2f}s_speech_seg_{clean_filename}_{segment_counter:03d}.wav"
                     seg_path = os.path.join(OUTPUT_SEGMENTS_DIR, seg_name)
@@ -134,7 +140,6 @@ def run_comparison_report():
                     print(f"      Seg {segment_counter}: {duracao:.2f}s, SNR: {snr:.2f}dB, Arquivo: {seg_name}")
                     
                     # Decisão do Sistema
-                    # Usando lógica do transcrever_inteligente mas sem chamar a transcrição ainda para não gastar duplo
                     usar_economico = (snr > 15.0) and (duracao < 5.0)
                     system_choice = "AssemblyAI" if usar_economico else "ElevenLabs"
                     reason = "HighSNR+Short" if usar_economico else "LowSNR_or_Long"
@@ -159,9 +164,8 @@ def run_comparison_report():
                         txt_assembly,
                         "" # Acuracia Manual em branco
                     ])
-                    csvfile.flush() # Garantir gravação
+                    csvfile.flush()
                     
-            wf.close()
             print(f"   -> Finalizado {file_name}. {segment_counter} segmentos.")
 
     print(f"\nRelatório gerado em: {REPORT_FILE}")
