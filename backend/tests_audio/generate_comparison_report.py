@@ -34,6 +34,19 @@ def decode_audio_to_pcm(file_path):
         print(f"Erro FFmpeg ao decodificar {file_path}: {e}")
         return None
 
+import json
+
+# Configurações Adicionais
+STATUS_FILE = os.path.join(BASE_DIR, '..', 'app', 'static', 'batch_status.json')
+
+def update_status(data):
+    try:
+        os.makedirs(os.path.dirname(STATUS_FILE), exist_ok=True)
+        with open(STATUS_FILE, 'w') as f:
+            json.dump(data, f)
+    except:
+        pass
+
 def run_comparison_report():
     print("--- Iniciando Geração de Relatório Comparativo ---")
     
@@ -58,13 +71,24 @@ def run_comparison_report():
             writer.writerow(csv_header)
             
         files = sorted([f for f in os.listdir(INPUT_DIR) if f.endswith('.wav') or f.endswith('.webm')])
+        total_files = len(files)
+        
         if not files:
             print("Nenhum arquivo de áudio encontrado em audios_brutos.")
             return
 
         print(f"Encontrados {len(files)} arquivos.")
 
-        for file_name in files:
+        for idx, file_name in enumerate(files):
+            # Update Status for UI
+            update_status({
+                "total": total_files,
+                "current": idx + 1,
+                "percent": int(((idx + 1) / total_files) * 100),
+                "current_file": file_name,
+                "status": "processing"
+            })
+            
             print(f"\n[{datetime.now().strftime('%H:%M:%S')}] Processando: {file_name}")
             file_path = os.path.join(INPUT_DIR, file_name)
             
@@ -106,10 +130,6 @@ def run_comparison_report():
                 
                 if not chunk: break
                 
-                # Se chunk final for menor, padding ou processar assim mesmo?
-                # VAD e Cleaner geralmente lidam bem ou precisamos completar.
-                # Cleaner precisa de tamanho consistente as vezes? Vamos passar direto.
-                
                 # Clean
                 cleaned_chunk = cleaner.process(chunk)
                 
@@ -122,7 +142,7 @@ def run_comparison_report():
                     # Calcular duração antes para usar no nome
                     duracao = len(speech_segment) / 32000.0
                     
-                    # Nome solicitado: QNT_SEGUNDOS_speech_seg_ARQUIVO_ORIGINAL
+                    # Nome solicitado
                     clean_filename = os.path.splitext(file_name)[0].replace(" ", "_")
                     seg_name = f"{duracao:.2f}s_speech_seg_{clean_filename}_{segment_counter:03d}.wav"
                     seg_path = os.path.join(OUTPUT_SEGMENTS_DIR, seg_name)
@@ -168,6 +188,8 @@ def run_comparison_report():
                     
             print(f"   -> Finalizado {file_name}. {segment_counter} segmentos.")
 
+    # Status Final
+    update_status({"percent": 100, "status": "done", "current_file": "Concluído"})
     print(f"\nRelatório gerado em: {REPORT_FILE}")
 
 if __name__ == "__main__":
