@@ -1,19 +1,62 @@
 import os
 import io
+import time
 import numpy as np
 import requests
 from elevenlabs.client import ElevenLabs
 
-# Configuração ElevenLabs
-ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY")
-try:
-    client_eleven = ElevenLabs(api_key=ELEVENLABS_API_KEY)
-except:
-    client_eleven = None
+# --- Gerenciamento de Chaves ElevenLabs ---
+class ElevenLabsKeyManager:
+    def __init__(self):
+        # Lê chaves separadas por vírgula 'KEY1,KEY2,KEY3'
+        keys_str = os.environ.get("ELEVENLABS_API_KEYS", "")
+        if not keys_str:
+            # Fallback para a chave antiga única se a nova env não existir
+            single_key = os.environ.get("ELEVENLABS_API_KEY", "")
+            self.keys = [k.strip() for k in single_key.split(',') if k.strip()]
+        else:
+            self.keys = [k.strip() for k in keys_str.split(',') if k.strip()]
+        
+        self.current_key_index = 0
+        # Mapa de uso: {key: seconds_used}
+        self.usage_map = {k: 0.0 for k in self.keys}
+        self.limit_seconds = 120 * 60 # 120 minutos
 
-# Configuração Modelo Econômico (Ex: Soniox ou Whisper Local)
-# Se fosse Whisper Local, carregaríamos o modelo aqui.
-SONIOX_API_KEY = os.environ.get("SONIOX_API_KEY")
+        print(f"[ElevenLabs] Carregadas {len(self.keys)} chaves.")
+
+    def get_client(self):
+        if not self.keys:
+            return None
+        
+        # Pega chave atual
+        current_key = self.keys[self.current_key_index]
+        
+        # Verifica se estourou o limite (apenas check local simples)
+        if self.usage_map[current_key] >= self.limit_seconds:
+             # Tenta rodar para a próxima se tiver mais de uma
+             if len(self.keys) > 1:
+                 print(f"[ElevenLabs] Chave {current_key[:5]}... excedeu limite ({self.usage_map[current_key]/60:.1f} min). Trocando.")
+                 self.rotate_key()
+                 current_key = self.keys[self.current_key_index]
+        
+        return ElevenLabs(api_key=current_key)
+
+    def rotate_key(self):
+        if not self.keys: return
+        self.current_key_index = (self.current_key_index + 1) % len(self.keys)
+        new_key = self.keys[self.current_key_index]
+        print(f"[ElevenLabs] Rotacionado para chave: {new_key[:5]}...")
+
+    def register_usage(self, seconds: float):
+        if not self.keys: return
+        current_key = self.keys[self.current_key_index]
+        self.usage_map[current_key] += seconds
+
+# Instância Global do Manager
+key_manager = ElevenLabsKeyManager()
+
+# --- Configuração AssemblyAI (Substituto do Soniox) ---
+ASSEMBLYAI_API_KEY = os.environ.get("ASSEMBLYAI_API_KEY")
 
 def calcular_snr(audio_bytes: bytes) -> float:
     """
@@ -49,37 +92,93 @@ def calcular_snr(audio_bytes: bytes) -> float:
         return 0.0
 
 def transcrever_elevenlabs(audio_bytes: bytes) -> str:
-    """Modelo Caro e Robusto."""
-    if not client_eleven: return "[Erro: ElevenLabs não configurado]"
+    """Modelo Caro e Robusto (ElevenLabs Scribe)."""
+    client = key_manager.get_client()
+    if not client: return "[Erro: Nenhuma chave ElevenLabs configurada]"
+    
+    # Duração em segundos para tracking
+    duration = len(audio_bytes) / 32000.0 # 16k * 2 bytes
+    
     try:
         audio_file = io.BytesIO(audio_bytes)
         audio_file.name = "audio.wav"
-        result = client_eleven.speech_to_text.convert(
+        
+        result = client.speech_to_text.convert(
             file=audio_file,
             model_id="scribe_v1",
             tag="balto_pharmacy"
         )
+        
+        # Se sucesso, registra uso
+        key_manager.register_usage(duration)
+        
         return result.text
     except Exception as e:
         print(f"Erro ElevenLabs: {e}")
         return ""
 
-def transcrever_economico(audio_bytes: bytes) -> str:
+def transcrever_assemblyai(audio_bytes: bytes) -> str:
     """
-    Modelo Barato (Soniox / Whisper Tiny).
-    Placeholder para implementação real.
+    Modelo Econômico (AssemblyAI).
+    Substitui o antigo Soniox.
     """
-    # Exemplo mockado de baixo custo
-    # Aqui entraria: requests.post('https://api.soniox.com/transcribe', ...)
-    print("[Transcriber] Usando modelo ECONÔMICO")
-    return transcrever_elevenlabs(audio_bytes) # Fallback temporário para garantir que funciona
+    if not ASSEMBLYAI_API_KEY:
+        print("[AssemblyAI] API Key não configurada.")
+        return ""
+    
+    headers = {
+        "authorization": ASSEMBLYAI_API_KEY
+    }
+    
+    try:
+        # 1. Upload
+        upload_response = requests.post(
+            "https://api.assemblyai.com/v2/upload",
+            headers=headers,
+            data=audio_bytes
+        )
+        upload_response.raise_for_status()
+        upload_url = upload_response.json()["upload_url"]
+        
+        # 2. Transcribe
+        json_data = {
+            "audio_url": upload_url,
+            "language_code": "pt" # Forçar português
+        }
+        transcript_response = requests.post(
+            "https://api.assemblyai.com/v2/transcript",
+            headers=headers,
+            json=json_data
+        )
+        transcript_response.raise_for_status()
+        transcript_id = transcript_response.json()["id"]
+        
+        # 3. Polling
+        polling_endpoint = f"https://api.assemblyai.com/v2/transcript/{transcript_id}"
+        
+        while True:
+            poll_response = requests.get(polling_endpoint, headers=headers)
+            poll_response.raise_for_status()
+            status = poll_response.json()["status"]
+            
+            if status == "completed":
+                return poll_response.json()["text"] or ""
+            elif status == "error":
+                print(f"[AssemblyAI] Erro no processamento: {poll_response.json().get('error')}")
+                return ""
+            
+            time.sleep(0.5) # Polling rápido
+            
+    except Exception as e:
+        print(f"[AssemblyAI] Erro de requisição: {e}")
+        return ""
 
 def transcrever_inteligente(audio_bytes: bytes) -> dict:
     """
     Smart Routing: Decide qual modelo usar baseado na qualidade do áudio.
     """
     snr = calcular_snr(audio_bytes)
-    duration_sec = len(audio_bytes) / 32000 # 16k * 2 bytes
+    duration_sec = len(audio_bytes) / 32000.0
     
     # Lógica de Decisão
     # Se o áudio é muito limpo (SNR > 15dB) e curto, modelo barato resolve.
@@ -88,13 +187,13 @@ def transcrever_inteligente(audio_bytes: bytes) -> dict:
     usar_economico = (snr > 15.0) and (duration_sec < 5.0)
     
     if usar_economico:
-        texto = transcrever_economico(audio_bytes)
-        modelo = "economico"
-        custo = 0.001 # Custo fictício baixo
+        texto = transcrever_assemblyai(audio_bytes)
+        modelo = "assemblyai"
+        custo = 0.005 # Estimativa AssemblyAI
     else:
         texto = transcrever_elevenlabs(audio_bytes)
         modelo = "elevenlabs"
-        custo = 0.05 # Custo fictício alto
+        custo = 0.05 # Estimativa ElevenLabs
         
     return {
         "texto": texto,
