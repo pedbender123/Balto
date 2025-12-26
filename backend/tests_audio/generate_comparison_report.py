@@ -27,6 +27,28 @@ STATUS_FILE = os.path.join(BASE_DIR, '..', 'app', 'static', 'batch_status.json')
 CLEANER_CHUNK_SIZE = 1536 # 96ms (3 * 512) - Suficiente para n_fft=1024
 VAD_CHUNK_SIZE = 512 # 32ms - Requisito Silero
 
+def update_status(data):
+    try:
+        os.makedirs(os.path.dirname(STATUS_FILE), exist_ok=True)
+        with open(STATUS_FILE, 'w') as f:
+            json.dump(data, f)
+    except:
+        pass
+
+def convert_to_stream(file_path):
+    """Gera chunks de 512 samples (16k) usando FFmpeg."""
+    try:
+        cmd = [
+            "ffmpeg", "-i", file_path,
+            "-f", "s16le", "-acodec", "pcm_s16le", "-ac", "1", "-ar", "16000",
+            "-loglevel", "error", "-"
+        ]
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        return process
+    except Exception as e:
+        print(f"Erro FFmpeg: {e}")
+        return None
+
 def run_comparison_report():
     print("--- Iniciando Geração de Relatório Comparativo (Silero VAD) ---")
     
