@@ -582,7 +582,7 @@ if __name__ == "__main__":
     
     print("Balto Server 2.0 Rodando na porta 8765")
     web.run_app(app, port=8765)
-import base64
+
 # from app import silero_vad (Movido para escopo local para evitar crash no startup se torch falhar)
 
 # --- Debug Pipeline (Instrumentado) ---
