@@ -10,5 +10,5 @@ __pycache__/
 *.pyc
 
 # 4. Pasta de testes (relatórios e áudios de teste)
-testes/
+
 venv/
