@@ -137,11 +137,44 @@ Quando o sistema detecta uma oportunidade de venda ou necessidade de intervenç�
 }
 
 
+
 🛠️ Manutenção e Banco de Dados
 
 Localização: O banco SQLite fica salvo no volume Docker e mapeado internamente em /backend/app/dados/registro.db.
 
 Backups: Para realizar backup, copie o arquivo .db do volume ou utilize a nova interface Admin para exportar os dados relevantes.
+
+🔬 Protocolo de Teste e Calibração (Debug Route)
+
+Para fins de QA, ajuste de VAD e análise de custos, o sistema expõe uma rota nativa de debug:
+
+**Endpoint:** `ws://<HOST>/ws/debug_audio`
+
+**Autenticação Master:**
+Utilize a `ADMIN_SECRET` definida no `.env` (bypass de cadastro de balcão).
+- Header: `X-Adm-Key: sua-admin-secret`
+- Query: `?key=sua-admin-secret`
+
+**Retorno de Dados (JSON Events):**
+Diferente da rota de produção que silencia etapas intermediárias, esta rota retorna o "produto" de cada estágio do pipeline:
+
+1. `segment_created`: Retorna o áudio fatiado pelo VAD (Base64) e metadados.
+   - Ideal para verificar se o VAD está cortando frases corretamente.
+2. `routing_decision`: Mostra qual modelo (ElevenLabs vs AssemblyAI) foi escolhido e porquê (SNR/Duração).
+3. `transcription_result`: O texto bruto transcrito.
+4. `analysis_result`: O JSON completo da análise do LLM.
+
+**Exemplo de Evento de Segmento:**
+```json
+{
+  "event": "segment_created",
+  "data": {
+    "segment_id": "a1b2c3d4",
+    "duration_seconds": 2.5,
+    "audio_base64": "UklGRi..." // WAV base64
+  }
+}
+```
 
 📂 Estrutura de Pastas
 

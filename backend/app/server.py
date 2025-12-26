@@ -162,14 +162,17 @@ async def debug_process_speech_pipeline(websocket, speech_segment: bytes, segmen
     """Pipeline instrumentado que envia eventos JSON de volta para o cliente."""
     print(f"[DEBUG] Processando segmento {segment_id} ({len(speech_segment)} bytes)")
 
-    # 1. Evento: Segmento Criado
+    # 1. Evento: Segmento Criado (+ AUDIO BASE64)
     duration = len(speech_segment) / 32000.0
+    audio_base64 = base64.b64encode(speech_segment).decode('utf-8')
+    
     await websocket.send_json({
         "event": "segment_created",
         "data": {
             "segment_id": segment_id,
             "duration_seconds": round(duration, 3),
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "audio_base64": audio_base64 # Produto Bruto do VAD
         }
     })
 
@@ -256,7 +259,7 @@ async def debug_websocket_handler(request):
         await ws.close(code=4003, message=b"Forbidden: Invalid ADM Key")
         return ws
 
-    print("[DEBUG] Cliente conectado e autenticado.")
+    print("[DEBUG] Cliente conectado e autenticado (ADM Bypass).")
     
     # Setup Pipeline de Teste (Silero para melhor qualidade)
     vad_inst = silero_vad.SileroVAD(threshold=0.5)
