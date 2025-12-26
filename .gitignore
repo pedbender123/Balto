@@ -8,3 +8,7 @@ dados/
 # 3. Cache do Python
 __pycache__/
 *.pyc
+
+# 4. Pasta de testes (relatórios e áudios de teste)
+testes/
+venv/
