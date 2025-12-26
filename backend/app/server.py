@@ -370,6 +370,18 @@ async def debug_websocket_handler(request):
         return ws
 
 
+# --- Setup ---
+@web.middleware
+async def cors_middleware(request, handler):
+    if request.method == 'OPTIONS':
+        resp = web.Response()
+    else:
+        resp = await handler(request)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
+    resp.headers['Access-Control-Allow-Headers'] = '*'
+    return resp
+
 if __name__ == "__main__":
     db.inicializar_db()
     
