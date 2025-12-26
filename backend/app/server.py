@@ -61,6 +61,7 @@ def dump_audio_to_disk(audio_bytes: bytes, balcao_id: str):
     print(f"[DUMP] Áudio salvo: {filepath}")
 
 # --- Pipeline Principal (Core Logic) ---
+# --- Pipeline Principal (Core Logic) ---
 async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: str):
     print(f"[{balcao_id}] Processando segmento de fala ({len(speech_segment)} bytes)...")
 
@@ -79,15 +80,14 @@ async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: s
         return
 
     try:
-        # Passo 2 & 3: Roteamento de Custo e Transcrição (Smart Routing)
-        # O transcription.py decide se usa modelo caro ou barato
-        transcricao_resultado = await asyncio.to_thread(
-            transcription.transcrever_inteligente, speech_segment
+        # Passo 2 & 3: Transcrição (Hardcoded ElevenLabs para Produção)
+        # Em produção, não usamos mais o roteamento econômico para garantir qualidade máxima.
+        texto = await asyncio.to_thread(
+            transcription.transcrever_elevenlabs, speech_segment
         )
-        
-        texto = transcricao_resultado["texto"]
-        modelo_usado = transcricao_resultado["modelo"]
-        custo_estimado = transcricao_resultado["custo"]
+        # Mock values para manter compatibilidade com DB
+        modelo_usado = "elevenlabs"
+        custo_estimado = 0.05 
         
         if not texto:
             return
@@ -177,43 +177,52 @@ async def debug_process_speech_pipeline(websocket, speech_segment: bytes, segmen
     })
 
     try:
-        # 2. Transcrição e Roteamento
-        transcricao_resultado = await asyncio.to_thread(
-            transcription.transcrever_inteligente, speech_segment
+        # 2. Roteamento (SIMULAÇÃO)
+        # Descobrimos qual modelo o sistema "inteligente" escolheria, apenas para log.
+        routing = await asyncio.to_thread(
+            transcription.decidir_roteamento, speech_segment
         )
         
-        texto = transcricao_resultado["texto"]
-        modelo_usado = transcricao_resultado["modelo"]
-        snr = transcricao_resultado.get("snr", 0.0)
+        # 3. Transcrição DUPLA (Comparação)
+        # Executando ambos para análise de qualidade
+        t_eleven = await asyncio.to_thread(
+            transcription.transcrever_elevenlabs, speech_segment
+        )
+        t_assembly = await asyncio.to_thread(
+            transcription.transcrever_assemblyai, speech_segment
+        )
 
-        # 3. Evento: Decisão de Roteamento
+        # 4. Evento: Decisão de Roteamento (Simulada)
         await websocket.send_json({
             "event": "routing_decision",
             "data": {
                 "segment_id": segment_id,
-                "snr_db": round(snr, 2),
+                "snr_db": round(routing["snr"], 2),
                 "duration": round(duration, 3),
-                "chosen_model": modelo_usado,
-                "reason": "Economic (SNR>15 & <5s)" if modelo_usado == "assemblyai" else "Premium"
+                "suggested_model": routing["modelo_sugerido"],
+                "reason": routing["reason"]
             }
         })
 
-        # 4. Evento: Resultado Transcrição
+        # 5. Evento: Resultado Transcrição (DUPLO)
         await websocket.send_json({
             "event": "transcription_result",
             "data": {
                 "segment_id": segment_id,
-                "model": modelo_usado,
-                "text": texto
+                "transcriptions": {
+                    "elevenlabs": t_eleven,
+                    "assemblyai": t_assembly
+                },
+                "chosen_for_analysis": "elevenlabs" # Sempre usamos o melhor para análise
             }
         })
 
-        if not texto: return
+        if not t_eleven: return
 
-        # 5. Análise (Mock ou Real)
-        # Usando a mesma função de análise de produção
+        # 6. Análise (Mock ou Real)
+        # Usando o texto do ElevenLabs (melhor qualidade) para a IA analisar
         analise_json = await asyncio.to_thread(
-            analysis.analisar_texto, texto, "Funcionario_Teste"
+            analysis.analisar_texto, t_eleven, "Funcionario_Teste"
         )
         
         analysis_data = {}
@@ -223,7 +232,7 @@ async def debug_process_speech_pipeline(websocket, speech_segment: bytes, segmen
             except:
                 analysis_data = {"raw": analise_json}
 
-        # 6. Evento: Resultado Análise
+        # 7. Evento: Resultado Análise
         await websocket.send_json({
             "event": "analysis_result",
             "data": {

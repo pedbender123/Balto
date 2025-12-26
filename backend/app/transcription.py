@@ -173,31 +173,49 @@ def transcrever_assemblyai(audio_bytes: bytes) -> str:
         print(f"[AssemblyAI] Erro de requisição: {e}")
         return ""
 
-def transcrever_inteligente(audio_bytes: bytes) -> dict:
+def decidir_roteamento(audio_bytes: bytes) -> dict:
     """
-    Smart Routing: Decide qual modelo usar baseado na qualidade do áudio.
+    Decide qual modelo usar baseado na qualidade, mas NÃO executa a transcrição.
+    Retorna metadados da decisão.
     """
     snr = calcular_snr(audio_bytes)
     duration_sec = len(audio_bytes) / 32000.0
     
     # Lógica de Decisão
-    # Se o áudio é muito limpo (SNR > 15dB) e curto, modelo barato resolve.
-    # Se o áudio é sujo ou muito longo (complexo), usa ElevenLabs.
-    
     usar_economico = (snr > 15.0) and (duration_sec < 5.0)
     
     if usar_economico:
-        texto = transcrever_assemblyai(audio_bytes)
         modelo = "assemblyai"
-        custo = 0.005 # Estimativa AssemblyAI
+        reason = "Economic (SNR>15 & <5s)"
+    else:
+        modelo = "elevenlabs"
+        reason = "Premium (Low SNR or Long)"
+        
+    return {
+        "modelo_sugerido": modelo,
+        "reason": reason,
+        "snr": snr,
+        "duration": duration_sec
+    }
+
+def transcrever_inteligente(audio_bytes: bytes) -> dict:
+    """
+    Mantido para retrocompatibilidade, mas agora usa decidir_roteamento
+    e executa o modelo escolhido.
+    """
+    decisao = decidir_roteamento(audio_bytes)
+    modelo = decisao["modelo_sugerido"]
+    
+    if modelo == "assemblyai":
+        texto = transcrever_assemblyai(audio_bytes)
+        custo = 0.005
     else:
         texto = transcrever_elevenlabs(audio_bytes)
-        modelo = "elevenlabs"
-        custo = 0.05 # Estimativa ElevenLabs
+        custo = 0.05
         
     return {
         "texto": texto,
         "modelo": modelo,
         "custo": custo,
-        "snr": snr
+        "snr": decisao["snr"]
     }

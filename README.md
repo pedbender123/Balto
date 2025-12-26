@@ -159,19 +159,21 @@ Utilize a `ADMIN_SECRET` definida no `.env` (bypass de cadastro de balcão).
 Diferente da rota de produção que silencia etapas intermediárias, esta rota retorna o "produto" de cada estágio do pipeline:
 
 1. `segment_created`: Retorna o áudio fatiado pelo VAD (Base64) e metadados.
-   - Ideal para verificar se o VAD está cortando frases corretamente.
-2. `routing_decision`: Mostra qual modelo (ElevenLabs vs AssemblyAI) foi escolhido e porquê (SNR/Duração).
-3. `transcription_result`: O texto bruto transcrito.
-4. `analysis_result`: O JSON completo da análise do LLM.
+2. `routing_decision`: Simula qual modelo o "Smart Routing" escolheria (apenas informativo, pois o teste roda ambos).
+3. `transcription_result`: Retorna **ambas** as transcrições (ElevenLabs e AssemblyAI) para comparação de qualidade vs custo.
+4. `analysis_result`: O JSON completo da análise do LLM (baseado no ElevenLabs).
 
-**Exemplo de Evento de Segmento:**
+**Exemplo de Evento de Transcrição Dupla:**
 ```json
 {
-  "event": "segment_created",
+  "event": "transcription_result",
   "data": {
-    "segment_id": "a1b2c3d4",
-    "duration_seconds": 2.5,
-    "audio_base64": "UklGRi..." // WAV base64
+    "segment_id": "xyz123",
+    "transcriptions": {
+      "elevenlabs": "Texto preciso do cliente",
+      "assemblyai": "Texto aproximado do cleinte"
+    },
+    "chosen_for_analysis": "elevenlabs"
   }
 }
 ```
