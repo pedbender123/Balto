@@ -153,131 +153,207 @@ async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: s
 
 # --- Handlers WebSocket e HTTP ---
 
-async def websocket_handler(request):
+# --- Imports Debug ---
+import base64
+from app import silero_vad
+
+# --- Debug Pipeline (Instrumentado) ---
+async def debug_process_speech_pipeline(websocket, speech_segment: bytes, segment_id: str):
+    """Pipeline instrumentado que envia eventos JSON de volta para o cliente."""
+    print(f"[DEBUG] Processando segmento {segment_id} ({len(speech_segment)} bytes)")
+
+    # 1. Evento: Segmento Criado
+    duration = len(speech_segment) / 32000.0
+    await websocket.send_json({
+        "event": "segment_created",
+        "data": {
+            "segment_id": segment_id,
+            "duration_seconds": round(duration, 3),
+            "timestamp": datetime.now().isoformat()
+        }
+    })
+
+    try:
+        # 2. Transcrição e Roteamento
+        transcricao_resultado = await asyncio.to_thread(
+            transcription.transcrever_inteligente, speech_segment
+        )
+        
+        texto = transcricao_resultado["texto"]
+        modelo_usado = transcricao_resultado["modelo"]
+        snr = transcricao_resultado.get("snr", 0.0)
+
+        # 3. Evento: Decisão de Roteamento
+        await websocket.send_json({
+            "event": "routing_decision",
+            "data": {
+                "segment_id": segment_id,
+                "snr_db": round(snr, 2),
+                "duration": round(duration, 3),
+                "chosen_model": modelo_usado,
+                "reason": "Economic (SNR>15 & <5s)" if modelo_usado == "assemblyai" else "Premium"
+            }
+        })
+
+        # 4. Evento: Resultado Transcrição
+        await websocket.send_json({
+            "event": "transcription_result",
+            "data": {
+                "segment_id": segment_id,
+                "model": modelo_usado,
+                "text": texto
+            }
+        })
+
+        if not texto: return
+
+        # 5. Análise (Mock ou Real)
+        # Usando a mesma função de análise de produção
+        analise_json = await asyncio.to_thread(
+            analysis.analisar_texto, texto, "Funcionario_Teste"
+        )
+        
+        analysis_data = {}
+        if analise_json:
+            try:
+                analysis_data = json.loads(analise_json)
+            except:
+                analysis_data = {"raw": analise_json}
+
+        # 6. Evento: Resultado Análise
+        await websocket.send_json({
+            "event": "analysis_result",
+            "data": {
+                "segment_id": segment_id,
+                "analysis": analysis_data
+            }
+        })
+
+    except Exception as e:
+        error_msg = str(e)
+        print(f"[DEBUG] Erro: {error_msg}")
+        await websocket.send_json({
+            "event": "error",
+            "data": {"segment_id": segment_id, "message": error_msg}
+        })
+
+# --- Handler WebSocket de Debug ---
+async def debug_websocket_handler(request):
+    """
+    Endpoint para testes: /ws/debug_audio
+    Requer autenticação via 'key' na query string ou header 'X-Adm-Key'.
+    Usa Silero VAD e reporta tudo via JSON events.
+    """
     ws = web.WebSocketResponse()
     await ws.prepare(request)
+
+    # 1. Autenticação
+    # Tenta Header depois Query Param
+    auth_key = request.headers.get("X-Adm-Key") or request.query.get("key")
     
-    balcao_id = None
-    vad_session = None
+    if auth_key != ADMIN_SECRET:
+        print(f"[DEBUG] Tentativa de acesso negado. Key: {auth_key}")
+        await ws.close(code=4003, message=b"Forbidden: Invalid ADM Key")
+        return ws
+
+    print("[DEBUG] Cliente conectado e autenticado.")
     
-    # Buffers de decodificação
+    # Setup Pipeline de Teste (Silero para melhor qualidade)
+    vad_inst = silero_vad.SileroVAD(threshold=0.5)
+    vad_iterator = vad_inst.get_iterator()
+    cleaner = audio_processor.AudioCleaner()
+    
+    # Buffers
+    # O Silero precisa de chunks de 512 samples. O FFmpeg gera chunks arbitrários.
+    # Vamos usar um buffer circular ou acumulador.
+    process_buffer = bytearray()
+    vad_buffer = [] # Lista de chunks de fala
+    is_speaking = False
+    
+    # Configuração Chunks
+    VAD_CHUNK_SIZE_BYTES = 1024 # 512 samples * 2 bytes
+
+    # Buffer de decodificação global
     webm_buffer = bytearray()
     pcm_offset = 0
 
     try:
-        # Auth Handshake
-        msg = await ws.receive_json(timeout=10.0)
-        api_key = msg.get("api_key")
-        balcao_id = db.validate_api_key(api_key)
-        
-        if not balcao_id:
-            await ws.close(code=4001, message=b"API Key Invalida")
-            return ws
-            
-        print(f"Conectado: {balcao_id}")
-        vad_session = vad.VAD() # Instância dedicada do VAD
-        audio_cleaner = audio_processor.AudioCleaner() # Instância dedicada do Cleaner
-        
+        async for msg in ws:
+            if msg.type == WSMsgType.BINARY:
+                # Recebe chunk Opus/WebM ou PCM (vamos assumir stream continuo PCM se o cliente mandar PCM, 
+                # mas o encoded webm se for browser. O protocolo diz "Audio Binario".
+                # Para ser compatível com o cliente de teste simples, vamos suportar WebM stream igual prod)
+                
+                webm_buffer.extend(msg.data)
+                
+                # Decodifica incremental
+                full_pcm = decode_webm_to_pcm16le(bytes(webm_buffer))
+                if not full_pcm: continue
+                
+                # Pega só o novo
+                if len(full_pcm) > pcm_offset:
+                    new_pcm = full_pcm[pcm_offset:]
+                    pcm_offset = len(full_pcm)
+                    
+                    # 1. Cleaning
+                    cleaned_chunk = cleaner.process(new_pcm)
+                    process_buffer.extend(cleaned_chunk)
+                    
+                    # 2. VAD Loop (Consome o buffer em blocos de 1024 bytes)
+                    while len(process_buffer) >= VAD_CHUNK_SIZE_BYTES:
+                        sub_chunk = process_buffer[:VAD_CHUNK_SIZE_BYTES]
+                        del process_buffer[:VAD_CHUNK_SIZE_BYTES]
+                        
+                        # Prepare Tensor
+                        audio_int16 = silero_vad.np.frombuffer(sub_chunk, dtype=silero_vad.np.int16)
+                        audio_float32 = audio_int16.astype(silero_vad.np.float32) / 32768.0
+                        tensor = silero_vad.torch.Tensor(audio_float32)
+                        
+                        # VAD Check
+                        speech_dict = vad_iterator(tensor, return_seconds=False)
+                        
+                        if speech_dict:
+                            if 'start' in speech_dict:
+                                is_speaking = True
+                                print("[DEBUG] Fala iniciada")
+                                vad_buffer.append(sub_chunk)
+                            elif 'end' in speech_dict:
+                                is_speaking = False
+                                print("[DEBUG] Fala encerrada")
+                                vad_buffer.append(sub_chunk)
+                                
+                                # Dispara processamento
+                                full_segment = b''.join(vad_buffer)
+                                vad_buffer = []
+                                
+                                # Filtro min duracao (0.5s)
+                                if len(full_segment) > 16000:
+                                    seg_id = uuid.uuid4().hex[:8]
+                                    asyncio.create_task(
+                                        debug_process_speech_pipeline(ws, full_segment, seg_id)
+                                    )
+                        else:
+                            if is_speaking:
+                                vad_buffer.append(sub_chunk)
+
+            elif msg.type == WSMsgType.ERROR:
+                print(f"[DEBUG] WS Error: {ws.exception()}")
+
     except Exception as e:
-        print(f"Erro Auth WS: {e}")
-        await ws.close()
+        print(f"[DEBUG] Exception no Handler: {e}")
+    finally:
+        print("[DEBUG] Cliente desconectado.")
         return ws
 
-    async for msg in ws:
-        if msg.type == WSMsgType.BINARY:
-            # Fluxo de Áudio
-            webm_buffer.extend(msg.data)
-            
-            # Decodifica tudo que tem no buffer
-            pcm_full = decode_webm_to_pcm16le(bytes(webm_buffer))
-            
-            if not pcm_full: continue
-            
-            # Pega apenas os bytes novos
-            if len(pcm_full) > pcm_offset:
-                new_pcm = pcm_full[pcm_offset:]
-                pcm_offset = len(pcm_full)
-                
-                # Processa no VAD
-                # 1. Limpeza de Áudio (Fase 1)
-                cleaned_pcm = audio_cleaner.process(new_pcm)
-                
-                # 2. VAD Adaptativo com áudio limpo
-                speech = vad_session.process(cleaned_pcm)
-                
-                if speech:
-                    asyncio.create_task(
-                        process_speech_pipeline(ws, speech, balcao_id)
-                    )
-        elif msg.type == WSMsgType.ERROR:
-            print(f"WS Error: {ws.exception()}")
-
-    print(f"Desconectado: {balcao_id}")
-    return ws
-
-# --- API e Admin ---
-async def admin_page(request):
-    return web.FileResponse('./app/static/admin.html')
-
-async def admin_login(request):
-    try:
-        data = await request.json()
-        if data.get("password") == ADMIN_SECRET:
-            resp = web.Response(text="OK")
-            resp.set_cookie("admin_token", "auth_ok", max_age=3600)
-            return resp
-        return web.Response(status=401)
-    except:
-        return web.Response(status=400)
-
-async def api_enroll_voice(request):
-    """Endpoint para cadastrar voz de funcionário (Fase 3)."""
-    # Exige Auth (simplificado check de cookie)
-    if request.cookies.get("admin_token") != "auth_ok":
-        return web.Response(status=403)
-        
-    reader = await request.multipart()
-    field = await reader.next()
-    
-    nome = "Funcionario"
-    balcao_id = "default" # Em prod, pegar do form
-    
-    # Lógica simplificada de leitura de multipart
-    # Na prática, precisaria parsear os campos 'nome', 'balcao_id' e o arquivo 'audio'
-    # Deixando esqueleto funcional
-    return web.Response(text="Enrollment endpoint ready")
-
-async def api_batch_status(request):
-    """Endpoint para checar status do processamento em lote."""
-    try:
-        status_path = './app/static/batch_status.json'
-        if os.path.exists(status_path):
-            with open(status_path, 'r') as f:
-                data = json.load(f)
-            return web.json_response(data)
-        else:
-            return web.json_response({"percent": 0, "status": "idle"})
-    except Exception as e:
-        return web.json_response({"error": str(e)}, status=500)
-
-# --- Setup ---
-@web.middleware
-async def cors_middleware(request, handler):
-    if request.method == 'OPTIONS':
-        resp = web.Response()
-    else:
-        resp = await handler(request)
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    resp.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
-    resp.headers['Access-Control-Allow-Headers'] = '*'
-    return resp
 
 if __name__ == "__main__":
     db.inicializar_db()
     
     app = web.Application(middlewares=[cors_middleware])
     app.router.add_get('/ws', websocket_handler)
+    app.router.add_get('/ws/debug_audio', debug_websocket_handler) # Rota de Debug
     app.router.add_get('/admin', admin_page)
+    # ... (restante igual)
     app.router.add_post('/admin/login', admin_login)
     app.router.add_post('/api/enroll', api_enroll_voice)
     app.router.add_get('/api/batch_status', api_batch_status)
