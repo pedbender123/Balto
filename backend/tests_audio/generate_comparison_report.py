@@ -1,4 +1,11 @@
 import torch
+import os
+import sys
+import wave
+import csv
+import time
+import numpy as np
+from datetime import datetime
 
 # Adicionar parent dir ao path para importar app
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
