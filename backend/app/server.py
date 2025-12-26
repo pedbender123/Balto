@@ -151,7 +151,113 @@ async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: s
         import traceback
         traceback.print_exc()
 
-# --- Handlers WebSocket e HTTP ---
+# --- Handler WebSocket de Produção ---
+async def websocket_handler(request):
+    ws = web.WebSocketResponse()
+    await ws.prepare(request)
+    
+    balcao_id = None
+    vad_session = None
+    
+    # Buffers de decodificação
+    webm_buffer = bytearray()
+    pcm_offset = 0
+
+    try:
+        # Auth Handshake
+        msg = await ws.receive_json(timeout=10.0)
+        api_key = msg.get("api_key")
+        balcao_id = db.validate_api_key(api_key)
+        
+        if not balcao_id:
+            await ws.close(code=4001, message=b"API Key Invalida")
+            return ws
+            
+        print(f"Conectado: {balcao_id}")
+        vad_session = vad.VAD() # Instância dedicada do VAD
+        audio_cleaner = audio_processor.AudioCleaner() # Instância dedicada do Cleaner
+        
+    except Exception as e:
+        print(f"Erro Auth WS: {e}")
+        await ws.close()
+        return ws
+
+    async for msg in ws:
+        if msg.type == WSMsgType.BINARY:
+            # Fluxo de Áudio
+            webm_buffer.extend(msg.data)
+            
+            # Decodifica tudo que tem no buffer
+            pcm_full = decode_webm_to_pcm16le(bytes(webm_buffer))
+            
+            if not pcm_full: continue
+            
+            # Pega apenas os bytes novos
+            if len(pcm_full) > pcm_offset:
+                new_pcm = pcm_full[pcm_offset:]
+                pcm_offset = len(pcm_full)
+                
+                # Processa no VAD
+                # 1. Limpeza de Áudio (Fase 1)
+                cleaned_pcm = audio_cleaner.process(new_pcm)
+                
+                # 2. VAD Adaptativo com áudio limpo
+                speech = vad_session.process(cleaned_pcm)
+                
+                if speech:
+                    asyncio.create_task(
+                        process_speech_pipeline(ws, speech, balcao_id)
+                    )
+        elif msg.type == WSMsgType.ERROR:
+            print(f"WS Error: {ws.exception()}")
+
+    print(f"Desconectado: {balcao_id}")
+    return ws
+
+# --- API e Admin ---
+async def admin_page(request):
+    return web.FileResponse('./app/static/admin.html')
+
+async def admin_login(request):
+    try:
+        data = await request.json()
+        if data.get("password") == ADMIN_SECRET:
+            resp = web.Response(text="OK")
+            resp.set_cookie("admin_token", "auth_ok", max_age=3600)
+            return resp
+        return web.Response(status=401)
+    except:
+        return web.Response(status=400)
+
+async def api_enroll_voice(request):
+    """Endpoint para cadastrar voz de funcionário (Fase 3)."""
+    # Exige Auth (simplificado check de cookie)
+    if request.cookies.get("admin_token") != "auth_ok":
+        return web.Response(status=403)
+        
+    reader = await request.multipart()
+    field = await reader.next()
+    
+    nome = "Funcionario"
+    balcao_id = "default" # Em prod, pegar do form
+    
+    # Lógica simplificada de leitura de multipart
+    # Na prática, precisaria parsear os campos 'nome', 'balcao_id' e o arquivo 'audio'
+    # Deixando esqueleto funcional
+    return web.Response(text="Enrollment endpoint ready")
+
+async def api_batch_status(request):
+    """Endpoint para checar status do processamento em lote."""
+    try:
+        status_path = './app/static/batch_status.json'
+        if os.path.exists(status_path):
+            with open(status_path, 'r') as f:
+                data = json.load(f)
+            return web.json_response(data)
+        else:
+            return web.json_response({"percent": 0, "status": "idle"})
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)
 
 # --- Imports Debug ---
 import base64
