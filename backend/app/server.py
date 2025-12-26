@@ -277,8 +277,8 @@ async def get_debug_engine():
         # Importação pesada aqui dentro
         from app import silero_vad
         
-        # Carrega Modelo VAD
-        vad_inst = silero_vad.SileroVAD(threshold=0.4) # Threshold ajustado para ser mais sensível
+        # Carrega Modelo VAD (EXTREMAMENTE SENSÍVEL PARA DEBUG)
+        vad_inst = silero_vad.SileroVAD(threshold=0.1) 
         
         # Carrega Cleaner (Opcional, pode desativar se der gargalo)
         cleaner = audio_processor.AudioCleaner(stationary=True)
@@ -432,8 +432,13 @@ async def debug_websocket_handler(request):
     # Buffer de decodificação global
     webm_buffer = bytearray()
     pcm_offset = 0
+    
+    # Buffer DEBUG para dump em disco (primeiros 1MB)
+    debug_file_buffer = bytearray()
+    debug_dumped = False
 
     try:
+        import audioop # Para calcular RMS
         async for msg in ws:
             if msg.type == WSMsgType.BINARY:
                 
@@ -459,6 +464,31 @@ async def debug_websocket_handler(request):
                     pcm_len = len(new_pcm)
                     pcm_offset = len(full_pcm)
                     
+                    # LOG DE ENERGIA (Diagnóstico "No Speech Detected")
+                    try:
+                        rms = audioop.rms(new_pcm, 2)
+                        if rms == 0:
+                            print(f"[DEBUG] SILÊNCIO TOTAL RECEBIDO (RMS=0). FFMPEG Broken? Len: {pcm_len}")
+                        elif rms < 300:
+                            print(f"[DEBUG] Áudio muito baixo (RMS={rms}). Pode ser ignorado pelo VAD.")
+                    except: 
+                        pass
+                    
+                    # DUMP PARA DISCO (Diagnóstico Final)
+                    if not debug_dumped:
+                        debug_file_buffer.extend(new_pcm)
+                        if len(debug_file_buffer) > 1000000: # 1MB ~ 30s
+                            # Salva
+                            tstamp = datetime.now().strftime("%H%M%S")
+                            dump_path = f"./debug_stream_{tstamp}.wav"
+                            with wave.open(dump_path, "wb") as wf:
+                                wf.setnchannels(1)
+                                wf.setsampwidth(2)
+                                wf.setframerate(16000)
+                                wf.writeframes(debug_file_buffer)
+                            print(f"[DEBUG] DUMP DE ÁUDIO SALVO EM: {dump_path}")
+                            debug_dumped = True
+                    
                     # 1. Cleaning API
                     # ATENCAO: Desativando cleaner temporariamente se for muito agressivo?
                     # cleaned_chunk = await asyncio.to_thread(cleaner.process, new_pcm)
@@ -475,6 +505,7 @@ async def debug_websocket_handler(request):
                     # O 'vad_inst' encapsula lógica, mas aqui estamos fazendo manual o tensor.
                     # Vamos pegar as deps do engine.
                     from app import silero_vad
+
                     
                     while len(process_buffer) >= VAD_CHUNK_SIZE_BYTES:
                         sub_chunk = process_buffer[:VAD_CHUNK_SIZE_BYTES]
