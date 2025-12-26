@@ -106,7 +106,6 @@ def transcrever_elevenlabs(audio_bytes: bytes) -> str:
         result = client.speech_to_text.convert(
             file=audio_file,
             model_id="scribe_v1",
-            tag="balto_pharmacy"
         )
         
         # Se sucesso, registra uso
