@@ -155,7 +155,7 @@ async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: s
 
 # --- Imports Debug ---
 import base64
-from app import silero_vad
+# from app import silero_vad (Movido para escopo local para evitar crash no startup se torch falhar)
 
 # --- Debug Pipeline (Instrumentado) ---
 async def debug_process_speech_pipeline(websocket, speech_segment: bytes, segment_id: str):
@@ -177,19 +177,22 @@ async def debug_process_speech_pipeline(websocket, speech_segment: bytes, segmen
     })
 
     try:
+        # Importação Local para Roteamento (evita ciclo/erro start)
+        from app import transcription as debug_transcription
+        
         # 2. Roteamento (SIMULAÇÃO)
         # Descobrimos qual modelo o sistema "inteligente" escolheria, apenas para log.
         routing = await asyncio.to_thread(
-            transcription.decidir_roteamento, speech_segment
+            debug_transcription.decidir_roteamento, speech_segment
         )
         
         # 3. Transcrição DUPLA (Comparação)
         # Executando ambos para análise de qualidade
         t_eleven = await asyncio.to_thread(
-            transcription.transcrever_elevenlabs, speech_segment
+            debug_transcription.transcrever_elevenlabs, speech_segment
         )
         t_assembly = await asyncio.to_thread(
-            transcription.transcrever_assemblyai, speech_segment
+            debug_transcription.transcrever_assemblyai, speech_segment
         )
 
         # 4. Evento: Decisão de Roteamento (Simulada)
@@ -270,10 +273,19 @@ async def debug_websocket_handler(request):
 
     print("[DEBUG] Cliente conectado e autenticado (ADM Bypass).")
     
-    # Setup Pipeline de Teste (Silero para melhor qualidade)
-    vad_inst = silero_vad.SileroVAD(threshold=0.5)
-    vad_iterator = vad_inst.get_iterator()
-    cleaner = audio_processor.AudioCleaner()
+    try:
+        # Importação Local do Silero (Risky Dependency)
+        from app import silero_vad
+        
+        # Setup Pipeline de Teste (Silero para melhor qualidade)
+        vad_inst = silero_vad.SileroVAD(threshold=0.5)
+        vad_iterator = vad_inst.get_iterator()
+        cleaner = audio_processor.AudioCleaner()
+    except Exception as e:
+        print(f"[DEBUG] Erro ao carregar dependencias de teste (Silero): {e}")
+        await ws.send_json({"event": "fatal_error", "data": "Falha ao carregar motor de teste. Verifique logs do servidor."})
+        await ws.close(code=4500)
+        return ws
     
     # Buffers
     # O Silero precisa de chunks de 512 samples. O FFmpeg gera chunks arbitrários.
