@@ -1,0 +1,193 @@
+🤖 Balto Server Backend
+
+Sistema de Inteligência Farmacêutica em Tempo Real
+
+O Balto Server é um serviço de backend assíncrono de alta performance desenvolvido em Python. Ele atua como o cérebro da operação, orquestrando o reconhecimento de fala, processamento de linguagem natural e a lógica de sugestão farmacêutica.
+
+📋 Stack Tecnológica
+
+Linguagem: Python 3.10
+
+Server: AIOHTTP (Async/WebSockets)
+
+VAD (Voice Activity Detection): WebRTCVAD + Energy Gate (Filtragem avançada de ruído/silêncio)
+
+STT (Speech-to-Text): ElevenLabs (Scribe)
+
+LLM (Inteligência): xAI (Grok Beta)
+
+Banco de Dados: SQLite (Gerenciado via SQLAlchemy/Direct Access)
+
+Infraestrutura: Docker & Docker Compose
+
+✨ Novidades e Funcionalidades
+
+1. 🛡️ Nova Área Administrativa
+
+O sistema agora conta com um painel de administração integrado para gestão e auditoria.
+
+Monitoramento em Tempo Real: Visualize o status do serviço e conexões ativas.
+
+Histórico de Transações: Acesso completo aos logs de sugestões, transcrições e produtos recomendados.
+
+Ajuste Fino: Capacidade de verificar a precisão das transcrições e das respostas da IA.
+
+2. 🚀 Pipeline de IA Otimizada
+
+Processamento de Áudio: O VAD foi recalibrado para ignorar ruídos de farmácia (bips, impressoras) e focar na voz humana.
+
+Grok Beta: Integração atualizada com o modelo xAI para respostas mais rápidas e contextualizadas com bula de medicamentos.
+
+📡 Endereços de Acesso (Endpoints)
+
+O backend pode ser acessado localmente (desenvolvimento) ou através da VPS de produção.
+
+Ambiente
+
+URL Base (HTTP/Admin)
+
+WebSocket (WSS/WS)
+
+Descrição
+
+Produção (VPS)
+
+https://balto.pbpmdev.com
+
+wss://balto.pbpmdev.com/ws
+
+Ambiente estável com SSL.
+
+Local (Dev)
+
+http://localhost:8765
+
+ws://localhost:8765/ws
+
+Para testes e desenvolvimento.
+
+Nota: Ao usar a VPS (https), certifique-se de que seu cliente WebSocket utilize wss:// (Secure WebSocket) para evitar erros de conteúdo misto.
+
+🚀 Instalação e Execução
+
+1. Configuração de Variáveis (.env)
+
+Crie um arquivo .env na pasta backend/ baseando-se no modelo abaixo:
+
+XAI_API_KEY="sua-chave-grok-aqui"
+ELEVENLABS_API_KEY="sua-chave-elevenlabs-aqui"
+DB_FILE="/backend/app/dados/registro.db"
+VAD_ENERGY_THRESHOLD=300
+ADMIN_SECRET=x9PeHTY7ouQNvzJH
+MOCK_MODE=0
+
+2. Rodando com Docker (Recomendado)
+
+Utilize o Docker Compose para subir a aplicação. O volume balto-dados garante que seu banco de dados persista mesmo após reiniciar os containers.
+
+Iniciar o serviço:
+
+docker-compose up --build -d
+
+
+Verificar logs em tempo real:
+
+docker-compose logs -f
+
+
+Parar o serviço:
+
+docker-compose down
+
+
+🔌 Protocolo WebSocket
+
+O cliente deve se conectar ao endpoint /ws e seguir o fluxo abaixo.
+
+1. Autenticação (Cliente -> Servidor)
+
+Imediatamente após conectar, envie:
+
+{
+  "comando": "auth",
+  "api_key": "sua-api-key-do-balcao"
+}
+
+
+2. Streaming de Áudio (Cliente -> Servidor)
+
+Envie o áudio em formato binário continuamente:
+
+Formato: PCM 16-bit, 16kHz, Mono.
+
+Chunk Size: Idealmente frames de 20ms a 30ms.
+
+Otimização: O servidor possui Silence Suppression. Áudios contendo apenas silêncio ou ruído estático são descartados antes de gerar custos nas APIs de STT/LLM.
+
+3. Recebimento de Sugestões (Servidor -> Cliente)
+
+Quando o sistema detecta uma oportunidade de venda ou necessidade de intervenção:
+
+{
+  "comando": "recomendar",
+  "produto": "Vitamina C 1g",
+  "explicacao": "Cliente relatou sintomas de gripe e fadiga.",
+  "transcricao_base": "Estou me sentindo muito cansado e gripado ultimamente.",
+  "confianca": "alta"
+}
+
+
+
+🛠️ Manutenção e Banco de Dados
+
+Localização: O banco SQLite fica salvo no volume Docker e mapeado internamente em /backend/app/dados/registro.db.
+
+Backups: Para realizar backup, copie o arquivo .db do volume ou utilize a nova interface Admin para exportar os dados relevantes.
+
+🔬 Protocolo de Teste e Calibração (Debug Route)
+
+Para fins de QA, ajuste de VAD e análise de custos, o sistema expõe uma rota nativa de debug:
+
+**Endpoint:** `ws://<HOST>/ws/debug_audio`
+
+**Autenticação Master:**
+Utilize a `ADMIN_SECRET` definida no `.env` (bypass de cadastro de balcão).
+- Header: `X-Adm-Key: sua-admin-secret`
+- Query: `?key=sua-admin-secret`
+
+**Retorno de Dados (JSON Events):**
+Diferente da rota de produção que silencia etapas intermediárias, esta rota retorna o "produto" de cada estágio do pipeline:
+
+1. `segment_created`: Retorna o áudio fatiado pelo VAD (Base64) e metadados.
+2. `routing_decision`: Simula qual modelo o "Smart Routing" escolheria (apenas informativo, pois o teste roda ambos).
+3. `transcription_result`: Retorna **ambas** as transcrições (ElevenLabs e AssemblyAI) para comparação de qualidade vs custo.
+4. `analysis_result`: O JSON completo da análise do LLM (baseado no ElevenLabs).
+
+**Exemplo de Evento de Transcrição Dupla:**
+```json
+{
+  "event": "transcription_result",
+  "data": {
+    "segment_id": "xyz123",
+    "transcriptions": {
+      "elevenlabs": "Texto preciso do cliente",
+      "assemblyai": "Texto aproximado do cleinte"
+    },
+    "chosen_for_analysis": "elevenlabs"
+  }
+}
+```
+
+📂 Estrutura de Pastas
+
+/
+├── backend/
+│   ├── app/
+│   │   ├── admin/       # Rotas e templates da Área Admin
+│   │   ├── core/        # Lógica de VAD e WebSocket
+│   │   ├── services/    # Integrações (ElevenLabs, xAI)
+│   │   └── main.py      # Entrypoint
+│   ├── Dockerfile
+│   └── .env
+├── docker-compose.yml
+└── README.md

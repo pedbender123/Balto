@@ -1,0 +1,103 @@
+Relatório Consolidado de Execução de Testes
+Data: 26/12/2025
+
+---
+TENTATIVA 1: Teste com 1 Arquivo (gravacao.wav -> audio_01.wav)
+Horário: ~17:50
+Status: SUCESSO na conexão
+Resultado: NENHUMA FALA DETECTADA.
+Erro: O VAD do servidor descartou o áudio (provavelmente silêncio/ruído).
+Arquivo CSV: relatorio_comparativo_20251226_175037.csv (Vazio)
+
+---
+TENTATIVA 2: Teste com 5 Arquivos (Múltiplas Conexões)
+Horário: ~17:54
+Status: FALHA
+Erro: timed out during opening handshake (4 de 6 arquivos).
+Resultado: 2 arquivos conectaram mas não tiveram fala detectada.
+Diagnóstico: Instabilidade na VPS para aceitar múltiplas conexões em sequência.
+Arquivo CSV: relatorio_comparativo_20251226_175450.csv
+
+---
+TENTATIVA 3: Teste com WebM Nativo (Múltiplas Conexões)
+Horário: ~17:59
+Status: FALHA
+Erro: timed out during opening handshake
+Resultado: Mesmo comportamento da tentativa 2, independente do formato do arquivo.
+Arquivo CSV: relatorio_comparativo_20251226_175911.csv
+
+---
+TENTATIVA 4: Teste de Conexão Única (Streaming Contínuo)
+Horário: ~18:08
+Status: FALHA
+Erro: sent 1011 (internal error) keepalive ping timeout; no close frame received
+Resultado: Conexão caiu durante o envio do primeiro arquivo.
+Diagnóstico: Perda de heartbeat (ping/pong) com o servidor. Latência alta ou servidor travado.
+Arquivo CSV: relatorio_comparativo_20251226_180839.csv
+
+---
+TENTATIVA 5: Teste com Increased Timeout (ping_timeout=60, interval=30)
+Horário: ~18:23
+Status: FALHA
+Erro: sent 1011 (internal error) keepalive ping timeout; no close frame received.
+Resultado: Conexão caiu logo após o primeiro arquivo. O aumento dos timeouts não resolveu.
+Diagnóstico: Persiste a instabilidade severa de conexão/heartbeat com o servidor.
+Arquivo CSV: relatorio_comparativo_20251226_182326.csv
+
+---
+TENTATIVA 6: Teste com Envio RAW (Sem Conversão/Decoding no Cliente)
+Horário: ~18:27
+Status: PARCIALMENTE SUCESSO
+Resultado:
+- Arquivo 1 (WAV): Enviado com sucesso.
+- Arquivo 2 (WebM): Enviado com sucesso! (Confirmando que o servidor aceita WebM nativo).
+- Arquivo 3 (WAV): Conexão caiu (Timeout) durante o envio.
+Diagnóstico:
+- O erro "Invalid Data" na VPS FOI RESOLVIDO. O problema era enviar PCM para o FFMPEG que esperava container.
+- O erro de "Timeout" persiste para sessões longas, mas agora avançamos para o processamento real.
+Arquivo CSV: relatorio_comparativo_20251226_182705.csv
+
+---
+TENTATIVA 7: Teste com Envio RAW + Pausa de 5s
+Horário: ~18:38
+Status: FALHA DE CONEXÃO
+Resultado:
+- Arquivo 1 (WAV): Enviado.
+- Arquivo 2 (WebM): Enviado.
+- Arquivo 3 (WAV): Timeout (keepalive ping timeout) durante o envio, mesmo com pausa maior.
+- Transcrições: Nenhuma recebida (0 segmentos no CSV).
+Diagnóstico:
+- Aumentar a pausa não impediu a queda da conexão. O servidor para de responder pings.
+Arquivo CSV: relatorio_comparativo_20251226_183855.csv
+
+---
+TENTATIVA 8: Teste LOCAL (PC do Usuário)
+Horário: ~18:54
+Status: SUCESSO DE CONEXÃO
+Resultado:
+- Todos os 6 arquivos foram enviados (streaming contínuo) sem quedas!
+- O problema de "Timeout" era específico da Raspberry Pi (Wi-Fi/CPU/Rede).
+- Transcrições: Ainda ZERO (0 segmentos).
+Diagnóstico:
+- Conexão e Protocolo: OK.
+- Problema Restante: O servidor não está detectando fala nesses áudios (VAD Threshold alto? Áudio muito baixo? Erro silencioso no FFMPEG?).
+Arquivo CSV: relatorio_comparativo_20251226_185430.csv
+
+---
+TENTATIVA 9: Teste LOCAL para Monitoramento de RMS
+Horário: ~19:21
+Status: SUCESSO DE CONEXÃO
+Resultado:
+- Todos os 6 arquivos enviados.
+- Cliente aguardou e finalizou normalmente.
+- Transcrições: ZERO.
+Ação Requerida: Verificar logs do servidor (RMS) neste horário.
+
+---
+TENTATIVA 10: Teste LOCAL para Sincronização de Logs RMS
+Horário: ~19:58
+Status: SUCESSO DE CONEXÃO
+Resultado:
+- Todos os 6 arquivos enviados.
+- Transcrições: ZERO.
+Ação Requerida: Analisar os logs do servidor durante este período para investigar valores RMS e erros de FFMPEG.
