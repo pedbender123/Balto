@@ -261,6 +261,297 @@ async def api_batch_status(request):
 
 # --- Imports Debug ---
 import base64
+
+# Cache de componentes de Debug (Lazy Load)
+DEBUG_ENGINE = None
+
+async def get_debug_engine():
+    """Carrega dependências pesadas (Torch/Silero/NoiseReduce) em thread separada."""
+    global DEBUG_ENGINE
+    if DEBUG_ENGINE:
+        return DEBUG_ENGINE
+    
+    print("[DEBUG] Inicializando engine de debug (Torch/Silero)... Pode demorar.")
+    
+    def _load():
+        # Importação pesada aqui dentro
+        from app import silero_vad
+        
+        # Carrega Modelo VAD
+        vad_inst = silero_vad.SileroVAD(threshold=0.4) # Threshold ajustado para ser mais sensível
+        
+        # Carrega Cleaner (Opcional, pode desativar se der gargalo)
+        cleaner = audio_processor.AudioCleaner(stationary=True)
+        
+        return vad_inst, cleaner
+
+    # Executa no Executor Padrão (Thread Pool) para não travar o loop
+    try:
+        DEBUG_ENGINE = await asyncio.to_thread(_load)
+        print("[DEBUG] Engine carregada com sucesso.")
+        return DEBUG_ENGINE
+    except Exception as e:
+        print(f"[DEBUG] Falha ao carregar engine: {e}")
+        return None, None
+
+# --- Debug Pipeline (Instrumentado) ---
+async def debug_process_speech_pipeline(websocket, speech_segment: bytes, segment_id: str):
+    """Pipeline instrumentado que envia eventos JSON de volta para o cliente."""
+    print(f"[DEBUG] Processando segmento {segment_id} ({len(speech_segment)} bytes)")
+
+    # 1. Evento: Segmento Criado (+ AUDIO BASE64)
+    duration = len(speech_segment) / 32000.0
+    audio_base64 = base64.b64encode(speech_segment).decode('utf-8')
+    
+    await websocket.send_json({
+        "event": "segment_created",
+        "data": {
+            "segment_id": segment_id,
+            "duration_seconds": round(duration, 3),
+            "timestamp": datetime.now().isoformat(),
+            "audio_base64": audio_base64 # Produto Bruto do VAD
+        }
+    })
+
+    try:
+        # Importação Local para Roteamento (evita ciclo/erro start)
+        from app import transcription as debug_transcription
+        
+        # 2. Roteamento (SIMULAÇÃO)
+        # Descobrimos qual modelo o sistema "inteligente" escolheria, apenas para log.
+        routing = await asyncio.to_thread(
+            debug_transcription.decidir_roteamento, speech_segment
+        )
+        
+        # 3. Transcrição DUPLA (Comparação)
+        # Executando ambos para análise de qualidade
+        t_eleven = await asyncio.to_thread(
+            debug_transcription.transcrever_elevenlabs, speech_segment
+        )
+        t_assembly = await asyncio.to_thread(
+            debug_transcription.transcrever_assemblyai, speech_segment
+        )
+
+        # 4. Evento: Decisão de Roteamento (Simulada)
+        await websocket.send_json({
+            "event": "routing_decision",
+            "data": {
+                "segment_id": segment_id,
+                "snr_db": round(routing["snr"], 2),
+                "duration": round(duration, 3),
+                "suggested_model": routing["modelo_sugerido"],
+                "reason": routing["reason"]
+            }
+        })
+
+        # 5. Evento: Resultado Transcrição (DUPLO)
+        await websocket.send_json({
+            "event": "transcription_result",
+            "data": {
+                "segment_id": segment_id,
+                "transcriptions": {
+                    "elevenlabs": t_eleven,
+                    "assemblyai": t_assembly
+                },
+                "chosen_for_analysis": "elevenlabs" # Sempre usamos o melhor para análise
+            }
+        })
+
+        if not t_eleven: return
+
+        # 6. Análise (Mock ou Real)
+        # Usando o texto do ElevenLabs (melhor qualidade) para a IA analisar
+        analise_json = await asyncio.to_thread(
+            analysis.analisar_texto, t_eleven, "Funcionario_Teste"
+        )
+        
+        analysis_data = {}
+        if analise_json:
+            try:
+                analysis_data = json.loads(analise_json)
+            except:
+                analysis_data = {"raw": analise_json}
+
+        # 7. Evento: Resultado Análise
+        await websocket.send_json({
+            "event": "analysis_result",
+            "data": {
+                "segment_id": segment_id,
+                "analysis": analysis_data
+            }
+        })
+
+    except Exception as e:
+        error_msg = str(e)
+        print(f"[DEBUG] Erro Pipeline: {error_msg}")
+        await websocket.send_json({
+            "event": "error",
+            "data": {"segment_id": segment_id, "message": error_msg}
+        })
+
+# --- Handler WebSocket de Debug ---
+async def debug_websocket_handler(request):
+    """
+    Endpoint para testes: /ws/debug_audio
+    Requer autenticação via 'key' na query string ou header 'X-Adm-Key'.
+    Usa Silero VAD e reporta tudo via JSON events.
+    """
+    ws = web.WebSocketResponse()
+    await ws.prepare(request)
+
+    # 1. Autenticação
+    auth_key = request.headers.get("X-Adm-Key") or request.query.get("key")
+    
+    if auth_key != ADMIN_SECRET:
+        print(f"[DEBUG] Tentativa de acesso negado. Key: {auth_key}")
+        await ws.close(code=4003, message=b"Forbidden: Invalid ADM Key")
+        return ws
+
+    print("[DEBUG] Cliente conectado e autenticado (ADM Bypass). Inicializando Engine...")
+    
+    # 2. Setup Pipeline de Teste (Async/Lazy)
+    vad_inst, cleaner = await get_debug_engine()
+    
+    if not vad_inst:
+        await ws.send_json({"event": "fatal_error", "data": "Falha no motor de teste."})
+        await ws.close(code=4500)
+        return ws
+    
+    vad_iterator = vad_inst.get_iterator()
+    
+    # Buffers
+    process_buffer = bytearray()
+    vad_buffer = [] 
+    is_speaking = False
+    
+    # Configuração Chunks
+    VAD_CHUNK_SIZE_BYTES = 1024 # 512 samples * 2 bytes
+    
+    # IMPORTANTE: Em debug queremos VER o que acontece, então vamos logar o tamanho dos buffers
+    
+    # Buffer de decodificação global
+    webm_buffer = bytearray()
+    pcm_offset = 0
+
+    try:
+        async for msg in ws:
+            if msg.type == WSMsgType.BINARY:
+                
+                # Recebe Chunk
+                chunk_len = len(msg.data)
+                webm_buffer.extend(msg.data)
+                
+                # Decodifica incremental (AGORA EM THREAD PARA NAO BLOQUEAR O LOOP)
+                # Isso resolve o Timeout de Keepalive
+                full_pcm = await asyncio.to_thread(
+                    decode_webm_to_pcm16le, bytes(webm_buffer), 16000
+                )
+                
+                if not full_pcm: 
+                    # Se ffmpeg falhar, pode ser porque o buffer ainda é header imcompleto
+                    if len(webm_buffer) > 50000: # Se acumulou 50kb e nao decodificou, estranho
+                         print(f"[WARN] FFMPEG retornou vazio com buffer {len(webm_buffer)}")
+                    continue
+                
+                # Pega só o novo
+                if len(full_pcm) > pcm_offset:
+                    new_pcm = full_pcm[pcm_offset:]
+                    pcm_len = len(new_pcm)
+                    pcm_offset = len(full_pcm)
+                    
+                    # 1. Cleaning API
+                    # ATENCAO: Desativando cleaner temporariamente se for muito agressivo?
+                    # cleaned_chunk = await asyncio.to_thread(cleaner.process, new_pcm)
+                    # Não, vamos usar direto, mas cuidado com delay. O Cleaner é numpy, rápido.
+                    
+                    cleaned_chunk = cleaner.process(new_pcm) # Processamento síncrono rápido (Numpy)
+                    process_buffer.extend(cleaned_chunk)
+                    
+                    # Log de fluxo
+                    # print(f"[FLOW] In: {chunk_len}b -> PCM New: {pcm_len}b -> Buff: {len(process_buffer)}")
+
+                    # 2. VAD Loop (Consome o buffer em blocos de 1024 bytes)
+                    # Precisa importar silero_vad para usar np dentro do loop? 
+                    # O 'vad_inst' encapsula lógica, mas aqui estamos fazendo manual o tensor.
+                    # Vamos pegar as deps do engine.
+                    from app import silero_vad
+                    
+                    while len(process_buffer) >= VAD_CHUNK_SIZE_BYTES:
+                        sub_chunk = process_buffer[:VAD_CHUNK_SIZE_BYTES]
+                        del process_buffer[:VAD_CHUNK_SIZE_BYTES]
+                        
+                        # Prepare Tensor
+                        audio_int16 = silero_vad.np.frombuffer(sub_chunk, dtype=silero_vad.np.int16)
+                        audio_float32 = audio_int16.astype(silero_vad.np.float32) / 32768.0
+                        tensor = silero_vad.torch.Tensor(audio_float32)
+                        
+                        # VAD Check
+                        speech_dict = vad_iterator(tensor, return_seconds=False)
+                        
+                        if speech_dict:
+                            if 'start' in speech_dict:
+                                is_speaking = True
+                                print("[DEBUG] >>> Fala INICIOU")
+                                vad_buffer.append(sub_chunk)
+                            elif 'end' in speech_dict:
+                                is_speaking = False
+                                print("[DEBUG] <<< Fala ENCERROU")
+                                vad_buffer.append(sub_chunk)
+                                
+                                # Dispara processamento
+                                full_segment = b''.join(vad_buffer)
+                                vad_buffer = []
+                                
+                                # Filtro min duracao (0.5s)
+                                if len(full_segment) > 16000:
+                                    seg_id = uuid.uuid4().hex[:8]
+                                    asyncio.create_task(
+                                        debug_process_speech_pipeline(ws, full_segment, seg_id)
+                                    )
+                                else:
+                                    print("[DEBUG] Segmento muito curto descartado.")
+                        else:
+                            if is_speaking:
+                                vad_buffer.append(sub_chunk)
+
+            elif msg.type == WSMsgType.ERROR:
+                print(f"[DEBUG] WS Error: {ws.exception()}")
+
+    except Exception as e:
+        print(f"[DEBUG] Exception no Handler: {e}")
+        import traceback
+        traceback.print_exc()
+    finally:
+        print("[DEBUG] Cliente desconectado.")
+        return ws
+
+
+# --- Setup ---
+@web.middleware
+async def cors_middleware(request, handler):
+    if request.method == 'OPTIONS':
+        resp = web.Response()
+    else:
+        resp = await handler(request)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
+    resp.headers['Access-Control-Allow-Headers'] = '*'
+    return resp
+
+if __name__ == "__main__":
+    db.inicializar_db()
+    
+    app = web.Application(middlewares=[cors_middleware])
+    app.router.add_get('/ws', websocket_handler)
+    app.router.add_get('/ws/debug_audio', debug_websocket_handler) # Rota de Debug
+    app.router.add_get('/admin', admin_page)
+    app.router.add_post('/admin/login', admin_login)
+    app.router.add_post('/api/enroll', api_enroll_voice)
+    app.router.add_get('/api/batch_status', api_batch_status)
+    
+    print("Balto Server 2.0 Rodando na porta 8765")
+    web.run_app(app, port=8765)
+import base64
 # from app import silero_vad (Movido para escopo local para evitar crash no startup se torch falhar)
 
 # --- Debug Pipeline (Instrumentado) ---
