@@ -8,3 +8,4 @@ dados/
 # 3. Cache do Python
 __pycache__/
 *.pyc
+venv/
