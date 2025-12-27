@@ -1,4 +1,5 @@
 import asyncio
+import base64
 import json
 import os
 import uuid
@@ -60,6 +61,118 @@ def dump_audio_to_disk(audio_bytes: bytes, balcao_id: str):
         wf.writeframes(audio_bytes)
     print(f"[DUMP] Áudio salvo: {filepath}")
 
+# --- Rotas de Teste (Hybrid Testing) ---
+
+async def api_test_segmentar(request):
+    """
+    Simula o streaming WebSocket via HTTP.
+    Fatia o áudio em chunks e passa pelo VAD estado-a-estado.
+    """
+    try:
+        reader = await request.multipart()
+        field = await reader.next()
+        if not field or field.name != 'audio':
+            return web.json_response({"error": "Campo 'audio' obrigatório"}, status=400)
+        
+        filename = field.filename or "audio_upload.wav"
+        audio_bytes = await field.read()
+        
+        # 1. Converter para PCM 16le 16kHz
+        pcm_bytes = decode_webm_to_pcm16le(audio_bytes)
+        if not pcm_bytes:
+            return web.json_response({"error": "Falha na decodificação de áudio"}, status=400)
+            
+        # 2. Instanciar VAD Novo
+        vad_session = vad.VAD()
+        # Instanciar Cleaner tbm se quisermos fidelidade total
+        cleaner = audio_processor.AudioCleaner()
+        
+        segments_found = []
+        
+        # 3. Simular Streaming (Chunking)
+        # O cliente envia chunks pequenos. Vamos simular chunks de 30ms (480 samples * 2 bytes = 960 bytes)
+        CHUNK_SIZE = 960 
+        
+        total_len = len(pcm_bytes)
+        offset = 0
+        
+        while offset < total_len:
+            end = min(offset + CHUNK_SIZE, total_len)
+            chunk = pcm_bytes[offset:end]
+            offset = end
+            
+            # Pipeline identico ao WS
+            cleaned_chunk = cleaner.process(chunk)
+            speech = vad_session.process(cleaned_chunk)
+            
+            if speech:
+                # Segmento detectado!
+                # Codificar em base64 para retornar no JSON
+                b64_seg = base64.b64encode(speech).decode('utf-8')
+                segments_found.append({
+                    "size_bytes": len(speech),
+                    "duration_sec": len(speech) / 32000.0,
+                    "audio_base64": b64_seg
+                })
+        
+        return web.json_response({"segments": segments_found, "total_segments": len(segments_found)})
+        
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)
+
+async def api_test_transcrever(request):
+    try:
+        reader = await request.multipart()
+        
+        data = {}
+        while True:
+            field = await reader.next()
+            if field is None: break
+            
+            if field.name == 'audio':
+                data['audio'] = await field.read()
+            elif field.name == 'provider':
+                data['provider'] = await field.read(decode=True)
+                data['provider'] = data['provider'].decode('utf-8')
+        
+        if 'audio' not in data:
+            return web.json_response({"error": "Audio required"}, status=400)
+            
+        provider = data.get('provider', 'elevenlabs')
+        audio_bytes = data['audio']
+        
+        text = ""
+        if provider == 'assemblyai':
+            text = transcription.transcrever_assemblyai(audio_bytes)
+        else:
+            text = transcription.transcrever_elevenlabs(audio_bytes)
+            
+        return web.json_response({"texto": text})
+        
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)
+
+async def api_test_analisar(request):
+    try:
+        data = await request.json()
+        texto = data.get("texto")
+        if not texto: return web.json_response({"error": "Texto empty"}, status=400)
+        
+        res_json_str = analysis.analisar_texto(texto, "TesteHTTP")
+        
+        if res_json_str:
+            try:
+                res = json.loads(res_json_str)
+            except:
+                res = {"raw": res_json_str}
+            return web.json_response(res)
+        else:
+            return web.json_response({"error": "No analysis result"}, status=500)
+            
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)
+
+
 # --- Pipeline Principal (Core Logic) ---
 async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: str):
     print(f"[{balcao_id}] Processando segmento de fala ({len(speech_segment)} bytes)...")
@@ -80,7 +193,6 @@ async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: s
 
     try:
         # Passo 2 & 3: Roteamento de Custo e Transcrição (Smart Routing)
-        # O transcription.py decide se usa modelo caro ou barato
         transcricao_resultado = await asyncio.to_thread(
             transcription.transcrever_inteligente, speech_segment
         )
@@ -98,8 +210,7 @@ async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: s
         nome_funcionario = "Desconhecido"
         funcionario_id = None
         
-        # Só tenta identificar se tiver áudio suficiente (>1s) para evitar falso positivo
-        if len(speech_segment) > 32000: # ~1 segundo em 16k 16bit
+        if len(speech_segment) > 32000:
             identificacao = await asyncio.to_thread(
                 speaker_id.identificar_funcionario, speech_segment, balcao_id
             )
@@ -281,6 +392,11 @@ if __name__ == "__main__":
     app.router.add_post('/admin/login', admin_login)
     app.router.add_post('/api/enroll', api_enroll_voice)
     app.router.add_get('/api/batch_status', api_batch_status)
+    
+    # Novas Rotas de Teste
+    app.router.add_post('/api/test/segmentar', api_test_segmentar)
+    app.router.add_post('/api/test/transcrever', api_test_transcrever)
+    app.router.add_post('/api/test/analisar', api_test_analisar)
     
     print("Balto Server 2.0 Rodando na porta 8765")
     web.run_app(app, port=8765)
