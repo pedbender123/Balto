@@ -9,3 +9,11 @@ dados/
 __pycache__/
 *.pyc
 venv/
+
+# 4. Dados de Teste
+testes/1_input/
+testes/2_cortados/
+testes/3_transcricoes/
+testes/4_analises/
+backend/tests_audio/audios_brutos/
+venv_local/

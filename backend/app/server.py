@@ -87,23 +87,29 @@ async def api_test_segmentar(request):
         # Instanciar Cleaner tbm se quisermos fidelidade total
         cleaner = audio_processor.AudioCleaner()
         
+        # OTIMIZAÇÃO: Limpar o áudio inteiro de uma vez para melhor perfil de ruído
+        # Em vez de limpar chunk por chunk (que é ruim para noisereduce), limpamos tudo.
+        print(f"[TEST] Limpando áudio completo ({len(pcm_bytes)} bytes)...")
+        cleaned_pcm_full = cleaner.process(pcm_bytes)
+        print("[TEST] Limpeza concluída.")
+        
         segments_found = []
         
         # 3. Simular Streaming (Chunking)
         # O cliente envia chunks pequenos. Vamos simular chunks de 30ms (480 samples * 2 bytes = 960 bytes)
         CHUNK_SIZE = 960 
         
-        total_len = len(pcm_bytes)
+        total_len = len(cleaned_pcm_full)
         offset = 0
         
         while offset < total_len:
             end = min(offset + CHUNK_SIZE, total_len)
-            chunk = pcm_bytes[offset:end]
+            # Pegar do áudio JÁ LIMPO
+            chunk = cleaned_pcm_full[offset:end]
             offset = end
             
-            # Pipeline identico ao WS
-            cleaned_chunk = cleaner.process(chunk)
-            speech = vad_session.process(cleaned_chunk)
+            # Pipeline identico ao WS (exceto que o chunk já está limpo)
+            speech = vad_session.process(chunk) # Passa direto pro VAD
             
             if speech:
                 # Segmento detectado!

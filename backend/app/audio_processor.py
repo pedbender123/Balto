@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class AudioCleaner:
-    def __init__(self, sample_rate=16000, stationary=True, prop_decrease=0.75):
+    def __init__(self, sample_rate=16000, stationary=True, prop_decrease=0.85):
         self.sample_rate = sample_rate
         self.stationary = stationary
         self.prop_decrease = prop_decrease

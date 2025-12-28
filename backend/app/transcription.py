@@ -106,7 +106,7 @@ def transcrever_elevenlabs(audio_bytes: bytes) -> str:
         result = client.speech_to_text.convert(
             file=audio_file,
             model_id="scribe_v1",
-            tag="balto_pharmacy"
+            language_code="pt"
         )
         
         # Se sucesso, registra uso
@@ -115,7 +115,7 @@ def transcrever_elevenlabs(audio_bytes: bytes) -> str:
         return result.text
     except Exception as e:
         print(f"Erro ElevenLabs: {e}")
-        return ""
+        return f"[ERROR] {e}"
 
 def transcrever_assemblyai(audio_bytes: bytes) -> str:
     """
