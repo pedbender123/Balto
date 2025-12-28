@@ -198,6 +198,9 @@ def decidir_roteamento(audio_bytes: bytes) -> dict:
     }
 
 def transcrever_inteligente(audio_bytes: bytes) -> dict:
+    # Retornando somente o essencial e prioritário, apenas transcrição com Elevenlabs. O resto é lixo que faz a gente perder tempo
+    return {"texto": texto, "modelo": "elevenlabs", "custo": 0.05, "snr": 0.0}
+
     """
     Mantido para retrocompatibilidade, mas agora usa decidir_roteamento
     e executa o modelo escolhido.
