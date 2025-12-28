@@ -5,6 +5,8 @@ import os
 import uuid
 import subprocess
 import wave
+import imageio_ffmpeg # NOVA DEPENDENCIA LOCAL
+
 from datetime import datetime
 from dotenv import load_dotenv
 from aiohttp import web, WSMsgType
@@ -27,9 +29,10 @@ print(f"[BOOT] SAVE_AUDIO_DUMPS: {SAVE_AUDIO}")
 def decode_webm_to_pcm16le(webm_bytes: bytes, sample_rate: int = 16000) -> bytes:
     """Decodifica WebM/Opus para PCM 16-bit 16kHz usando FFmpeg."""
     try:
+        ffmpeg_cmd = imageio_ffmpeg.get_ffmpeg_exe()
         proc = subprocess.run(
             [
-                "ffmpeg", "-i", "pipe:0", "-f", "s16le", "-ar", str(sample_rate), "-ac", "1",
+                ffmpeg_cmd, "-i", "pipe:0", "-f", "s16le", "-ar", str(sample_rate), "-ac", "1",
                 "pipe:1", "-loglevel", "error"
             ],
             input=webm_bytes,
@@ -405,4 +408,5 @@ if __name__ == "__main__":
     app.router.add_post('/api/test/analisar', api_test_analisar)
     
     print("Balto Server 2.0 Rodando na porta 8765")
-    web.run_app(app, port=8765)
+    port = int(os.environ.get("PORT", 8765))
+    web.run_app(app, port=port)

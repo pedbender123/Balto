@@ -6,12 +6,2844 @@ Loaded the voice encoder model on cpu in 0.01 seconds.
 [BOOT] MOCK_MODE: False
 [BOOT] SAVE_AUDIO_DUMPS: False
 Balto Server 2.0 Rodando na porta 8765
-Traceback (most recent call last):
-  File "/home/pedro/Área de trabalho/PBPM/Projetos/Externos/Balto/server/backend/app/server.py", line 408, in <module>
-    web.run_app(app, port=8765)
-  File "/home/pedro/Área de trabalho/PBPM/Projetos/Externos/Balto/server/venv_local/lib/python3.12/site-packages/aiohttp/web.py", line 517, in run_app
-    loop.run_until_complete(main_task)
-  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
-    return future.result()
-           ^^^^^^^^^^^^^^^
-OSError: [Errno 98] error while attempting to bind on address ('0.0.0.0', 8765): address already in use
+======== Running on http://0.0.0.0:8766 ========
+(Press CTRL+C to quit)
+[TEST] Limpando áudio completo (1950720 bytes)...
+[TEST] Limpeza concluída.
+[VAD LOG] Energy:    1.0 | NoiseFlr:   95.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   90.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   85.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   81.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   77.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   74.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   70.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   67.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   64.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   60.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   57.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   55.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   52.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   33.0 | NoiseFlr:   51.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  979.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1370.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  981.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  184.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:   50.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:   12.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:   91.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:  722.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:  862.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  928.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  863.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  103.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:   12.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:    5.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:   25.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy:   28.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (14/30)
+[VAD LOG] Energy:    9.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (15/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (16/30)
+[VAD LOG] Energy:    5.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (17/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (18/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (19/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (20/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (21/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (22/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (23/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (24/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (25/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (26/30)
+[VAD LOG] Energy:    9.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (27/30)
+[VAD LOG] Energy:   58.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (28/30)
+[VAD LOG] Energy:   66.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (29/30)
+[VAD LOG] Energy:   34.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (30/30)
+   <<< [VAD] SEGMENT FINISHED
+[VAD LOG] Energy:   68.0 | NoiseFlr:   96.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  119.0 | NoiseFlr:   97.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  143.0 | NoiseFlr:   99.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  147.0 | NoiseFlr:  102.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  201.0 | NoiseFlr:  107.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  163.0 | NoiseFlr:  109.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  227.0 | NoiseFlr:  115.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  147.0 | NoiseFlr:  117.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  191.0 | NoiseFlr:  121.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  251.0 | NoiseFlr:  127.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  225.0 | NoiseFlr:  132.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  143.0 | NoiseFlr:  132.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   12.0 | NoiseFlr:  126.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:  120.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:  115.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:  109.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  109.0 | NoiseFlr:  109.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  132.0 | NoiseFlr:  110.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  230.0 | NoiseFlr:  116.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  395.0 | NoiseFlr:  130.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  356.0 | NoiseFlr:  141.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  325.0 | NoiseFlr:  151.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  361.0 | NoiseFlr:  161.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  276.0 | NoiseFlr:  167.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  313.0 | NoiseFlr:  174.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  282.0 | NoiseFlr:  179.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  204.0 | NoiseFlr:  181.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  187.0 | NoiseFlr:  181.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  133.0 | NoiseFlr:  179.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   85.0 | NoiseFlr:  174.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   57.0 | NoiseFlr:  168.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   19.0 | NoiseFlr:  161.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   98.0 | NoiseFlr:  157.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   96.0 | NoiseFlr:  154.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  132.0 | NoiseFlr:  153.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   77.0 | NoiseFlr:  149.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   52.0 | NoiseFlr:  144.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  141.0 | NoiseFlr:  144.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   42.0 | NoiseFlr:  139.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  178.0 | NoiseFlr:  141.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  406.0 | NoiseFlr:  154.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  352.0 | NoiseFlr:  164.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  337.0 | NoiseFlr:  173.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  443.0 | NoiseFlr:  186.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  197.0 | NoiseFlr:  187.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   57.0 | NoiseFlr:  180.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   95.0 | NoiseFlr:  176.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  112.0 | NoiseFlr:  173.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   77.0 | NoiseFlr:  168.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   29.0 | NoiseFlr:  161.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   13.0 | NoiseFlr:  154.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:  146.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:  139.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   26.0 | NoiseFlr:  134.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   41.0 | NoiseFlr:  129.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   87.0 | NoiseFlr:  127.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  110.0 | NoiseFlr:  126.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   27.0 | NoiseFlr:  121.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   11.0 | NoiseFlr:  115.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  113.0 | NoiseFlr:  115.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  325.0 | NoiseFlr:  126.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  468.0 | NoiseFlr:  143.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  238.0 | NoiseFlr:  148.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   25.0 | NoiseFlr:  141.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:  135.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   24.0 | NoiseFlr:  129.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   53.0 | NoiseFlr:  125.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   49.0 | NoiseFlr:  121.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   49.0 | NoiseFlr:  118.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  160.0 | NoiseFlr:  120.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  946.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1195.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  404.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  247.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy: 1797.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2778.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2186.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2517.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2119.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2382.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 5366.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 4376.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1676.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1224.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3277.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3020.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1296.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:   73.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:   10.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:    7.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:   32.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:  256.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:  769.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:  831.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  501.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:   64.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:   96.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:   15.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:  348.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy: 1152.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  609.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  584.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  172.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:   13.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:   18.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:  212.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy: 1641.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1009.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  480.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  297.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  435.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy: 1166.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1019.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  546.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  413.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:   95.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:   11.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:   45.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:  369.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:  574.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:  308.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:   49.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:    5.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (14/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (15/30)
+[VAD LOG] Energy:  175.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (16/30)
+[VAD LOG] Energy:  478.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (17/30)
+[VAD LOG] Energy:  367.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (18/30)
+[VAD LOG] Energy:   41.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (19/30)
+[VAD LOG] Energy:   12.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (20/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (21/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (22/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (23/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (24/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (25/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (26/30)
+[VAD LOG] Energy:   19.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (27/30)
+[VAD LOG] Energy:  764.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (28/30)
+[VAD LOG] Energy: 1910.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  499.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  276.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy: 1260.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2492.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2997.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2248.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1683.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  756.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  118.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:   26.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:   85.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:  643.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy: 1320.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1651.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1424.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1944.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3683.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2146.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  654.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  189.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  149.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:   72.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:  425.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:  904.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1531.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1344.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1150.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  320.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  164.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:   30.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:    7.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:    7.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:   76.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:  576.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:  141.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:   85.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:   97.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:  113.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:  541.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy:  619.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (14/30)
+[VAD LOG] Energy:  298.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (15/30)
+[VAD LOG] Energy:  150.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (16/30)
+[VAD LOG] Energy:   34.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (17/30)
+[VAD LOG] Energy:    9.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (18/30)
+[VAD LOG] Energy:   67.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (19/30)
+[VAD LOG] Energy:  306.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (20/30)
+[VAD LOG] Energy:  567.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (21/30)
+[VAD LOG] Energy:  119.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (22/30)
+[VAD LOG] Energy:   38.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (23/30)
+[VAD LOG] Energy:    6.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (24/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (25/30)
+[VAD LOG] Energy:    5.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (26/30)
+[VAD LOG] Energy:   93.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (27/30)
+[VAD LOG] Energy:  187.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (28/30)
+[VAD LOG] Energy:  225.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (29/30)
+[VAD LOG] Energy:  224.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (30/30)
+   <<< [VAD] SEGMENT FINISHED
+[VAD LOG] Energy:  162.0 | NoiseFlr:  161.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   91.0 | NoiseFlr:  158.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   29.0 | NoiseFlr:  151.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   17.0 | NoiseFlr:  144.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   10.0 | NoiseFlr:  138.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   22.0 | NoiseFlr:  132.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   12.0 | NoiseFlr:  126.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:  120.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   14.0 | NoiseFlr:  114.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   11.0 | NoiseFlr:  109.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:  104.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   99.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   94.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   90.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   86.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   82.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   78.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   13.0 | NoiseFlr:   75.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   69.0 | NoiseFlr:   74.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   75.0 | NoiseFlr:   74.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   61.0 | NoiseFlr:   74.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   55.0 | NoiseFlr:   73.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   49.0 | NoiseFlr:   72.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   64.0 | NoiseFlr:   71.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  101.0 | NoiseFlr:   73.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  104.0 | NoiseFlr:   74.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  120.0 | NoiseFlr:   76.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  964.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1755.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1709.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2176.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 4089.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 4932.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2984.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1203.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1436.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2843.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 4015.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3606.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3903.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3788.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2909.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2583.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1439.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1102.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1282.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2423.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2848.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2224.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1536.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1431.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1552.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1543.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1940.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2075.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2060.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  880.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  736.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  840.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  801.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1116.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  792.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  403.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  246.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  261.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:  364.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:  321.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:  278.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:  250.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:  209.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:  101.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:   88.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:   66.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:  208.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy:  189.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (14/30)
+[VAD LOG] Energy:  126.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (15/30)
+[VAD LOG] Energy:   93.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (16/30)
+[VAD LOG] Energy:  734.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (17/30)
+[VAD LOG] Energy:  418.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (18/30)
+[VAD LOG] Energy:  108.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (19/30)
+[VAD LOG] Energy:   61.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (20/30)
+[VAD LOG] Energy:   42.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (21/30)
+[VAD LOG] Energy:   27.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (22/30)
+[VAD LOG] Energy:  107.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (23/30)
+[VAD LOG] Energy:  176.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (24/30)
+[VAD LOG] Energy:  171.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (25/30)
+[VAD LOG] Energy:  179.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (26/30)
+[VAD LOG] Energy:  187.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (27/30)
+[VAD LOG] Energy:  100.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (28/30)
+[VAD LOG] Energy:   73.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (29/30)
+[VAD LOG] Energy:   45.0 | NoiseFlr:  121.2 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (30/30)
+   <<< [VAD] SEGMENT FINISHED
+[VAD LOG] Energy:   79.0 | NoiseFlr:  119.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  241.0 | NoiseFlr:  125.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  328.0 | NoiseFlr:  135.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  268.0 | NoiseFlr:  142.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  267.0 | NoiseFlr:  148.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  197.0 | NoiseFlr:  150.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  458.0 | NoiseFlr:  166.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  582.0 | NoiseFlr:  186.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  578.0 | NoiseFlr:  206.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  616.0 | NoiseFlr:  226.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  396.0 | NoiseFlr:  235.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  229.0 | NoiseFlr:  235.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  149.0 | NoiseFlr:  230.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  138.0 | NoiseFlr:  226.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  139.0 | NoiseFlr:  221.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  145.0 | NoiseFlr:  217.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  199.0 | NoiseFlr:  216.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  238.0 | NoiseFlr:  218.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  118.0 | NoiseFlr:  213.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   66.0 | NoiseFlr:  205.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   35.0 | NoiseFlr:  197.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   18.0 | NoiseFlr:  188.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:  179.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:  170.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  161.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  153.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  146.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:  139.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:  132.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:  125.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:  119.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:  113.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:  107.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  102.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   97.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   92.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   88.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   83.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   79.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   75.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   72.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   68.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   65.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   62.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   59.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   56.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   53.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   50.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   48.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   46.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   44.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   41.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   39.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   38.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   36.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   34.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   32.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   31.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   29.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   28.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   26.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   25.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   24.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   23.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   22.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   21.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   20.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   19.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   22.0 | NoiseFlr:   19.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   18.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   18.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   17.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   16.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   15.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   15.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   14.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   13.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   13.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   12.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   11.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   11.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   10.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   10.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    9.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    9.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:    9.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:    8.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:    8.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   22.0 | NoiseFlr:    9.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  215.0 | NoiseFlr:   19.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  860.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1242.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1337.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1061.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  904.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  783.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  488.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  586.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:   69.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:   16.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:  756.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy: 4319.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 4088.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1311.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  325.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  531.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  229.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  567.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy: 1429.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2098.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1555.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  911.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  684.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy: 1248.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1492.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1439.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1494.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1399.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  228.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:   89.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  548.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  620.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:   45.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:    6.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:    5.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:   15.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy: 1154.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1643.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  315.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:   74.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  132.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy: 1954.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2696.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2370.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  836.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  210.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:   29.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:    5.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (14/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (15/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (16/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (17/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (18/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (19/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (20/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (21/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (22/30)
+[VAD LOG] Energy:  274.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (23/30)
+[VAD LOG] Energy:  178.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (24/30)
+[VAD LOG] Energy:   50.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (25/30)
+[VAD LOG] Energy:   10.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (26/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (27/30)
+[VAD LOG] Energy:    5.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (28/30)
+[VAD LOG] Energy:   15.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (29/30)
+[VAD LOG] Energy:   61.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (30/30)
+   <<< [VAD] SEGMENT FINISHED
+[VAD LOG] Energy:  111.0 | NoiseFlr:   63.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  216.0 | NoiseFlr:   71.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  259.0 | NoiseFlr:   80.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   32.0 | NoiseFlr:   78.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   74.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   71.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   67.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   64.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   61.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   58.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   55.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   52.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   50.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   47.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   45.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   38.0 | NoiseFlr:   45.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  324.0 | NoiseFlr:   59.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   92.0 | NoiseFlr:   60.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  231.0 | NoiseFlr:   69.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  194.0 | NoiseFlr:   75.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   77.0 | NoiseFlr:   75.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  285.0 | NoiseFlr:   86.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  314.0 | NoiseFlr:   97.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   79.0 | NoiseFlr:   96.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   83.0 | NoiseFlr:   95.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   47.0 | NoiseFlr:   93.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   89.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   84.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  145.0 | NoiseFlr:   87.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy: 1070.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  454.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  118.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:   59.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  617.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy: 2046.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1456.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1400.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  619.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  254.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  515.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  224.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:   60.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:   57.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:  715.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy: 1259.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  670.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  191.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:   65.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:   69.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:   30.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:   23.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:  428.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:  540.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:  660.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:  880.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1515.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1177.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  639.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  979.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  925.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  467.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  144.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:   16.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:   31.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:  114.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:  196.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:  138.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:   25.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:    5.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (14/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (15/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (16/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (17/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (18/30)
+[VAD LOG] Energy:    6.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (19/30)
+[VAD LOG] Energy:   17.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (20/30)
+[VAD LOG] Energy:  504.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (21/30)
+[VAD LOG] Energy:  800.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (22/30)
+[VAD LOG] Energy:  903.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  288.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:   13.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  104.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  361.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:  242.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:   87.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:   18.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:   31.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:  666.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy: 1057.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  859.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  481.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  124.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:   17.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:   25.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:   61.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:    9.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:    5.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:   54.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy:  103.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (14/30)
+[VAD LOG] Energy:   54.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (15/30)
+[VAD LOG] Energy:    9.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (16/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (17/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (18/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (19/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (20/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (21/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (22/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (23/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (24/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (25/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (26/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (27/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (28/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (29/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  136.8 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (30/30)
+   <<< [VAD] SEGMENT FINISHED
+[VAD LOG] Energy:    2.0 | NoiseFlr:  130.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:  123.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:  117.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  111.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:  106.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  101.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   96.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   91.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   87.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   83.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   78.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   75.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   71.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   67.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   64.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   61.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   12.0 | NoiseFlr:   59.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   22.0 | NoiseFlr:   57.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   54.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   52.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   49.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   47.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   45.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   42.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   40.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   38.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   37.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   39.0 | NoiseFlr:   37.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  178.0 | NoiseFlr:   44.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   83.0 | NoiseFlr:   46.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   95.0 | NoiseFlr:   48.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   61.0 | NoiseFlr:   49.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   38.0 | NoiseFlr:   48.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   13.0 | NoiseFlr:   46.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   44.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   42.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   35.0 | NoiseFlr:   42.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   75.0 | NoiseFlr:   43.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   82.0 | NoiseFlr:   45.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   40.0 | NoiseFlr:   45.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   43.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   41.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   39.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   37.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   35.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   34.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   32.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   30.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   29.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   28.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   26.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   25.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   24.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   23.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   22.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   21.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   20.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   19.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   18.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   17.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   16.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   16.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   15.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   14.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   14.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   13.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   12.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   12.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   11.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   11.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   10.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   10.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    9.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    9.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    9.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    8.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:    8.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:    8.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    7.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    7.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:    7.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:    7.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    7.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:    6.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:    6.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   29.0 | NoiseFlr:    7.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   18.0 | NoiseFlr:    8.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   32.0 | NoiseFlr:    9.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   16.0 | NoiseFlr:    9.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   20.0 | NoiseFlr:   10.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   15.0 | NoiseFlr:   10.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   23.0 | NoiseFlr:   11.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   30.0 | NoiseFlr:   12.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   11.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   17.0 | NoiseFlr:   12.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   11.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   11.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   10.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   10.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   10.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:    9.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:    9.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:    9.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:    9.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:    8.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    8.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   47.0 | NoiseFlr:   10.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  612.0 | NoiseFlr:   40.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  643.0 | NoiseFlr:   70.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  312.0 | NoiseFlr:   82.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  147.0 | NoiseFlr:   85.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   38.0 | NoiseFlr:   83.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   79.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   76.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   72.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   68.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   65.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   62.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   59.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   56.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   53.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   51.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   48.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   46.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   44.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   41.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   39.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   12.0 | NoiseFlr:   38.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   12.0 | NoiseFlr:   37.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   35.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   33.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   32.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   31.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  110.0 | NoiseFlr:   34.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   69.0 | NoiseFlr:   36.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   18.0 | NoiseFlr:   35.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   34.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   32.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   10.0 | NoiseFlr:   31.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   30.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   28.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   27.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   26.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   12.0 | NoiseFlr:   25.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   99.0 | NoiseFlr:   29.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  160.0 | NoiseFlr:   35.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   86.0 | NoiseFlr:   38.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   37.0 | NoiseFlr:   38.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   36.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   35.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   33.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   32.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   30.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   29.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   27.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   26.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   25.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   24.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   23.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   22.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   21.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   20.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   19.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   18.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   18.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   17.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   16.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   15.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   15.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   14.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   13.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   13.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   12.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   12.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   11.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   11.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   10.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   10.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   10.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:    9.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:    9.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   16.0 | NoiseFlr:    9.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   12.0 | NoiseFlr:    9.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:    9.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:    9.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   28.0 | NoiseFlr:   10.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  725.0 | NoiseFlr:   45.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  481.0 | NoiseFlr:   67.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  459.0 | NoiseFlr:   87.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  557.0 | NoiseFlr:  110.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  369.0 | NoiseFlr:  123.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   89.0 | NoiseFlr:  121.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   34.0 | NoiseFlr:  117.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   25.0 | NoiseFlr:  112.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   13.0 | NoiseFlr:  107.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   12.0 | NoiseFlr:  103.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   98.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   93.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   89.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   84.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   80.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   76.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   73.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   69.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   66.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   63.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   60.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   57.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   54.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   52.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   49.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   47.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   45.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   43.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   41.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   39.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   37.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   35.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   34.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   32.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   21.0 | NoiseFlr:   32.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   39.0 | NoiseFlr:   32.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   15.0 | NoiseFlr:   31.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   39.0 | NoiseFlr:   32.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   38.0 | NoiseFlr:   32.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   95.0 | NoiseFlr:   35.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   74.0 | NoiseFlr:   37.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   49.0 | NoiseFlr:   38.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   12.0 | NoiseFlr:   36.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   17.0 | NoiseFlr:   35.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  188.0 | NoiseFlr:   43.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  125.0 | NoiseFlr:   47.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  135.0 | NoiseFlr:   51.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  146.0 | NoiseFlr:   56.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   74.0 | NoiseFlr:   57.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   14.0 | NoiseFlr:   55.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   52.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   50.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   48.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   45.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   44.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   42.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   40.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   38.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   36.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   35.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   33.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   32.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   30.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   29.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   27.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   26.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   25.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   24.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   23.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   22.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   21.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   20.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   19.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   19.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   18.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   17.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   17.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   13.0 | NoiseFlr:   17.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   16.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   74.0 | NoiseFlr:   19.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  198.0 | NoiseFlr:   28.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  350.0 | NoiseFlr:   44.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  165.0 | NoiseFlr:   50.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  127.0 | NoiseFlr:   54.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  108.0 | NoiseFlr:   56.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  126.0 | NoiseFlr:   60.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  114.0 | NoiseFlr:   63.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   53.0 | NoiseFlr:   62.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   39.0 | NoiseFlr:   61.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   23.0 | NoiseFlr:   59.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   10.0 | NoiseFlr:   57.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   14.0 | NoiseFlr:   54.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   52.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   50.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   47.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   10.0 | NoiseFlr:   45.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   43.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   41.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   40.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   38.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   36.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   34.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   33.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   31.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   30.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   28.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   27.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   26.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   25.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   24.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   22.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   21.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   20.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   20.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   19.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   18.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   17.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   16.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   16.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   15.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   15.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   14.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   13.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   13.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   12.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   12.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   11.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   11.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   11.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   15.0 | NoiseFlr:   11.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   79.0 | NoiseFlr:   14.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  111.0 | NoiseFlr:   19.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   29.0 | NoiseFlr:   19.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   19.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   18.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   17.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   16.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   16.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   15.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   15.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   14.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   14.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   65.0 | NoiseFlr:   16.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   98.0 | NoiseFlr:   20.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   62.0 | NoiseFlr:   22.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   17.0 | NoiseFlr:   22.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   21.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   21.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   20.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   19.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   18.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   17.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   16.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   16.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   15.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   15.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   14.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   14.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   13.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   13.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   13.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   12.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   12.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   11.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   11.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   11.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   38.0 | NoiseFlr:   12.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   71.0 | NoiseFlr:   15.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  148.0 | NoiseFlr:   22.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  122.0 | NoiseFlr:   27.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  186.0 | NoiseFlr:   35.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  240.0 | NoiseFlr:   45.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  182.0 | NoiseFlr:   52.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   95.0 | NoiseFlr:   54.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   49.0 | NoiseFlr:   54.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   51.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   11.0 | NoiseFlr:   49.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   17.0 | NoiseFlr:   48.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   97.0 | NoiseFlr:   50.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   83.0 | NoiseFlr:   52.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   65.0 | NoiseFlr:   52.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   10.0 | NoiseFlr:   50.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   16.0 | NoiseFlr:   48.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   10.0 | NoiseFlr:   46.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   30.0 | NoiseFlr:   46.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   76.0 | NoiseFlr:   47.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   93.0 | NoiseFlr:   49.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  139.0 | NoiseFlr:   54.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  166.0 | NoiseFlr:   59.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  131.0 | NoiseFlr:   63.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   50.0 | NoiseFlr:   62.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   19.0 | NoiseFlr:   60.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   57.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   55.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   48.0 | NoiseFlr:   55.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  377.0 | NoiseFlr:   71.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  505.0 | NoiseFlr:   92.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  214.0 | NoiseFlr:   98.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   79.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   25.0 | NoiseFlr:   94.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   89.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   26.0 | NoiseFlr:   86.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   12.0 | NoiseFlr:   82.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   12.0 | NoiseFlr:   79.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   21.0 | NoiseFlr:   76.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   12.0 | NoiseFlr:   73.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   69.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   66.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   63.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   60.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   57.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   55.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   52.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   50.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   48.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   45.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   43.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   41.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   39.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   37.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   36.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   34.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   33.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   22.0 | NoiseFlr:   32.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   46.0 | NoiseFlr:   33.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   11.0 | NoiseFlr:   32.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   30.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   29.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   17.0 | NoiseFlr:   28.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  122.0 | NoiseFlr:   33.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  147.0 | NoiseFlr:   39.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   35.0 | NoiseFlr:   38.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   37.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   35.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   34.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   32.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   31.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   30.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   29.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   28.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   27.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   25.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   24.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   23.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   22.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   21.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   20.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   19.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   19.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   18.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   17.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   16.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   16.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   15.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   14.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   12.0 | NoiseFlr:   14.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   19.0 | NoiseFlr:   14.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   22.0 | NoiseFlr:   15.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   12.0 | NoiseFlr:   15.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   14.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   14.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   13.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   12.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   12.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   11.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   11.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   10.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   10.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    9.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:    9.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   14.0 | NoiseFlr:    9.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   60.0 | NoiseFlr:   12.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  103.0 | NoiseFlr:   16.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   38.0 | NoiseFlr:   17.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   19.0 | NoiseFlr:   18.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   17.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   16.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   15.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   15.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   14.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   14.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   13.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   13.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   12.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   12.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   12.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   11.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   11.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   11.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   10.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   10.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   10.0 | NoiseFlr:   10.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   11.0 | NoiseFlr:   10.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   10.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   10.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:    9.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:    9.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:    9.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   24.0 | NoiseFlr:   10.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  121.0 | NoiseFlr:   15.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  101.0 | NoiseFlr:   19.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   26.0 | NoiseFlr:   20.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   52.0 | NoiseFlr:   21.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   75.0 | NoiseFlr:   24.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  154.0 | NoiseFlr:   30.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  100.0 | NoiseFlr:   34.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   61.0 | NoiseFlr:   35.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   22.0 | NoiseFlr:   35.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   33.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   32.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  201.0 | NoiseFlr:   40.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  246.0 | NoiseFlr:   51.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  104.0 | NoiseFlr:   53.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   87.0 | NoiseFlr:   55.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  200.0 | NoiseFlr:   62.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  124.0 | NoiseFlr:   65.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   25.0 | NoiseFlr:   63.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   60.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   57.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   55.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   52.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   50.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   48.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   17.0 | NoiseFlr:   46.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   21.0 | NoiseFlr:   45.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   21.0 | NoiseFlr:   44.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  123.0 | NoiseFlr:   48.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  412.0 | NoiseFlr:   66.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  413.0 | NoiseFlr:   83.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  226.0 | NoiseFlr:   90.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   22.0 | NoiseFlr:   87.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   83.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   79.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   75.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   71.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   68.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   64.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   61.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   58.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   55.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  881.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2162.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  697.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  190.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:   38.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  515.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy: 1641.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1700.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  662.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  309.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:   98.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  447.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:  156.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:   58.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:   14.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:   16.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:   11.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (14/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (15/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (16/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (17/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (18/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (19/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (20/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (21/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (22/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (23/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (24/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (25/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (26/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (27/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (28/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (29/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:   97.0 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (30/30)
+   <<< [VAD] SEGMENT FINISHED
+[VAD LOG] Energy:    2.0 | NoiseFlr:   92.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   87.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   38.0 | NoiseFlr:   85.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  488.0 | NoiseFlr:  105.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  494.0 | NoiseFlr:  124.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  182.0 | NoiseFlr:  127.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   21.0 | NoiseFlr:  122.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:  116.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  110.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  105.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:  100.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   95.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   90.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   86.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   82.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   78.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   74.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   70.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   67.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   64.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   61.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   58.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   55.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   52.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   50.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   47.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   45.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   43.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   41.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   39.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   37.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   35.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   33.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   32.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   30.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   29.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   28.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   26.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   25.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   24.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   23.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   22.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   21.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   20.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   19.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   18.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   17.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   17.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   16.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   72.0 | NoiseFlr:   19.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   30.0 | NoiseFlr:   19.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   19.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   18.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   17.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   16.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   13.0 | NoiseFlr:   16.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   23.0 | NoiseFlr:   16.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  103.0 | NoiseFlr:   21.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   27.0 | NoiseFlr:   21.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   54.0 | NoiseFlr:   23.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   22.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   28.0 | NoiseFlr:   22.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   61.0 | NoiseFlr:   24.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   87.0 | NoiseFlr:   27.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   92.0 | NoiseFlr:   30.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   86.0 | NoiseFlr:   33.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  201.0 | NoiseFlr:   41.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   74.0 | NoiseFlr:   43.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   24.0 | NoiseFlr:   42.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   38.0 | NoiseFlr:   42.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   73.0 | NoiseFlr:   43.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   54.0 | NoiseFlr:   44.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   10.0 | NoiseFlr:   42.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   40.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   39.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   37.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   16.0 | NoiseFlr:   36.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   17.0 | NoiseFlr:   35.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   14.0 | NoiseFlr:   34.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   33.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   31.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   11.0 | NoiseFlr:   30.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   29.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   27.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   26.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   25.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   24.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   23.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   22.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   21.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   20.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   19.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   18.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   17.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   16.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   16.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   15.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   14.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   14.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   13.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   12.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   12.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   11.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   11.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   10.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   10.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   10.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   10.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   18.0 | NoiseFlr:   10.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   18.0 | NoiseFlr:   11.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   10.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   15.0 | NoiseFlr:   11.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   10.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   10.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   10.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   17.0 | NoiseFlr:   10.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   10.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:    9.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:    9.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:    9.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   18.0 | NoiseFlr:    9.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   31.0 | NoiseFlr:   10.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   30.0 | NoiseFlr:   11.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   11.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   11.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   10.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   10.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    9.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:    9.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    9.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    8.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    8.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    8.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    7.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    7.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    7.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:    6.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    6.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:    6.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:    6.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:    6.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:    6.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:    6.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   16.0 | NoiseFlr:    6.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  675.0 | NoiseFlr:   40.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  607.0 | NoiseFlr:   68.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  773.0 | NoiseFlr:  103.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy: 1308.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1761.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 4646.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3940.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2188.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2850.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2341.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2204.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3622.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3077.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3174.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2567.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  742.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy: 2147.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1756.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  913.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  592.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  354.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  148.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  371.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:  552.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:  435.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:  332.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:  154.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:   28.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:    7.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (14/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (15/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (16/30)
+[VAD LOG] Energy:  559.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (17/30)
+[VAD LOG] Energy: 3714.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1657.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  561.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  194.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:   23.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:   14.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:  226.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:  994.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  456.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  360.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  142.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:   18.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:   15.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:   28.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:   38.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:  528.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:  753.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:  454.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:  191.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:   85.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:   23.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy:   14.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (14/30)
+[VAD LOG] Energy:    6.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (15/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (16/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (17/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (18/30)
+[VAD LOG] Energy:   66.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (19/30)
+[VAD LOG] Energy:    7.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (20/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (21/30)
+[VAD LOG] Energy:    8.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (22/30)
+[VAD LOG] Energy:  122.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (23/30)
+[VAD LOG] Energy:  329.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (24/30)
+[VAD LOG] Energy:  104.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (25/30)
+[VAD LOG] Energy:  102.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (26/30)
+[VAD LOG] Energy:  445.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (27/30)
+[VAD LOG] Energy:  933.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1405.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1165.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  593.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  398.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  382.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  367.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:  360.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:  435.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:  568.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:  603.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:  772.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy: 2703.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2083.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1121.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  837.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  361.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  518.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  559.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  433.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:  528.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:  303.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:  217.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:   95.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:   30.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:   45.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:  668.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:  797.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:  578.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy:  254.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (14/30)
+[VAD LOG] Energy:   90.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (15/30)
+[VAD LOG] Energy:   61.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (16/30)
+[VAD LOG] Energy:  103.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (17/30)
+[VAD LOG] Energy:   87.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (18/30)
+[VAD LOG] Energy:  102.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (19/30)
+[VAD LOG] Energy:   35.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (20/30)
+[VAD LOG] Energy:   13.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (21/30)
+[VAD LOG] Energy:   82.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (22/30)
+[VAD LOG] Energy:  162.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (23/30)
+[VAD LOG] Energy:  191.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (24/30)
+[VAD LOG] Energy: 1951.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2209.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1120.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  284.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  213.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy: 3564.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2716.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  592.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  297.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  537.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy: 1252.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  812.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  496.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  213.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:   51.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy: 1136.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3262.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3355.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2171.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  883.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  820.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  120.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  164.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  506.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  277.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:  118.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:   46.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:    5.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:    6.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:    5.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:  608.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy: 1434.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1267.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  477.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  341.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  114.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:   38.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:   39.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:  305.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy: 2587.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3939.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3273.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1763.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  805.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  389.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  472.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  545.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  395.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:  335.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:  169.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:  295.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:  208.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:  246.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:  109.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:   97.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:  259.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:  491.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy: 3841.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 6372.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 6353.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 4987.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1637.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1183.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2006.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3166.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  866.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  562.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  471.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  380.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy: 2123.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3177.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1210.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  866.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1926.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3498.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2581.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2777.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2025.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2072.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  865.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  973.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1919.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1178.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  555.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  513.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  559.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  222.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy: 1086.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1437.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  906.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  413.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  405.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy: 1505.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3280.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3773.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 4411.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3779.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3095.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3223.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2860.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2057.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1202.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  427.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  692.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  597.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  271.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:   41.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:    5.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:  178.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:  522.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:   44.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:   21.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:    9.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:    6.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (14/30)
+[VAD LOG] Energy:   23.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (15/30)
+[VAD LOG] Energy:   18.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (16/30)
+[VAD LOG] Energy:   26.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (17/30)
+[VAD LOG] Energy:   16.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (18/30)
+[VAD LOG] Energy:   50.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (19/30)
+[VAD LOG] Energy:  725.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (20/30)
+[VAD LOG] Energy: 1091.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  644.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:   73.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:    8.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (14/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (15/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (16/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (17/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (18/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (19/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (20/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (21/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (22/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (23/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (24/30)
+[VAD LOG] Energy:   15.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (25/30)
+[VAD LOG] Energy:    6.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (26/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (27/30)
+[VAD LOG] Energy:    1.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (28/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (29/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:  163.9 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (30/30)
+   <<< [VAD] SEGMENT FINISHED
+[VAD LOG] Energy:    3.0 | NoiseFlr:  155.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  148.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  140.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  133.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  127.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  121.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:  115.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  109.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:  104.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   98.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   94.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   89.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   85.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   80.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   76.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   73.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   69.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   66.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   17.0 | NoiseFlr:   63.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   10.0 | NoiseFlr:   61.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   58.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   55.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   53.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   50.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   48.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   45.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  438.0 | NoiseFlr:   65.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  283.0 | NoiseFlr:   76.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   92.0 | NoiseFlr:   77.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   15.0 | NoiseFlr:   74.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   70.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   67.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   64.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   60.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   58.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   55.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   52.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   50.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   47.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   45.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   11.0 | NoiseFlr:   43.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   41.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   40.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   38.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  174.0 | NoiseFlr:   45.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  181.0 | NoiseFlr:   52.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  132.0 | NoiseFlr:   56.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  117.0 | NoiseFlr:   59.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   72.0 | NoiseFlr:   59.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   95.0 | NoiseFlr:   61.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   44.0 | NoiseFlr:   60.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   86.0 | NoiseFlr:   61.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  157.0 | NoiseFlr:   66.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  294.0 | NoiseFlr:   78.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  234.0 | NoiseFlr:   85.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  137.0 | NoiseFlr:   88.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   58.0 | NoiseFlr:   86.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  163.0 | NoiseFlr:   90.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  153.0 | NoiseFlr:   93.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  143.0 | NoiseFlr:   96.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  249.0 | NoiseFlr:  103.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  129.0 | NoiseFlr:  105.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   72.0 | NoiseFlr:  103.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   16.0 | NoiseFlr:   99.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  113.0 | NoiseFlr:   99.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  101.0 | NoiseFlr:   99.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  136.0 | NoiseFlr:  101.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   90.0 | NoiseFlr:  101.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   37.0 | NoiseFlr:   97.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   28.0 | NoiseFlr:   94.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  119.0 | NoiseFlr:   95.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   36.0 | NoiseFlr:   92.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   14.0 | NoiseFlr:   88.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   84.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   80.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   76.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   72.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   69.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   65.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   62.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   59.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   56.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   53.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   51.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   48.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   46.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   44.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   42.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   40.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   38.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   36.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   34.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   33.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   31.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   30.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   28.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   16.0 | NoiseFlr:   28.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   10.0 | NoiseFlr:   27.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   26.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   25.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   19.0 | NoiseFlr:   24.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   26.0 | NoiseFlr:   24.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   13.0 | NoiseFlr:   24.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  105.0 | NoiseFlr:   28.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  210.0 | NoiseFlr:   37.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  568.0 | NoiseFlr:   64.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  229.0 | NoiseFlr:   72.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  509.0 | NoiseFlr:   94.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  344.0 | NoiseFlr:  106.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  242.0 | NoiseFlr:  113.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  172.0 | NoiseFlr:  116.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   90.0 | NoiseFlr:  115.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  226.0 | NoiseFlr:  120.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  153.0 | NoiseFlr:  122.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  210.0 | NoiseFlr:  126.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  228.0 | NoiseFlr:  131.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  348.0 | NoiseFlr:  142.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  335.0 | NoiseFlr:  152.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  342.0 | NoiseFlr:  161.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  331.0 | NoiseFlr:  170.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  337.0 | NoiseFlr:  178.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  588.0 | NoiseFlr:  198.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  513.0 | NoiseFlr:  214.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  359.0 | NoiseFlr:  221.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  763.0 | NoiseFlr:  248.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  600.0 | NoiseFlr:  266.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  701.0 | NoiseFlr:  288.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  496.0 | NoiseFlr:  298.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  387.0 | NoiseFlr:  302.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  408.0 | NoiseFlr:  308.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  429.0 | NoiseFlr:  314.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  368.0 | NoiseFlr:  316.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  527.0 | NoiseFlr:  327.4 | DynThresh:  818.6 | Gate: shut
+[VAD LOG] Energy:  281.0 | NoiseFlr:  325.1 | DynThresh:  812.8 | Gate: shut
+[VAD LOG] Energy:  269.0 | NoiseFlr:  322.3 | DynThresh:  805.8 | Gate: shut
+[VAD LOG] Energy:  228.0 | NoiseFlr:  317.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  210.0 | NoiseFlr:  312.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  487.0 | NoiseFlr:  320.9 | DynThresh:  802.4 | Gate: shut
+[VAD LOG] Energy:  276.0 | NoiseFlr:  318.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  255.0 | NoiseFlr:  315.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  303.0 | NoiseFlr:  314.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  163.0 | NoiseFlr:  307.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   62.0 | NoiseFlr:  295.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   33.0 | NoiseFlr:  281.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   11.0 | NoiseFlr:  268.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:  255.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:  242.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:  231.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:  219.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:  209.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   12.0 | NoiseFlr:  199.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:  189.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:  180.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:  172.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:  163.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:  155.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:  148.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:  141.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:  134.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   47.0 | NoiseFlr:  130.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  178.0 | NoiseFlr:  132.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  129.0 | NoiseFlr:  132.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   46.0 | NoiseFlr:  128.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   46.0 | NoiseFlr:  123.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   32.0 | NoiseFlr:  119.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   39.0 | NoiseFlr:  115.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   45.0 | NoiseFlr:  111.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  127.0 | NoiseFlr:  112.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  131.0 | NoiseFlr:  113.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   95.0 | NoiseFlr:  112.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   87.0 | NoiseFlr:  111.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  107.0 | NoiseFlr:  111.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  211.0 | NoiseFlr:  116.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  289.0 | NoiseFlr:  124.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  277.0 | NoiseFlr:  132.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  383.0 | NoiseFlr:  144.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  481.0 | NoiseFlr:  161.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  630.0 | NoiseFlr:  185.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  950.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  965.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  893.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  835.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  802.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  861.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  792.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  798.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy: 1007.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  994.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1049.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1023.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1186.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1269.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1586.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1626.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1647.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1447.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1738.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1747.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1848.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1707.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1708.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2032.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2202.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1851.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1722.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1706.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1749.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1636.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1742.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 3203.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2151.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 2494.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy: 1519.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  953.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  804.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  630.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  701.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  693.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  539.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:  484.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:  542.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:  549.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:  431.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:  497.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:  475.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:  491.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:  418.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:  462.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy:  446.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (14/30)
+[VAD LOG] Energy:  371.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (15/30)
+[VAD LOG] Energy:  438.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (16/30)
+[VAD LOG] Energy:  370.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (17/30)
+[VAD LOG] Energy:  338.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (18/30)
+[VAD LOG] Energy:  709.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (19/30)
+[VAD LOG] Energy: 1028.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: OPEN
+   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)
+[VAD LOG] Energy:  661.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (1/30)
+[VAD LOG] Energy:  332.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (2/30)
+[VAD LOG] Energy:  163.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (3/30)
+[VAD LOG] Energy:  128.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (4/30)
+[VAD LOG] Energy:   79.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (5/30)
+[VAD LOG] Energy:   57.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (6/30)
+[VAD LOG] Energy:   16.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (7/30)
+[VAD LOG] Energy:    8.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (8/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (9/30)
+[VAD LOG] Energy:    4.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (10/30)
+[VAD LOG] Energy:   53.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (11/30)
+[VAD LOG] Energy:  159.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (12/30)
+[VAD LOG] Energy:   26.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (13/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (14/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (15/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (16/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (17/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (18/30)
+[VAD LOG] Energy:    3.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (19/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (20/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (21/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (22/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (23/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (24/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (25/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (26/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (27/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (28/30)
+[VAD LOG] Energy:    2.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (29/30)
+[VAD LOG] Energy:    5.0 | NoiseFlr:  223.3 | DynThresh:  800.0 | Gate: shut
+   ... [VAD] Silence Hold (30/30)
+   <<< [VAD] SEGMENT FINISHED
+[VAD LOG] Energy:    8.0 | NoiseFlr:  212.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:  202.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:  192.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:  183.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   11.0 | NoiseFlr:  174.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   16.0 | NoiseFlr:  166.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   10.0 | NoiseFlr:  158.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   18.0 | NoiseFlr:  151.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:  144.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  137.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  130.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  124.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  118.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:  112.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:  106.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  101.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   96.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   91.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   87.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   82.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   78.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   75.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   15.0 | NoiseFlr:   72.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  166.0 | NoiseFlr:   76.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  259.0 | NoiseFlr:   85.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  235.0 | NoiseFlr:   93.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  360.0 | NoiseFlr:  106.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  451.0 | NoiseFlr:  123.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  319.0 | NoiseFlr:  133.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  181.0 | NoiseFlr:  136.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   20.0 | NoiseFlr:  130.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   14.0 | NoiseFlr:  124.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:  118.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:  112.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:  107.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  101.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   96.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   92.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   87.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   83.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   79.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   75.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   72.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   68.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   65.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   62.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   59.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   56.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    6.0 | NoiseFlr:   53.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   51.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   42.0 | NoiseFlr:   50.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   28.0 | NoiseFlr:   49.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   26.0 | NoiseFlr:   48.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   18.0 | NoiseFlr:   47.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   10.0 | NoiseFlr:   45.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   43.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   41.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   39.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   37.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   36.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   17.0 | NoiseFlr:   35.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   21.0 | NoiseFlr:   34.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   32.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   31.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   29.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   28.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   27.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   25.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   25.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   20.0 | NoiseFlr:   24.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   82.0 | NoiseFlr:   27.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   59.0 | NoiseFlr:   29.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   20.0 | NoiseFlr:   28.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   27.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    4.0 | NoiseFlr:   26.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   25.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   24.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   22.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   21.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   21.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  264.0 | NoiseFlr:   33.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  409.0 | NoiseFlr:   52.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  630.0 | NoiseFlr:   80.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  213.0 | NoiseFlr:   87.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   32.0 | NoiseFlr:   84.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   10.0 | NoiseFlr:   81.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   77.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   73.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   69.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   66.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   63.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   60.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   57.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   54.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   51.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   49.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   46.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   44.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   42.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   33.0 | NoiseFlr:   42.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   55.0 | NoiseFlr:   42.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   27.0 | NoiseFlr:   41.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   26.0 | NoiseFlr:   41.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  699.0 | NoiseFlr:   74.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  785.0 | NoiseFlr:  109.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  211.0 | NoiseFlr:  114.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  107.0 | NoiseFlr:  114.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  206.0 | NoiseFlr:  118.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  271.0 | NoiseFlr:  126.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  224.0 | NoiseFlr:  131.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  141.0 | NoiseFlr:  131.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:  125.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:  119.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  113.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:  108.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:  102.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   97.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    1.0 | NoiseFlr:   93.0 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   88.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   84.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    3.0 | NoiseFlr:   80.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  132.0 | NoiseFlr:   82.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  157.0 | NoiseFlr:   86.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  187.0 | NoiseFlr:   91.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   52.0 | NoiseFlr:   89.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   14.0 | NoiseFlr:   85.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   81.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   77.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   73.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   70.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   66.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   63.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   60.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  195.0 | NoiseFlr:   67.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  404.0 | NoiseFlr:   84.3 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:  310.0 | NoiseFlr:   95.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   82.0 | NoiseFlr:   94.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   47.0 | NoiseFlr:   92.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   37.0 | NoiseFlr:   89.7 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   85.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    7.0 | NoiseFlr:   81.6 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   13.0 | NoiseFlr:   78.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   19.0 | NoiseFlr:   75.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   41.0 | NoiseFlr:   73.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   66.0 | NoiseFlr:   73.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   15.0 | NoiseFlr:   70.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   66.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   26.0 | NoiseFlr:   64.9 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    9.0 | NoiseFlr:   62.1 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   59.2 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    2.0 | NoiseFlr:   56.4 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    5.0 | NoiseFlr:   53.8 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:    8.0 | NoiseFlr:   51.5 | DynThresh:  800.0 | Gate: shut
+[VAD LOG] Energy:   13.0 | NoiseFlr:   49.6 | DynThresh:  800.0 | Gate: shut
