@@ -6,7 +6,9 @@ from datetime import datetime
 DB_FILE = os.environ.get("DB_FILE", "registro.db")
 
 def inicializar_db():
-    os.makedirs(os.path.dirname(DB_FILE), exist_ok=True)
+    db_dir = os.path.dirname(DB_FILE)
+    if db_dir:
+        os.makedirs(db_dir, exist_ok=True)
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     

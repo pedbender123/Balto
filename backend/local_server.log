@@ -1,0 +1,17 @@
+/home/pedro/Área de trabalho/PBPM/Projetos/Externos/Balto/server/venv_local/lib/python3.12/site-packages/webrtcvad.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[ElevenLabs] Carregadas 0 chaves.
+Loaded the voice encoder model on cpu in 0.01 seconds.
+[SpeakerID] Modelo carregado com sucesso.
+[BOOT] MOCK_MODE: False
+[BOOT] SAVE_AUDIO_DUMPS: False
+Balto Server 2.0 Rodando na porta 8765
+Traceback (most recent call last):
+  File "/home/pedro/Área de trabalho/PBPM/Projetos/Externos/Balto/server/backend/app/server.py", line 408, in <module>
+    web.run_app(app, port=8765)
+  File "/home/pedro/Área de trabalho/PBPM/Projetos/Externos/Balto/server/venv_local/lib/python3.12/site-packages/aiohttp/web.py", line 517, in run_app
+    loop.run_until_complete(main_task)
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+OSError: [Errno 98] error while attempting to bind on address ('0.0.0.0', 8765): address already in use
