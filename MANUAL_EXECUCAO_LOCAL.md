@@ -10,9 +10,9 @@ Este documento descreve como configurar e rodar o sistema completo (Servidor Bac
 
 ## 2. Configuração do Ambiente
 
-1.  **Navegue até a pasta do servidor**:
+1.  **Navegue até a pasta do servidor**
     ```bash
-    cd /caminho/para/Balto/server
+    cd /caminho/para/Balto/server 
     ```
 
 2.  **Crie e ative o ambiente virtual** (caso não exista):
