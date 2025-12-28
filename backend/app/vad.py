@@ -27,7 +27,7 @@ class VAD:
         self.triggered = False
         
         # Configurações de Silêncio para "corte" da frase
-        self.silence_frames_needed = 20 # Aprox 600ms de silêncio para considerar fim de frase
+        self.silence_frames_needed = 30 # Aprox 900ms de silêncio (era 20/600ms)
         self.silence_frames_count = 0
         
         # --- Lógica Adaptativa (EMA) ---
@@ -37,10 +37,12 @@ class VAD:
         # 0.05 = adaptação lenta (bom para ruído de fundo constante)
         self.alpha = 0.05
         # Fator de Segurança: Voz tem que ser X vezes mais alta que o ruído
-        self.threshold_multiplier = 2.0 # Era 1.5. Aumentado para evitar falsos positivos.
+        self.threshold_multiplier = 2.5 # Reduzido para 2.5 para pegar onsets suaves
         
         # Limite mínimo absoluto para evitar ativar com silêncio total
-        self.min_energy_threshold = 500 # Era 200. Subindo a régua.
+        self.min_energy_threshold = 800 # Reduzido para 800 (pegar voz baixa)
+        
+        self.pre_roll_buffer = deque(maxlen=20) # 600ms de pre-roll (pedido > 0.2s)
 
     def _calculate_energy(self, frame):
         """Calcula a energia RMS (Root Mean Square) do frame."""
@@ -90,6 +92,12 @@ class VAD:
             # 5. Máquina de Estados
             if is_speech:
                 print(f"   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)")
+                
+                # Se iniciou agora, adicionar pre-roll
+                if not self.triggered:
+                    self.speech_buffer.extend(self.pre_roll_buffer)
+                    self.pre_roll_buffer.clear()
+                    
                 self.speech_buffer.append(frame)
                 self.triggered = True
                 self.silence_frames_count = 0
@@ -110,8 +118,7 @@ class VAD:
                     self.speech_buffer.clear()
                     return segment
             else:
-                # Silêncio absoluto, descarta frames para economizar memória
-                # (Opcional: manter um pequeno buffer de pré-roll)
-                pass
+                # Silêncio absoluto, mantendo pre-roll
+                self.pre_roll_buffer.append(frame)
                 
         return None
