@@ -146,7 +146,6 @@ def transcrever_gladia(audio_bytes: bytes) -> str:
         # 2. Transcription
         data = {
             "audio_url": audio_url,
-            "language_behaviour": "automatic single language", # or 'manual' with 'pt'
             "language": "pt"
         }
         
