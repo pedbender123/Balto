@@ -3,6 +3,7 @@ import io
 import time
 import numpy as np
 import requests
+import wave
 from elevenlabs.client import ElevenLabs
 
 # --- Gerenciamento de Chaves ElevenLabs ---
@@ -100,11 +101,20 @@ def transcrever_elevenlabs(audio_bytes: bytes) -> str:
     duration = len(audio_bytes) / 32000.0 # 16k * 2 bytes
     
     try:
-        audio_file = io.BytesIO(audio_bytes)
-        audio_file.name = "audio.wav"
+        # Wrap PCM in WAV container
+        wav_buffer = io.BytesIO()
+        with wave.open(wav_buffer, 'wb') as wf:
+            wf.setnchannels(1)
+            wf.setsampwidth(2)
+            wf.setframerate(16000)
+            wf.writeframes(audio_bytes)
+        
+        # Reset pointer for reading
+        wav_buffer.seek(0)
+        wav_buffer.name = "audio.wav"
         
         result = client.speech_to_text.convert(
-            file=audio_file,
+            file=wav_buffer,
             model_id="scribe_v1",
             language_code="pt"
         )
@@ -131,11 +141,21 @@ def transcrever_assemblyai(audio_bytes: bytes) -> str:
     }
     
     try:
+        # Wrap PCM in WAV container
+        wav_buffer = io.BytesIO()
+        with wave.open(wav_buffer, 'wb') as wf:
+            wf.setnchannels(1)
+            wf.setsampwidth(2)
+            wf.setframerate(16000)
+            wf.writeframes(audio_bytes)
+        
+        wav_data = wav_buffer.getvalue()
+
         # 1. Upload
         upload_response = requests.post(
             "https://api.assemblyai.com/v2/upload",
             headers=headers,
-            data=audio_bytes
+            data=wav_data
         )
         upload_response.raise_for_status()
         upload_url = upload_response.json()["upload_url"]

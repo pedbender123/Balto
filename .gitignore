@@ -1,19 +1,28 @@
 # 1. ARQUIVO DE SEGREDOS - NUNCA SUBIR
 .env
-
 # 2. Banco de dados (não deve ir pro git)
 *.db
 dados/
 
 # 3. Cache do Python
+# Test Artifacts (Organized in server/testes)
+testes/1_input/*
+!testes/1_input/.gitkeep
+testes/2_cortados/*
+!testes/2_cortados/.gitkeep
+testes/planilhas/*
+!testes/planilhas/.gitkeep
+
+# Server Artifacts
+audio_dumps/*
+!audio_dumps/.gitkeep
+backend/app/dados/*
+!backend/app/dados/.gitkeep
+*.log
+*.sqlite
+*.db
 __pycache__/
 *.pyc
 venv/
-
-# 4. Dados de Teste
-testes/1_input/
-testes/2_cortados/
-testes/3_transcricoes/
-testes/4_analises/
-backend/tests_audio/audios_brutos/
 venv_local/
+.env

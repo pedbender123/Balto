@@ -56,7 +56,10 @@ def get_existing_transcriptions(wb):
     # Assume row 1 = headers
     for row in ws.iter_rows(min_row=2, values_only=True):
         if row[0]: # Filename
-            cache[row[0]] = row[1] # Transcription
+            transcript = row[1]
+            # Ignore errors in cache so we retry them
+            if transcript and not str(transcript).startswith("[ERROR") and not str(transcript).startswith("[EXCEPTION"):
+                cache[row[0]] = transcript
     return cache
 
 def transcribe_file(filepath, provider):
@@ -96,16 +99,28 @@ def main():
     cache_orig = get_existing_transcriptions(wb_orig)
     ws_orig = wb_orig.active
 
-    # 2. Criar Planilha de Segmentos (Sempre nova para este teste, ou append? User disse "duas planilhas". Vamos recriar a de segmentos para garantir dados limpos deste run)
-    wb_seg = openpyxl.Workbook()
+    # 2. Carregar/Criar Planilha de Segmentos (Modo Resume)
+    wb_seg = load_or_create_wb(FILE_SEGMENTOS, HEADERS_SEGMENTOS)
     ws_seg = wb_seg.active
-    ws_seg.append(HEADERS_SEGMENTOS)
+    
+    # Identificar quais arquivos JÁ tem segmentos na planilha para pular
+    existing_files_in_seg = set()
+    for row in ws_seg.iter_rows(min_row=2, values_only=True):
+        if row[0]: # Coluna 'Arquivo Original'
+            existing_files_in_seg.add(row[0])
+            
+    print(f"Arquivos já processados (Segmentos): {len(existing_files_in_seg)}")
     
     input_files = sorted([f for f in os.listdir(INPUT_DIR) if not f.startswith('.')])
     print(f"Arquivos encontrados: {len(input_files)}")
 
     for idx, filename in enumerate(input_files):
         print(f"\n[{idx+1}/{len(input_files)}] Processando: {filename}")
+        
+        if filename in existing_files_in_seg:
+            print(f" -> PULANDO: Já existe no relatório de segmentos.")
+            continue
+
         original_path = os.path.join(INPUT_DIR, filename)
         
         # --- ETAPA 1: Transcrição do Original (Com Cache) ---
