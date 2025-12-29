@@ -12,4 +12,5 @@ torch --index-url https://download.pytorch.org/whl/cpu
 torchaudio --index-url https://download.pytorch.org/whl/cpu
 python-dotenv
 ffmpeg-python
-assemblyaiimageio-ffmpeg
+assemblyai
+imageio-ffmpeg
