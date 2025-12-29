@@ -57,7 +57,127 @@ class ElevenLabsKeyManager:
 key_manager = ElevenLabsKeyManager()
 
 # --- Configuração AssemblyAI (Substituto do Soniox) ---
+# --- Configuração AssemblyAI (Substituto do Soniox) ---
 ASSEMBLYAI_API_KEY = os.environ.get("ASSEMBLYAI_API_KEY")
+
+# --- Configuração Deepgram ---
+DEEPGRAM_API_KEY = os.environ.get("DEEPGRAM_API_KEY")
+
+# --- Configuração Gladia ---
+GLADIA_API_KEY = os.environ.get("GLADIA_API_KEY")
+
+def transcrever_deepgram(audio_bytes: bytes) -> str:
+    """Modelo Rápido (Deepgram)."""
+    if not DEEPGRAM_API_KEY:
+        print("[Deepgram] API Key não configurada.")
+        return ""
+    
+    url = "https://api.deepgram.com/v1/listen?model=nova-2&language=pt&smart_format=true"
+    headers = {
+        "Authorization": f"Token {DEEPGRAM_API_KEY}",
+        "Content-Type": "audio/wav"
+    }
+    
+    try:
+        # Wrap PCM in WAV
+        wav_buffer = io.BytesIO()
+        with wave.open(wav_buffer, 'wb') as wf:
+            wf.setnchannels(1)
+            wf.setsampwidth(2)
+            wf.setframerate(16000)
+            wf.writeframes(audio_bytes)
+        
+        response = requests.post(url, headers=headers, data=wav_buffer.getvalue(), timeout=30)
+        
+        if response.status_code == 200:
+            data = response.json()
+            # Deepgram return format: results.channels[0].alternatives[0].transcript
+            return data.get('results', {}).get('channels', [{}])[0].get('alternatives', [{}])[0].get('transcript', "")
+        else:
+            print(f"[Deepgram] Erro: {response.status_code} - {response.text}")
+            return f"[ERROR {response.status_code}]"
+            
+    except Exception as e:
+        print(f"[Deepgram] Exceção: {e}")
+        return f"[EXCEPTION] {e}"
+
+def transcrever_gladia(audio_bytes: bytes) -> str:
+    """Modelo Gladia (Multilingual)."""
+    if not GLADIA_API_KEY:
+        print("[Gladia] API Key não configurada.")
+        return ""
+
+    # Usando V2 API (Upload -> Transcribe) ou Audio Intelligence?
+    # Vamos tentar o endpoint de upload direto se existir, ou multipart
+    # Docs v2 sugerem upload primeiro.
+    
+    headers = {
+        "x-gladia-key": GLADIA_API_KEY
+    }
+    
+    try:
+        # Wrap in WAV
+        wav_buffer = io.BytesIO()
+        with wave.open(wav_buffer, 'wb') as wf:
+            wf.setnchannels(1)
+            wf.setsampwidth(2)
+            wf.setframerate(16000)
+            wf.writeframes(audio_bytes)
+        wav_buffer.name = "audio.wav"
+        
+        # 1. Upload
+        files = {
+            'audio': ('audio.wav', wav_buffer.getvalue(), 'audio/wav')
+        }
+        
+        upload_response = requests.post(
+            "https://api.gladia.io/v2/upload/",
+            headers=headers,
+            files=files,
+            timeout=60
+        )
+        
+        if upload_response.status_code != 200:
+            print(f"[Gladia] Erro Upload: {upload_response.text}")
+            return f"[ERROR Upload {upload_response.status_code}]"
+            
+        audio_url = upload_response.json().get("audio_url")
+        
+        # 2. Transcription
+        data = {
+            "audio_url": audio_url,
+            "language_behaviour": "automatic single language", # or 'manual' with 'pt'
+            "language": "pt"
+        }
+        
+        transcribe_response = requests.post(
+            "https://api.gladia.io/v2/transcription/",
+            headers=headers,
+            json=data,
+            timeout=60
+        )
+        
+        if transcribe_response.status_code == 201:
+            result_url = transcribe_response.json().get("result_url")
+            # Polling needed
+            
+            while True:
+                res = requests.get(result_url, headers=headers)
+                status = res.json().get("status")
+                
+                if status == "done":
+                    return res.json().get("result", {}).get("transcription", {}).get("full_transcript", "")
+                elif status == "error":
+                    return f"[ERROR Gladia Processing]"
+                
+                time.sleep(1)
+        else:
+             print(f"[Gladia] Erro Transcribe: {transcribe_response.text}")
+             return f"[ERROR Transcribe {transcribe_response.status_code}]"
+
+    except Exception as e:
+         print(f"[Gladia] Exceção: {e}")
+         return f"[EXCEPTION] {e}"
 
 def calcular_snr(audio_bytes: bytes) -> float:
     """

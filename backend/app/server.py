@@ -153,6 +153,10 @@ async def api_test_transcrever(request):
         text = ""
         if provider == 'assemblyai':
             text = transcription.transcrever_assemblyai(audio_bytes)
+        elif provider == 'deepgram':
+            text = transcription.transcrever_deepgram(audio_bytes)
+        elif provider == 'gladia':
+            text = transcription.transcrever_gladia(audio_bytes)
         else:
             text = transcription.transcrever_elevenlabs(audio_bytes)
             

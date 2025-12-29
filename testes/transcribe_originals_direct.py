@@ -4,11 +4,19 @@ import openpyxl
 from dotenv import load_dotenv
 
 # Carregar variáveis de ambiente (chave nova local)
-load_dotenv(os.path.join(os.path.dirname(__file__), "../backend/.env"))
+# Assumindo execução da raiz (server/)
+env_path = os.path.abspath("backend/.env")
+print(f"CWD: {os.getcwd()}")
+print(f"Loading .env from: {env_path}")
+print(f"File exists? {os.path.exists(env_path)}")
+
+load_dotenv(env_path)
 API_KEY = os.environ.get("ELEVENLABS_API_KEY")
 
 if not API_KEY:
-    print("ERRO: ELEVENLABS_API_KEY não encontrada no ../backend/.env")
+    print("ERRO: ELEVENLABS_API_KEY não encontrada.")
+    # Debug: print all keys
+    # print(os.environ) 
     exit(1)
 
 INPUT_DIR = "testes/1_input"
