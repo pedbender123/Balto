@@ -62,6 +62,13 @@
                 <button onclick="loadBatchTab()"
                     class="tab-btn px-6 py-2 bg-white rounded shadow hover:bg-gray-50 font-medium text-gray-600">Processamento
                     em Lote</button>
+
+                <!-- Botão Exportar Excel -->
+                <button onclick="downloadExcel()"
+                    class="px-6 py-2 bg-green-600 text-white rounded shadow hover:bg-green-700 font-medium flex items-center gap-2">
+                    📥 Baixar Excel
+                </button>
+
                 <button onclick="showEnrollment()"
                     class="ml-auto bg-purple-600 text-white px-6 py-2 rounded shadow hover:bg-purple-700 font-bold flex items-center gap-2">
                     🎙️ Cadastrar Voz
@@ -197,6 +204,10 @@
 
         function showEnrollment() {
             document.getElementById('enroll-modal').classList.remove('hidden');
+        }
+
+        function downloadExcel() {
+            window.location.href = '/api/export/xlsx';
         }
 
         function logout() { location.reload(); }

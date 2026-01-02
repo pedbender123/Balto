@@ -5,6 +5,8 @@ import os
 import uuid
 import subprocess
 import wave
+import pandas as pd
+import io
 import imageio_ffmpeg # NOVA DEPENDENCIA LOCAL
 
 from datetime import datetime
@@ -384,6 +386,65 @@ async def api_batch_status(request):
     except Exception as e:
         return web.json_response({"error": str(e)}, status=500)
 
+        return web.json_response({"error": str(e)}, status=500)
+
+async def api_export_xlsx(request):
+    """Gera e baixa relatorio Excel das interacoes."""
+    try:
+        # Auth Simples (Cookie)
+        if request.cookies.get("admin_token") != "auth_ok":
+            return web.Response(status=403, text="Forbidden")
+
+        # Busca dados com Pandas direto do Postgres
+        conn = db.get_db_connection()
+        query = """
+        SELECT 
+            i.id,
+            i.timestamp,
+            b.nome_balcao,
+            f.nome as funcionario,
+            i.transcricao_completa,
+            i.recomendacao_gerada,
+            i.resultado_feedback,
+            i.modelo_stt,
+            i.custo_estimado
+        FROM interacoes i
+        LEFT JOIN balcoes b ON i.balcao_id = b.balcao_id
+        LEFT JOIN funcionarios f ON i.funcionario_id = f.id
+        ORDER BY i.timestamp DESC
+        """
+        df = pd.read_sql_query(query, conn)
+        conn.close()
+
+        # Tratamento basico
+        df['timestamp'] = pd.to_datetime(df['timestamp']).dt.strftime('%d/%m/%Y %H:%M:%S')
+        
+        # Gera Excel em memoria
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='Interacoes')
+            # Auto-adjust columns width (basic)
+            worksheet = writer.sheets['Interacoes']
+            for column_cells in worksheet.columns:
+                length = max(len(str(cell.value)) for cell in column_cells)
+                worksheet.column_dimensions[column_cells[0].column_letter].width = min(length + 2, 50)
+        
+        output.seek(0)
+        
+        timestamp_str = datetime.now().strftime("%Y%m%d_%H%M")
+        filename = f"relatorio_balto_{timestamp_str}.xlsx"
+        
+        return web.Response(
+            body=output.read(),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            headers={
+                'Content-Disposition': f'attachment; filename="{filename}"'
+            }
+        )
+    except Exception as e:
+        print(f"Erro Export Excel: {e}")
+        return web.Response(status=500, text=str(e))
+
 # --- Setup ---
 @web.middleware
 async def cors_middleware(request, handler):
@@ -410,6 +471,9 @@ if __name__ == "__main__":
     app.router.add_post('/api/test/segmentar', api_test_segmentar)
     app.router.add_post('/api/test/transcrever', api_test_transcrever)
     app.router.add_post('/api/test/analisar', api_test_analisar)
+
+    # Rota Exportacao
+    app.router.add_get('/api/export/xlsx', api_export_xlsx)
     
     print("Balto Server 2.0 Rodando na porta 8765")
     port = int(os.environ.get("PORT", 8765))
