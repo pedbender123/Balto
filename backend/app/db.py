@@ -1,15 +1,27 @@
-import sqlite3
 import os
-import uuid
+import psycopg2
+from psycopg2.extras import RealDictCursor
 from datetime import datetime
 
-DB_FILE = os.environ.get("DB_FILE", "registro.db")
+# Configuração via variáveis de ambiente
+DB_HOST = os.environ.get("POSTGRES_HOST", "localhost")
+DB_PORT = os.environ.get("POSTGRES_PORT", "5432")
+DB_NAME = os.environ.get("POSTGRES_DB", "balto_db")
+DB_USER = os.environ.get("POSTGRES_USER", "balto_user")
+DB_PASS = os.environ.get("POSTGRES_PASSWORD", "baltopassword123")
+
+def get_db_connection():
+    conn = psycopg2.connect(
+        host=DB_HOST,
+        port=DB_PORT,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASS
+    )
+    return conn
 
 def inicializar_db():
-    db_dir = os.path.dirname(DB_FILE)
-    if db_dir:
-        os.makedirs(db_dir, exist_ok=True)
-    conn = sqlite3.connect(DB_FILE)
+    conn = get_db_connection()
     cursor = conn.cursor()
     
     # 1. Tabela Users
@@ -37,22 +49,21 @@ def inicializar_db():
     # 3. Tabela Funcionários (Fase 3 - Speaker ID)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS funcionarios (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         user_id TEXT,
         nome TEXT,
-        embedding BLOB,
-        criado_em DATETIME,
+        embedding BYTEA,
+        criado_em TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users (user_id)
     )
     """)
 
     # 4. Tabela Interações (Analytics Expandido)
-    # Verifica colunas novas para migração
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS interacoes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         balcao_id TEXT,
-        timestamp DATETIME,
+        timestamp TIMESTAMP,
         transcricao_completa TEXT,
         recomendacao_gerada TEXT,
         resultado_feedback TEXT,
@@ -63,14 +74,9 @@ def inicializar_db():
     )
     """)
     
-    # Migração simples (adiciona colunas se faltarem)
-    try:
-        cursor.execute("SELECT modelo_stt FROM interacoes LIMIT 1")
-    except sqlite3.OperationalError:
-        print("[DB] Migrando tabela interacoes...")
-        cursor.execute("ALTER TABLE interacoes ADD COLUMN funcionario_id INTEGER")
-        cursor.execute("ALTER TABLE interacoes ADD COLUMN modelo_stt TEXT")
-        cursor.execute("ALTER TABLE interacoes ADD COLUMN custo_estimado REAL")
+    # Migração simples (adiciona colunas se faltarem) - Postgres requer verificação diferente
+    # Simplificação: assumindo criação correta. Se precisar migrar colunas em pg, usamos alter table if not exists ou verificação de schema.
+    # Por enquanto, mantendo simples para a criação inicial.
     
     conn.commit()
     conn.close()
@@ -78,43 +84,47 @@ def inicializar_db():
 # --- Funções Auxiliares ---
 
 def validate_api_key(api_key):
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    cursor.execute("SELECT balcao_id FROM balcoes WHERE api_key = ?", (api_key,))
-    res = cursor.fetchone()
-    conn.close()
-    return res[0] if res else None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT balcao_id FROM balcoes WHERE api_key = %s", (api_key,))
+        res = cursor.fetchone()
+        conn.close()
+        return res[0] if res else None
+    except Exception as e:
+        print(f"Erro ao validar API Key: {e}")
+        return None
 
 def registrar_interacao(balcao_id, transcricao, recomendacao, resultado, funcionario_id=None, modelo_stt=None, custo=0.0):
-    conn = sqlite3.connect(DB_FILE)
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
     INSERT INTO interacoes (balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback, funcionario_id, modelo_stt, custo_estimado)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
     """, (balcao_id, datetime.now(), transcricao, recomendacao, resultado, funcionario_id, modelo_stt, custo))
     conn.commit()
     conn.close()
 
 def adicionar_funcionario(user_id, nome, embedding_blob):
-    conn = sqlite3.connect(DB_FILE)
+    conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO funcionarios (user_id, nome, embedding, criado_em) VALUES (?, ?, ?, ?)",
+    cursor.execute("INSERT INTO funcionarios (user_id, nome, embedding, criado_em) VALUES (%s, %s, %s, %s)",
                    (user_id, nome, embedding_blob, datetime.now()))
     conn.commit()
     conn.close()
 
 def listar_funcionarios_por_balcao(balcao_id):
     """Retorna lista de funcionarios do dono do balcão."""
-    conn = sqlite3.connect(DB_FILE)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = get_db_connection()
+    # Usando RealDictCursor para retornar dicionários compatíveis com o código anterior
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     
     # Join para achar o user_id através do balcao_id
     query = """
     SELECT f.id, f.nome, f.embedding 
     FROM funcionarios f
     JOIN balcoes b ON f.user_id = b.user_id
-    WHERE b.balcao_id = ?
+    WHERE b.balcao_id = %s
     """
     cursor.execute(query, (balcao_id,))
     rows = [dict(row) for row in cursor.fetchall()]

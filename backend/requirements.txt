@@ -14,3 +14,4 @@ python-dotenv
 ffmpeg-python
 assemblyai
 imageio-ffmpeg
+psycopg2-binary

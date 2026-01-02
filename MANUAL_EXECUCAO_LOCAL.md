@@ -1,89 +1,102 @@
-# Manual de Execução Local - Sistema Balto
+# Manual de Execução - Sistema Balto
 
-Este documento descreve como configurar e rodar o sistema completo (Servidor Backend + Script de Relatório) inteiramente em sua máquina local.
+Este manual descreve como configurar o ambiente e executar os scripts de transcrição e geração de relatório.
 
 ## 1. Pré-requisitos
 
-*   **Python 3.12+** instalado.
-*   **Virtualenv** (recomendado).
-*   Chaves de API (ElevenLabs, AssemblyAI) no arquivo `.env`.
+*   **Python 3.10+** instalado.
+*   **Virtualenv** configurado.
+*   **Chaves de API** (ElevenLabs, AssemblyAI, Deepgram, Gladia).
 
 ## 2. Configuração do Ambiente
 
-1.  **Navegue até a pasta do servidor**
+1.  **Navegue até a pasta do servidor**:
     ```bash
-    cd /caminho/para/Balto/server 
+    cd server
     ```
 
-2.  **Crie e ative o ambiente virtual** (caso não exista):
+2.  **Ative o ambiente virtual**:
     ```bash
-    python3 -m venv venv_local
+    # Se ainda não criou: python3 -m venv venv_local
     source venv_local/bin/activate
     ```
 
 3.  **Instale as dependências**:
-    O backend possui requisitos específicos. Além disso, para rodar local sem instalar o FFmpeg no sistema, instalamos o `imageio-ffmpeg`.
     ```bash
     pip install -r backend/requirements.txt
-    pip install imageio-ffmpeg
+    pip install openpyxl requests python-dotenv imageio-ffmpeg
     ```
 
-## 3. Configuração das Chaves (Env)
+4.  **Configure o arquivo `.env`**:
+    Edite o arquivo `backend/.env` e adicione as chaves:
+    ```env
+    ELEVENLABS_API_KEY=sk_...
+    ASSEMBLYAI_API_KEY=...
+    DEEPGRAM_API_KEY=...
+    GLADIA_API_KEY=...
+    BALTO_SERVER_URL=https://balto.pbpmdev.com
+    ```
+    *(Nota: `BALTO_SERVER_URL` define onde o script vai buscar a segmentação. O padrão é a VPS. Para local, use `http://localhost:8765`)*
 
-Certifique-se de que o arquivo `backend/.env` exista e contenha as chaves necessárias:
+## 3. Fluxo de Execução
 
-```env
-ELEVENLABS_API_KEY=sua_chave_aqui
-ASSEMBLYAI_API_KEY=sua_chave_aqui
-ADMIN_SECRET=admin123
-# Outras variáveis opcionais
-```
+O processo é dividido em duas etapas para garantir segurança e performance.
 
-## 4. Executando o Servidor Localmente
+### Etapa 1: Transcrição dos Originais (Local & Direto)
+Este script transcreve os arquivos originais da pasta `testes/1_input` usando a API da ElevenLabs diretamente, sem passar pelo servidor de segmentação. Isso gera a "verdade absoluta" do áudio inteiro.
 
-Para iniciar o servidor, precisamos definir o `PYTHONPATH` para que ele encontre o pacote `app`, e opcionalmente definir a porta (padrão 8765, mas recomendamos 8766 se o 8765 estiver ocupado).
-
-Execute o seguinte comando na raiz `server/`:
-
+**Comando:**
 ```bash
-cd backend
-PYTHONPATH=. PORT=8766 ../venv_local/bin/python3 app/server.py
+python3 testes/transcribe_originals_direct.py
 ```
+*   **Entrada**: `testes/1_input/*.webm`
+*   **Saída**: `testes/planilhas/Relatorio_Originais.xlsx`
+*   **Funcionalidade**: Resume automaticamente se parar.
 
-*Se tudo der certo, você verá:*
-`[BOOT] ...`
-`Balto Server 2.0 Rodando na porta 8766`
+### Etapa 2: Segmentação e Comparativo (Via VPS)
+Este script pega os mesmos áudios, envia para o servidor (VPS) para serem segmentados (VAD), e então transcreve cada segmento usando 4 modelos (ElevenLabs, AssemblyAI, Deepgram, Gladia).
 
-Mantenha esse terminal aberto.
+**Comando:**
+```bash
+# Se definiu BALTO_SERVER_URL no .env, basta rodar:
+python3 testes/generate_spreadsheet_report.py
 
-## 5. Executando o Teste / Gerador de Relatório
+# OU forçando a URL manualmente:
+BALTO_SERVER_URL=https://balto.pbpmdev.com python3 testes/generate_spreadsheet_report.py
+```
+*   **Entrada**: `testes/1_input/*.webm` e `Relatorio_Originais.xlsx` (cache)
+*   **Saída**: `testes/planilhas/Relatorio_Segmentos.xlsx`
 
-Em **outro terminal**, navegue até a pasta `server/` e ative o ambiente virtual novamente.
+## 4. Resultados
 
-1.  **Prepare os áudios**:
-    Coloque os arquivos `.webm` que deseja processar na pasta `testes/1_input`.
-    *(Para teste rápido, coloque apenas 1 arquivo)*.
+Ao final, você terá na pasta `testes/planilhas`:
+1.  **Relatorio_Originais.xlsx**: Transcrição completa de cada arquivo (ElevenLabs).
+2.  **Relatorio_Segmentos.xlsx**: Quebra frase a frase com colunas comparativas:
+    *   ElevenLabs
+    *   AssemblyAI
+    *   Deepgram
+    *   Gladia
 
-2.  **Rode o script apontando para o servidor local**:
-    O script padrão tenta conectar em `localhost:8765`. Se você mudou a porta para 8766 (como sugerido acima), use a variável de ambiente `BALTO_SERVER_URL`.
+## 5. Rodando o Servidor Localmente (Opcional)
 
+Se quiser rodar o backend na sua máquina (em vez da VPS):
+
+1.  **Inicie o Servidor**:
     ```bash
-    BALTO_SERVER_URL=http://localhost:8766 python3 testes/generate_spreadsheet_report.py
+    cd backend
+    PYTHONPATH=. python3 app/server.py
+    ```
+    *O servidor rodará na porta 8765.*
+
+2.  **Aponte os Scripts para Local**:
+    No terminal dos testes:
+    ```bash
+    export BALTO_SERVER_URL=http://localhost:8765
+    python3 testes/generate_spreadsheet_report.py
     ```
 
-## 6. Resultados
+## Solução de Problemas
 
-O script irá:
-1.  Enviar o áudio para o servidor local (`/api/test/segmentar`).
-2.  O servidor limpará o áudio e fará a detecção de voz (VAD).
-3.  O servidor devolverá os segmentos.
-4.  O script enviará cada segmento de volta para transcrição (`/api/test/transcrever`).
-5.  Os resultados serão salvos em:
-    *   `testes/planilhas/Relatorio_Originais.xlsx`
-    *   `testes/planilhas/Relatorio_Segmentos.xlsx`
-
-## Solução de Problemas Comuns
-
-*   **Erro "Address already in use"**: A porta 8765 ou 8766 está ocupada. Use `fuser -k 8766/tcp` para matar o processo ou mude a porta no comando `PORT=...`.
-*   **Erro de FFmpeg**: Se aparecer erro de decodificação, verifique se instalou `imageio-ffmpeg`.
-*   **Erro 404**: Verifique se a URL no comando do cliente bate com a porta que o servidor iniciou.
+*   **Erro 401 (Quota Exceeded)**: Verifique se a chave da ElevenLabs tem créditos. Atualize no `.env`.
+*   **Erro 502 Bad Gateway (VPS)**: O servidor pode estar reiniciando. Aguarde 1 minuto e tente novamente.
+*   **Erro de Permissão**: Verifique se as pastas `testes/planilhas` e `testes/2_cortados` têm permissão de escrita.
