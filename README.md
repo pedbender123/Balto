@@ -170,26 +170,33 @@ Se precisar trocar a senha:
 
 ---
 
-## 4. Gestão de Dispositivos (Provisionamento)
+## 4. Cadastro e Provisionamento
 
-O sistema utiliza um fluxo de **Credenciamento Seguro** para adicionar novos balcões/dispositivos sem manipular chaves manualmente.
+O sistema utiliza um fluxo de hierárquico para gerenciar **Clientes** (Redes/Donos) e seus **Balcões** (Dispositivos).
 
-### A. Admin: Gerar Código de Vinculação
-O administrador gera um código temporário de 6 dígitos vinculado à empresa/usuário.
+### A. Cadastro de Cliente (Admin/Backoffice)
+Cria o registro do responsável e gera o **código de vinculação** (6 dígitos).
 
-**Endpoint**: `POST /admin/generate_code` (Requer Auth Admin)
-**JSON**: `{"user_id": "pedro_fortes"}`
-**Resposta**: `{"user_id": "pedro_fortes", "code": "849201"}`
-
-### B. Cliente: Auto-Credenciamento
-O novo dispositivo (ex: Totem recém-instalado) pede o código na tela. O app envia o código e se auto-cadastra no banco.
-
-**Endpoint**: `POST /api/provision`
-**JSON**:
+**Endpoint**: `POST /cadastro/cliente`
+**Payload**:
 ```json
 {
-  "code": "849201",
-  "device_name": "Balcão Entrada 01"
+  "email": "contato@redepharma.com",
+  "razao_social": "Rede Pharma LTDA",
+  "telefone": "11999998888"
+}
+```
+**Resposta**: `{"codigo": "123456"}`
+
+### B. Cadastro de Balcão (Dispositivo)
+O dispositivo usa o código do cliente para se registrar e obter sua API Key.
+
+**Endpoint**: `POST /cadastro/balcao`
+**Payload**:
+```json
+{
+  "nome_balcao": "Balcão Entrada 01",
+  "user_codigo": "123456"
 }
 ```
 
@@ -198,8 +205,8 @@ O novo dispositivo (ex: Totem recém-instalado) pede o código na tela. O app en
 {
   "api_key": "bk_a1b2c3d4...",
   "balcao_id": "uuid...",
-  "status": "provisioned"
+  "status": "registered"
 }
 ```
 
-> **Nota de Segurança**: A `api_key` retornada não expira e deve ser armazenada com segurança pelo cliente. O código de 6 dígitos pode ser rotacionado pelo Admin a qualquer momento.
+> **Nota de Segurança**: A `api_key` retornada não expira e deve ser armazenada com segurança pelo cliente. O código de 6 dígitos é usado apenas para o vínculo inicial.
