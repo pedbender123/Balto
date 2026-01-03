@@ -130,3 +130,44 @@ def listar_funcionarios_por_balcao(balcao_id):
     rows = [dict(row) for row in cursor.fetchall()]
     conn.close()
     return rows
+
+def get_user_by_code(code):
+    """Retorna user_id pelo código de 6 dígitos."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT user_id FROM users WHERE codigo_6_digitos = %s", (code,))
+    res = cursor.fetchone()
+    conn.close()
+    return res[0] if res else None
+
+def set_user_code(user_id, code):
+    """Define o código de 6 dígitos para um usuário."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET codigo_6_digitos = %s WHERE user_id = %s", (code, user_id))
+    rows = cursor.rowcount
+    conn.commit()
+    conn.close()
+    return rows > 0
+
+def create_balcao(user_id, nome_balcao):
+    """Cria um novo balcão e retorna (balcao_id, api_key)."""
+    import uuid
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    balcao_id = str(uuid.uuid4())
+    api_key = f"bk_{uuid.uuid4().hex}"
+    
+    # Verifica se já existe um balcão com esse nome para esse user (opcional, mas bom pra evitar duplicata)
+    # Por simplificação, vamos permitir múltiplos por enquanto ou deixar o banco chiar se fosse unique.
+    # Mas api_key é unique.
+    
+    cursor.execute("""
+        INSERT INTO balcoes (balcao_id, user_id, nome_balcao, api_key)
+        VALUES (%s, %s, %s, %s)
+    """, (balcao_id, user_id, nome_balcao, api_key))
+    
+    conn.commit()
+    conn.close()
+    return balcao_id, api_key

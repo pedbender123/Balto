@@ -5,20 +5,28 @@ services:
     ports:
       - "8765:8765"
     volumes:
-      # Persistência do Banco de Dados
       - balto-dados:/backend/app/dados
-      
-      # Infraestrutura de Teste (Fase 1): Salvar áudios no host para calibração
       - ./audio_dumps:/backend/app/audio_dumps
-      
-      # Sincronização de Código e Status (Importante para o Batch UI funcionar)
       - ./backend:/backend
     env_file:
       - ./backend/.env
     restart: unless-stopped
-    # Devices removido para evitar erro em VPS sem placa de som
-    # devices:
-    #   - /dev/snd:/dev/snd
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine
+    container_name: balto-db-prod
+    # SEGURANÇA CRÍTICA: Nenhuma porta exposta para o host.
+    # Apenas containers na mesma rede (balto-net) podem acessar.
+    # ports:
+    #   - "5432:5432" 
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
 
 volumes:
   balto-dados:
+  postgres-data:

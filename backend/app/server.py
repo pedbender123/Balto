@@ -445,6 +445,58 @@ async def api_export_xlsx(request):
         print(f"Erro Export Excel: {e}")
         return web.Response(status=500, text=str(e))
 
+async def admin_generate_code(request):
+    """Gera um novo código de 6 dígitos para um usuário (Admin)."""
+    try:
+        if request.cookies.get("admin_token") != "auth_ok":
+            return web.Response(status=403, text="Forbidden")
+            
+        data = await request.json()
+        user_id = data.get("user_id")
+        
+        if not user_id:
+            return web.json_response({"error": "user_id required"}, status=400)
+            
+        import random
+        code = str(random.randint(100000, 999999))
+        
+        # Tenta setar. Se der erro (ex: código duplicado azarado), tenta dnv
+        # Simplificação: 1 tentativa
+        if db.set_user_code(user_id, code):
+            return web.json_response({"user_id": user_id, "code": code})
+        else:
+            return web.json_response({"error": "User not found"}, status=404)
+            
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)
+
+async def api_provision_device(request):
+    """Credenciamento: Troca código de 6 dígitos por NOVA API Key para este dispositivo."""
+    try:
+        data = await request.json()
+        code = data.get("code")
+        device_name = data.get("device_name", "Dispositivo Sem Nome")
+        
+        if not code or len(code) != 6:
+            return web.json_response({"error": "Código invalido"}, status=400)
+            
+        user_id = db.get_user_by_code(code)
+        
+        if user_id:
+            balcao_id, api_key = db.create_balcao(user_id, device_name)
+            return web.json_response({
+                "api_key": api_key,
+                "balcao_id": balcao_id,
+                "status": "provisioned"
+            })
+        else:
+            # Code inválido ou expirado
+            return web.json_response({"error": "Código inválido ou expirado"}, status=403)
+            
+    except Exception as e:
+        print(f"Erro Provision: {e}")
+        return web.json_response({"error": str(e)}, status=500)
+
 # --- Setup ---
 @web.middleware
 async def cors_middleware(request, handler):
@@ -464,8 +516,10 @@ if __name__ == "__main__":
     app.router.add_get('/ws', websocket_handler)
     app.router.add_get('/admin', admin_page)
     app.router.add_post('/admin/login', admin_login)
+    app.router.add_post('/admin/generate_code', admin_generate_code)
     app.router.add_post('/api/enroll', api_enroll_voice)
     app.router.add_get('/api/batch_status', api_batch_status)
+    app.router.add_post('/api/provision', api_provision_device)
     
     # Novas Rotas de Teste
     app.router.add_post('/api/test/segmentar', api_test_segmentar)

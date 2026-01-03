@@ -21,8 +21,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copia o código fonte
 COPY . .
 
+# Cria usuário não-root por segurança
+RUN useradd -m -u 1000 balto_user && \
+    chown -R balto_user:balto_user /backend
+
 # Define o PYTHONPATH para garantir que imports 'from app...' funcionem
 ENV PYTHONPATH=/backend
+
+# Troca para o usuário não-root
+USER balto_user
 
 # Executa o servidor em modo unbuffered (logs aparecem instantaneamente)
 CMD ["python", "-u", "app/server.py"]

@@ -20,7 +20,7 @@ O sistema suporta operação **Híbrida**, podendo rodar tanto em servidores VPS
     *   ElevenLabs (Scribe)
     *   AssemblyAI (Backup/Comparativo)
 *   **LLM (Inteligência)**: xAI (Grok Beta) / OpenAI (GPT-4o)
-*   **Banco de Dados**: SQLite (Gerenciado via `app.db`)
+*   **Banco de Dados**: PostgreSQL (Container Isolado)
 
 ---
 
@@ -30,7 +30,7 @@ O sistema suporta operação **Híbrida**, podendo rodar tanto em servidores VPS
 O sistema conta com um painel de administração e endpoints de análise:
 *   **Monitoramento em Tempo Real**: Status do serviço e conexões.
 *   **Histórico Completo**: Logs de sugestões, transcrições e feedback.
-*   **Relatórios Comparativos**: Scripts para gerar planilhas Excel (`Relatorio_Originais.xlsx`, `Relatorio_Segmentos.xlsx`) comparando precisão de diferentes provedores de transcrição.
+*   **Relatórios Comparativos**: Endpoint `/api/export/xlsx` para download direto de relatórios detalhados de interações e custos em formato Excel.
 
 ### 2. 🚀 Pipeline de Áudio Avançado
 O fluxo de processamento de áudio foi rigorosamente otimizado:
@@ -76,20 +76,69 @@ Para um guia passo-a-passo detalhado de como rodar tudo localmente, veja o arqui
     PYTHONPATH=. PORT=8766 ../venv_local/bin/python3 app/server.py
     ```
 
-4.  **Execute Testes (Orquestrador Local)**:
-    ```bash
-    BALTO_SERVER_URL=http://localhost:8766 python3 testes/generate_spreadsheet_report.py
-    ```
+
 
 ---
 
-## 🔌 Protocolo WebSocket
+## 🔌 Manual de Integração WebSocket
 
-O cliente Balto (Desktop/Web) deve se conectar ao endpoint `/ws`:
+O Balto Server expõe um endpoint WebSocket (`/ws`) para comunicação full-duplex em tempo real. Este manual descreve como implementar um cliente compatível.
 
-1.  **Autenticação**: Enviar JSON `{"comando": "auth", "api_key": "..."}`.
-2.  **Streaming**: Enviar áudio (PCM 16-bit 16kHz) continuamente.
-3.  **Recepção**: O servidor envia eventos `{"comando": "recomendar", ...}` quando identifica uma oportunidade.
+**Endpoint**: `/ws` (Ex: `wss://balto.pbpmdev.com/ws` ou `ws://localhost:8765/ws`)
+
+### 1. Autenticação (Handshake)
+
+Imediatamente após conectar, o cliente **DEVE** enviar um frame JSON contendo a chave de API (Balcão ID). O servidor validará a chave antes de aceitar áudio.
+
+**Cliente -> Servidor (JSON):**
+```json
+{
+  "api_key": "seu_token_de_acesso"
+}
+```
+
+*   **Sucesso**: A conexão permanece aberta.
+*   **Erro**: O servidor fecha a conexão com Code `4001` (Close Reason: `API Key Invalida`).
+
+### 2. Streaming de Áudio
+
+Após a autenticação, envie o áudio capturado através de frames **Binários**.
+
+*   **Formato de Container**: WebM (Recomendado) ou WAV.
+*   **Codec**: Opus (Recomendado) ou PCM.
+*   **Especificações**: 16kHz, 16-bit, Mono.
+
+> **Importante**: Envie chunks pequenos (ex: a cada 250ms ou 500ms) para garantir baixa latência. O servidor processa o stream continuamente usando FFmpeg, permitindo flexibilidade de formatos, mas **WebM/Opus** é fortemente sugerido para eficiência de banda.
+
+**Cliente -> Servidor (Binary):**
+*   `[Binary Data Chunk 1]`
+*   `[Binary Data Chunk 2]`
+*   `...`
+
+### 3. Eventos de Recomendação
+
+O servidor enviará frames JSON assíncronos sempre que o motor de IA detectar uma oportunidade de venda ou sugestão relevante baseada no diálogo.
+
+**Servidor -> Cliente (JSON):**
+```json
+{
+  "comando": "recomendar",
+  "produto": "Nome do Produto Sugerido",
+  "explicacao": "Explicação curta do motivo da recomendação (para o atendente).",
+  "transcricao_base": "Trecho do diálogo que originou a sugestão.",
+  "atendente": "Nome do Atendente (se identificado via biometria)"
+}
+```
+
+### Exemplo de Fluxo
+
+1.  **Client** Conecta em `wss://.../ws`.
+2.  **Client** Envia `{"api_key": "123"}`.
+3.  **Client** Começa a enviar chunks de áudio binário.
+4.  **Server** Processa VAD e silêncio.
+5.  **Server** Detecta fala -> Transcreve -> Analisa.
+6.  **Server** Envia `{"comando": "recomendar", ...}`.
+7.  **Client** Renderiza sugestão na tela.
 
 ---
 
@@ -97,6 +146,60 @@ O cliente Balto (Desktop/Web) deve se conectar ao endpoint `/ws`:
 
 *   `backend/`: Código fonte do servidor (`app/server.py`, `app/vad.py`, etc).
 *   `testes/`: Scripts de teste e geração de relatórios.
-    *   `1_input`: Pasta para colocar arquivos de áudio para teste.
     *   `planilhas`: Onde os relatórios Excel são salvos.
 *   `venv_local/`: Ambiente virtual recomendado para execução local.
+
+---
+
+## 5. Segurança do Banco de Dados
+
+Para proteger contra ataques, o Banco de Dados roda em um container isolado **sem portas expostas** para a internet.
+
+### Acesso Administrativo (Via Docker)
+Como a porta 5432 está fechada externamente, para acessar o banco você deve entrar no container:
+
+```bash
+# Entrar no container do banco
+docker exec -it balto-db-prod psql -U balto_user -d balto_db
+```
+
+### Resetar Senha (Se necessário)
+Se precisar trocar a senha:
+1.  Edite `backend/.env`.
+2.  Recrie o container: `docker-compose up -d --force-recreate db`.
+
+---
+
+## 4. Gestão de Dispositivos (Provisionamento)
+
+O sistema utiliza um fluxo de **Credenciamento Seguro** para adicionar novos balcões/dispositivos sem manipular chaves manualmente.
+
+### A. Admin: Gerar Código de Vinculação
+O administrador gera um código temporário de 6 dígitos vinculado à empresa/usuário.
+
+**Endpoint**: `POST /admin/generate_code` (Requer Auth Admin)
+**JSON**: `{"user_id": "pedro_fortes"}`
+**Resposta**: `{"user_id": "pedro_fortes", "code": "849201"}`
+
+### B. Cliente: Auto-Credenciamento
+O novo dispositivo (ex: Totem recém-instalado) pede o código na tela. O app envia o código e se auto-cadastra no banco.
+
+**Endpoint**: `POST /api/provision`
+**JSON**:
+```json
+{
+  "code": "849201",
+  "device_name": "Balcão Entrada 01"
+}
+```
+
+**Resposta**:
+```json
+{
+  "api_key": "bk_a1b2c3d4...",
+  "balcao_id": "uuid...",
+  "status": "provisioned"
+}
+```
+
+> **Nota de Segurança**: A `api_key` retornada não expira e deve ser armazenada com segurança pelo cliente. O código de 6 dígitos pode ser rotacionado pelo Admin a qualquer momento.
