@@ -150,6 +150,32 @@ def set_user_code(user_id, code):
     conn.close()
     return rows > 0
 
+def create_client(email, razao_social, telefone):
+    """Cria um novo cliente (user) e gera código de 6 dígitos."""
+    import uuid
+    import random
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    user_id = str(uuid.uuid4())
+    # Gera código unico (tentativa simples, em prod faria loop de colisao)
+    codigo = str(random.randint(100000, 999999))
+    
+    try:
+        cursor.execute("""
+            INSERT INTO users (user_id, email, razao_social, telefone, codigo_6_digitos)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (user_id, email, razao_social, telefone, codigo))
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        raise e
+        
+    conn.close()
+    return codigo
+
 def create_balcao(user_id, nome_balcao):
     """Cria um novo balcão e retorna (balcao_id, api_key)."""
     import uuid
