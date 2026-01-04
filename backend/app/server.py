@@ -253,20 +253,25 @@ async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: s
         
         if analise_json:
             try:
+                # Tenta parsear JSON
                 dados = json.loads(analise_json)
                 sugestao = dados.get("sugestao")
                 explicacao = dados.get("explicacao")
+                pensamentos = dados.get("pensamentos") # Novo campo (opcional p/ frontend)
                 
                 if sugestao:
                     # Passo 6: Resposta ao Cliente
-                    await websocket.send_json({
+                    payload = {
                         "comando": "recomendar",
                         "produto": sugestao,
                         "explicacao": explicacao,
+                        "pensamentos": pensamentos,
                         "transcricao_base": texto,
                         "atendente": nome_funcionario
-                    })
-            except:
+                    }
+                    await websocket.send_json(payload)
+            except Exception as e:
+                print(f"[{balcao_id}] Erro Parse JSON Grok: {e}")
                 pass
 
         # Passo 7: Analytics e Logs
@@ -279,7 +284,8 @@ async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: s
             funcionario_id=funcionario_id,
             modelo_stt=modelo_usado,
             custo=custo_estimado,
-            snr=snr_calculado
+            snr=snr_calculado,
+            grok_raw=analise_json # Salva o RAW no banco
         )
 
     except Exception as e:

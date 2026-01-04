@@ -2,7 +2,7 @@ import os
 import json
 from openai import OpenAI
 
-# Carrega produtos
+# Carrega produtos (Mantido igual)
 PRODUTOS_DB_PATH = os.path.join(os.path.dirname(__file__), "produtos.json")
 try:
     with open(PRODUTOS_DB_PATH, 'r', encoding='utf-8') as f:
@@ -20,11 +20,11 @@ try:
 except:
     client = None
 
+# Prompt atualizado: Sem nome de funcionário e com campo "pensamentos"
 SYSTEM_PROMPT_TEMPLATE = """
 Você é um assistente sênior de farmácia. 
-Atendente Responsável: {atendente}
+Analise a transcrição e sugira um produto da lista abaixo.
 
-Analise a transcrição e sugira um produto da lista.
 Responda ESTRITAMENTE em formato JSON.
 
 LISTA DE PRODUTOS:
@@ -32,24 +32,27 @@ LISTA DE PRODUTOS:
 
 FORMATO DE RESPOSTA (JSON):
 {{
-  "sugestao": "Nome do Produto" (ou null),
-  "explicacao": "Explicação curta e técnica para o atendente {atendente}."
+  "pensamentos": "Faça uma análise breve dos sintomas citados e compare com a lista de produtos antes de decidir.",
+  "sugestao": "Nome do Produto" (ou null se nenhum for adequado),
+  "explicacao": "Explicação técnica e direta sobre o porquê da escolha."
 }}
 """
 
-def analisar_texto(texto: str, nome_funcionario: str = "Balconista") -> str | None:
+# Função limpa: removemos o argumento 'nome_funcionario'
+def analisar_texto(texto: str) -> str | None:
     if not client or not BASE_DE_PRODUTOS:
         return None
         
     try:
         produtos_str = json.dumps(BASE_DE_PRODUTOS, ensure_ascii=False)
+        
+        # O prompt agora só recebe a lista de produtos, sem variáveis de nome
         prompt = SYSTEM_PROMPT_TEMPLATE.format(
-            atendente=nome_funcionario,
             json_produtos=produtos_str
         )
 
         response = client.chat.completions.create(
-            model="grok-3-mini", 
+            model="grok-3-mini",  # Mantido o modelo solicitado
             messages=[
                 {"role": "system", "content": prompt},
                 {"role": "user", "content": texto}
