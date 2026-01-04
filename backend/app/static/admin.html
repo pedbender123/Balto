@@ -158,13 +158,50 @@
             document.getElementById('table-body').innerHTML = '';
             document.getElementById('table-title').innerText = table;
 
-            // Em prod, mover fetch para endpoint real /api/data/{table}
-            // Aqui simulamos delay
-            setTimeout(() => {
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('table-head').innerHTML = '<th class="p-4">Info</th>';
-                document.getElementById('table-body').innerHTML = '<tr><td class="p-4">Dados carregados via API (Ver backend/server.py)</td></tr>';
-            }, 500);
+            if (table === 'interacoes') {
+                try {
+                    const res = await fetch('/api/data/interacoes');
+                    if (res.ok) {
+                        const data = await res.json();
+                        document.getElementById('loading').classList.add('hidden');
+
+                        let th = `
+                            <th class="p-4 border-b">ID</th>
+                            <th class="p-4 border-b">Data</th>
+                            <th class="p-4 border-b">Balcão</th>
+                            <th class="p-4 border-b">Transcrição</th>
+                            <th class="p-4 border-b">Sugestão</th>
+                        `;
+                        document.getElementById('table-head').innerHTML = th;
+
+                        let rowsHtml = '';
+                        data.forEach(row => {
+                            rowsHtml += `
+                                <tr class="hover:bg-gray-50 border-b">
+                                    <td class="p-4 text-xs font-mono text-gray-500">#${row.id}</td>
+                                    <td class="p-4 text-sm text-gray-600">${row.timestamp}</td>
+                                    <td class="p-4 text-sm font-bold text-blue-800">${row.nome_balcao || '-'}</td>
+                                    <td class="p-4 text-sm italic text-gray-600">"${row.transcricao_completa}"</td>
+                                    <td class="p-4 text-sm font-bold text-green-700">${row.recomendacao_gerada || '-'}</td>
+                                </tr>
+                            `;
+                        });
+                        document.getElementById('table-body').innerHTML = rowsHtml || '<tr><td colspan="5" class="p-4 text-center">Nenhuma interação encontrada.</td></tr>';
+
+                    } else {
+                        throw new Error("Erro API " + res.status);
+                    }
+                } catch (e) {
+                    document.getElementById('loading').innerText = "Erro ao carregar: " + e;
+                }
+            } else {
+                // Mock para outros
+                setTimeout(() => {
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('table-head').innerHTML = '<th class="p-4">Info</th>';
+                    document.getElementById('table-body').innerHTML = '<tr><td class="p-4">Tabela ainda não implementada no backend.</td></tr>';
+                }, 500);
+            }
         }
 
         // --- Batch Processing Logic ---

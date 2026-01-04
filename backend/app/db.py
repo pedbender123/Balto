@@ -96,14 +96,49 @@ def validate_api_key(api_key):
         return None
 
 def registrar_interacao(balcao_id, transcricao, recomendacao, resultado, funcionario_id=None, modelo_stt=None, custo=0.0):
+    print(f"[DB] Tentando registrar interação para balcao={balcao_id}")
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+        INSERT INTO interacoes (balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback, funcionario_id, modelo_stt, custo_estimado)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (balcao_id, datetime.now(), transcricao, recomendacao, resultado, funcionario_id, modelo_stt, custo))
+        conn.commit()
+        conn.close()
+        print(f"[DB] Interação registrada com sucesso (ID gerado implicitamente).")
+    except Exception as e:
+        print(f"[DB] ERRO CRÍTICO ao salvar interação: {e}")
+        import traceback
+        traceback.print_exc()
+
+def listar_interacoes(limit=50):
+    """Retorna as ultimas interacoes para o admin."""
     conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-    INSERT INTO interacoes (balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback, funcionario_id, modelo_stt, custo_estimado)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-    """, (balcao_id, datetime.now(), transcricao, recomendacao, resultado, funcionario_id, modelo_stt, custo))
-    conn.commit()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    query = """
+    SELECT 
+        i.id,
+        i.timestamp,
+        b.nome_balcao,
+        i.transcricao_completa,
+        i.recomendacao_gerada,
+        i.modelo_stt
+    FROM interacoes i
+    LEFT JOIN balcoes b ON i.balcao_id = b.balcao_id
+    ORDER BY i.timestamp DESC
+    LIMIT %s
+    """
+    cursor.execute(query, (limit,))
+    rows = [dict(row) for row in cursor.fetchall()]
     conn.close()
+    
+    # Converter datetime para string
+    for row in rows:
+        if row['timestamp']:
+            row['timestamp'] = row['timestamp'].strftime("%d/%m/%Y %H:%M:%S")
+            
+    return rows
 
 def adicionar_funcionario(user_id, nome, embedding_blob):
     conn = get_db_connection()

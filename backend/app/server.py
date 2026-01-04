@@ -44,6 +44,14 @@ def decode_webm_to_pcm16le(webm_bytes: bytes, sample_rate: int = 16000) -> bytes
         )
         if proc.returncode != 0:
             print(f"[FFMPEG] Erro: {proc.stderr.decode('utf-8')}")
+            # --- DIAGNOSTIC START ---
+            try:
+                print(f"[FFMPEG DIAG] Buffer Size: {len(webm_bytes)} bytes")
+                header_hex = webm_bytes[:32].hex() if webm_bytes else "EMPTY"
+                print(f"[FFMPEG DIAG] Header (hex): {header_hex}")
+            except Exception as e:
+                print(f"[FFMPEG DIAG] Error logging: {e}")
+            # --- DIAGNOSTIC END ---
             return b""
         return proc.stdout
     except Exception as e:
@@ -445,6 +453,17 @@ async def api_export_xlsx(request):
         print(f"Erro Export Excel: {e}")
         return web.Response(status=500, text=str(e))
 
+async def api_data_interacoes(request):
+    """Retorna JSON com as interacoes para o Admin."""
+    try:
+        if request.cookies.get("admin_token") != "auth_ok":
+            return web.Response(status=403, text="Forbidden")
+            
+        rows = db.listar_interacoes(limit=50)
+        return web.json_response(rows)
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)
+
 async def api_cadastro_cliente(request):
     """Endpoint para cadastrar um novo cliente (Rede/Dono)."""
     try:
@@ -519,7 +538,8 @@ if __name__ == "__main__":
 
     # Rota Exportacao
     app.router.add_get('/api/export/xlsx', api_export_xlsx)
-    
+    app.router.add_get('/api/data/interacoes', api_data_interacoes)
+
     print("Balto Server 2.0 Rodando na porta 8765")
     port = int(os.environ.get("PORT", 8765))
     web.run_app(app, port=port)
