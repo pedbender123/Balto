@@ -317,34 +317,39 @@ async def websocket_handler(request):
         await ws.close()
         return ws
 
-    async for msg in ws:
-        if msg.type == WSMsgType.BINARY:
-            # Fluxo de Áudio
-            webm_buffer.extend(msg.data)
-            
-            # Decodifica tudo que tem no buffer
-            pcm_full = decode_webm_to_pcm16le(bytes(webm_buffer))
-            
-            if not pcm_full: continue
-            
-            # Pega apenas os bytes novos
-            if len(pcm_full) > pcm_offset:
-                new_pcm = pcm_full[pcm_offset:]
-                pcm_offset = len(pcm_full)
+    try:
+        async for msg in ws:
+            if msg.type == WSMsgType.BINARY:
+                # Fluxo de Áudio
+                webm_buffer.extend(msg.data)
                 
-                # Processa no VAD
-                # 1. Limpeza de Áudio (Fase 1)
-                cleaned_pcm = audio_cleaner.process(new_pcm)
+                # Decodifica tudo que tem no buffer
+                pcm_full = decode_webm_to_pcm16le(bytes(webm_buffer))
                 
-                # 2. VAD Adaptativo com áudio limpo
-                speech = vad_session.process(cleaned_pcm)
+                if not pcm_full: continue
                 
-                if speech:
-                    asyncio.create_task(
-                        process_speech_pipeline(ws, speech, balcao_id)
-                    )
-        elif msg.type == WSMsgType.ERROR:
-            print(f"WS Error: {ws.exception()}")
+                # Pega apenas os bytes novos
+                if len(pcm_full) > pcm_offset:
+                    new_pcm = pcm_full[pcm_offset:]
+                    pcm_offset = len(pcm_full)
+                    
+                    # Processa no VAD
+                    # 1. Limpeza de Áudio (Fase 1)
+                    cleaned_pcm = audio_cleaner.process(new_pcm)
+                    
+                    # 2. VAD Adaptativo com áudio limpo
+                    speech = vad_session.process(cleaned_pcm)
+                    
+                    if speech:
+                        asyncio.create_task(
+                            process_speech_pipeline(ws, speech, balcao_id)
+                        )
+            elif msg.type == WSMsgType.ERROR:
+                print(f"WS Error: {ws.exception()}")
+    except Exception as e:
+        # Ignora erro de desconexão abrupta
+        if "Cannot write to closing transport" not in str(e):
+            print(f"WS Loop Error: {e}")
 
     print(f"Desconectado: {balcao_id}")
     return ws

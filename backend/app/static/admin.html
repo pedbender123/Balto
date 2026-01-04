@@ -134,6 +134,18 @@
     </div>
 
     <script>
+        // State
+        let currentTab = 'interacoes';
+        let refreshInterval = null;
+
+        // Auto-Login on Load
+        window.addEventListener('load', () => {
+            console.log("Checking cookie:", document.cookie);
+            if (document.cookie.includes('admin_token=auth_ok')) {
+                showDashboard();
+            }
+        });
+
         // Lógica JS Básica para SPA
         async function login() {
             const pwd = document.getElementById('password').value;
@@ -142,20 +154,40 @@
                 body: JSON.stringify({ password: pwd })
             });
             if (res.ok) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-                loadTable('interacoes');
+                showDashboard();
             } else {
                 document.getElementById('error-msg').classList.remove('hidden');
             }
         }
 
-        async function loadTable(table) {
-            document.getElementById('batch-container').classList.add('hidden');
-            document.getElementById('table-container').classList.remove('hidden');
+        function showDashboard() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            loadTable('interacoes');
+            startAutoRefresh();
+        }
 
-            document.getElementById('loading').classList.remove('hidden');
-            document.getElementById('table-body').innerHTML = '';
+        function startAutoRefresh() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(() => {
+                if (!document.hidden && currentTab === 'interacoes') {
+                    loadTable('interacoes', true); // quiet reload
+                }
+            }, 5000);
+        }
+
+        async function loadTable(table, silent = false) {
+            currentTab = table;
+
+            if (table !== 'processamento') {
+                document.getElementById('batch-container').classList.add('hidden');
+                document.getElementById('table-container').classList.remove('hidden');
+            }
+
+            if (!silent) {
+                document.getElementById('loading').classList.remove('hidden');
+                document.getElementById('table-body').innerHTML = '';
+            }
             document.getElementById('table-title').innerText = table;
 
             if (table === 'interacoes') {
@@ -163,7 +195,7 @@
                     const res = await fetch('/api/data/interacoes');
                     if (res.ok) {
                         const data = await res.json();
-                        document.getElementById('loading').classList.add('hidden');
+                        if (!silent) document.getElementById('loading').classList.add('hidden');
 
                         let th = `
                             <th class="p-4 border-b">ID</th>
@@ -172,9 +204,13 @@
                             <th class="p-4 border-b">Transcrição</th>
                             <th class="p-4 border-b">Sugestão</th>
                         `;
-                        document.getElementById('table-head').innerHTML = th;
+                        // Avoid flickering
+                        if (document.getElementById('table-head').innerHTML !== th) {
+                            document.getElementById('table-head').innerHTML = th;
+                        }
 
                         let rowsHtml = '';
+                        // ... existing loop ...
                         data.forEach(row => {
                             rowsHtml += `
                                 <tr class="hover:bg-gray-50 border-b">
@@ -189,10 +225,10 @@
                         document.getElementById('table-body').innerHTML = rowsHtml || '<tr><td colspan="5" class="p-4 text-center">Nenhuma interação encontrada.</td></tr>';
 
                     } else {
-                        throw new Error("Erro API " + res.status);
+                        if (!silent) throw new Error("Erro API " + res.status);
                     }
                 } catch (e) {
-                    document.getElementById('loading').innerText = "Erro ao carregar: " + e;
+                    if (!silent) document.getElementById('loading').innerText = "Erro ao carregar: " + e;
                 }
             } else {
                 // Mock para outros
@@ -208,6 +244,7 @@
         let batchInterval = null;
 
         function loadBatchTab() {
+            currentTab = 'processamento';
             document.getElementById('table-container').classList.add('hidden');
             document.getElementById('batch-container').classList.remove('hidden');
 
@@ -247,7 +284,11 @@
             window.location.href = '/api/export/xlsx';
         }
 
-        function logout() { location.reload(); }
+        function logout() {
+            // Clear cookie
+            document.cookie = "admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            location.reload();
+        }
     </script>
 </body>
 

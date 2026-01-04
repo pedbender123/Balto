@@ -49,7 +49,7 @@ def analisar_texto(texto: str, nome_funcionario: str = "Balconista") -> str | No
         )
 
         response = client.chat.completions.create(
-            model="grok-beta", 
+            model="grok-4-1-fast-non-reasoning", 
             messages=[
                 {"role": "system", "content": prompt},
                 {"role": "user", "content": texto}
