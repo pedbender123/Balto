@@ -66,6 +66,11 @@ DEEPGRAM_API_KEY = os.environ.get("DEEPGRAM_API_KEY")
 # --- Configuração Gladia ---
 GLADIA_API_KEY = os.environ.get("GLADIA_API_KEY")
 
+# --- Smart Routing Config ---
+SMART_ROUTING_ENABLE = os.environ.get("SMART_ROUTING_ENABLE", "1") == "1"
+SMART_ROUTING_SNR_THRESHOLD = float(os.environ.get("SMART_ROUTING_SNR_THRESHOLD", "15.0"))
+SMART_ROUTING_MIN_DURATION = float(os.environ.get("SMART_ROUTING_MIN_DURATION", "5.0"))
+
 def transcrever_deepgram(audio_bytes: bytes) -> str:
     """Modelo Rápido (Deepgram)."""
     if not DEEPGRAM_API_KEY:
@@ -319,11 +324,6 @@ def transcrever_inteligente(audio_bytes: bytes) -> dict:
     snr = calcular_snr(audio_bytes)
     duration_sec = len(audio_bytes) / 32000.0
     
-    # --- Config via Env ---
-    SMART_ROUTING_ENABLE = os.environ.get("SMART_ROUTING_ENABLE", "1") == "1"
-    SMART_ROUTING_SNR_THRESHOLD = float(os.environ.get("SMART_ROUTING_SNR_THRESHOLD", "15.0"))
-    SMART_ROUTING_MIN_DURATION = float(os.environ.get("SMART_ROUTING_MIN_DURATION", "5.0"))
-
     # Lógica de Decisão (Controlada por Env):
     
     usar_economico = False
