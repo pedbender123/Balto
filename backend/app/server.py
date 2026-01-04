@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 from aiohttp import web, WSMsgType
 
 # Imports internos
-from app import db, vad, transcription, analysis, speaker_id, audio_processor
+from app import db, vad, transcription, analysis, speaker_id, audio_processor, diagnostics
 
 load_dotenv()
 
@@ -553,6 +553,18 @@ if __name__ == "__main__":
     app.router.add_get('/api/export/xlsx', api_export_xlsx)
     app.router.add_get('/api/data/interacoes', api_data_interacoes)
 
+    print("---------------------------------------")
     print("Balto Server 2.0 Rodando na porta 8765")
+    print(f"MOCK_MODE: {MOCK_MODE}")
+    print(f"SAVE_AUDIO_DUMPS: {SAVE_AUDIO}")
+    print(f"SMART_ROUTING_ENABLE: {transcription.SMART_ROUTING_ENABLE}")
+    if transcription.SMART_ROUTING_ENABLE:
+        print(f" -> SNR_THRESHOLD: {transcription.SMART_ROUTING_SNR_THRESHOLD} dB")
+        print(f" -> MIN_DURATION: {transcription.SMART_ROUTING_MIN_DURATION} s")
+    print("---------------------------------------")
+    
+    # Executa Diagnósticos
+    diagnostics.run_all_checks()
+    
     port = int(os.environ.get("PORT", 8765))
     web.run_app(app, port=port)
