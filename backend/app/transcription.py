@@ -319,11 +319,23 @@ def transcrever_inteligente(audio_bytes: bytes) -> dict:
     snr = calcular_snr(audio_bytes)
     duration_sec = len(audio_bytes) / 32000.0
     
-    # Lógica de Decisão
-    # Se o áudio é muito limpo (SNR > 15dB) e curto, modelo barato resolve.
-    # Se o áudio é sujo ou muito longo (complexo), usa ElevenLabs.
+    # --- Config via Env ---
+    SMART_ROUTING_ENABLE = os.environ.get("SMART_ROUTING_ENABLE", "1") == "1"
+    SMART_ROUTING_SNR_THRESHOLD = float(os.environ.get("SMART_ROUTING_SNR_THRESHOLD", "15.0"))
+    SMART_ROUTING_MIN_DURATION = float(os.environ.get("SMART_ROUTING_MIN_DURATION", "5.0"))
+
+    # Lógica de Decisão (Controlada por Env):
     
-    usar_economico = (snr > 15.0) and (duration_sec < 5.0)
+    usar_economico = False
+    
+    if SMART_ROUTING_ENABLE:
+        # - Áudios Curtos (< MIN_DURATION): AssemblyAI tende a falhar. Vai para ElevenLabs.
+        # - Áudios Médios/Longos (>= MIN_DURATION) e Limpos (> SNR_THRESHOLD): Vai para AssemblyAI (Economia).
+        # - Áudios Ruidosos: ElevenLabs (Robustez).
+        usar_economico = (snr > SMART_ROUTING_SNR_THRESHOLD) and (duration_sec >= SMART_ROUTING_MIN_DURATION)
+    else:
+        # Se desligado, usa sempre ElevenLabs (Robustez)
+        usar_economico = False
     
     if usar_economico:
         texto = transcrever_assemblyai(audio_bytes)

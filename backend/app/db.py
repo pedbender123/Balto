@@ -70,13 +70,18 @@ def inicializar_db():
         funcionario_id INTEGER,
         modelo_stt TEXT,
         custo_estimado REAL,
+        snr REAL, 
         FOREIGN KEY (balcao_id) REFERENCES balcoes (balcao_id)
     )
     """)
-    
-    # Migração simples (adiciona colunas se faltarem) - Postgres requer verificação diferente
-    # Simplificação: assumindo criação correta. Se precisar migrar colunas em pg, usamos alter table if not exists ou verificação de schema.
-    # Por enquanto, mantendo simples para a criação inicial.
+
+    # Migração segura para adicionar SNR se não existir
+    try:
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS snr REAL")
+        conn.commit()
+    except Exception as e:
+        print(f"[DB WARN] Erro ao migrar schema (snr): {e}")
+        conn.rollback()
     
     conn.commit()
     conn.close()
@@ -95,15 +100,15 @@ def validate_api_key(api_key):
         print(f"Erro ao validar API Key: {e}")
         return None
 
-def registrar_interacao(balcao_id, transcricao, recomendacao, resultado, funcionario_id=None, modelo_stt=None, custo=0.0):
-    print(f"[DB] Tentando registrar interação para balcao={balcao_id}")
+def registrar_interacao(balcao_id, transcricao, recomendacao, resultado, funcionario_id=None, modelo_stt=None, custo=0.0, snr=0.0):
+    print(f"[DB] Tentando registrar interação para balcao={balcao_id}, SNR={snr:.2f}")
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("""
-        INSERT INTO interacoes (balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback, funcionario_id, modelo_stt, custo_estimado)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """, (balcao_id, datetime.now(), transcricao, recomendacao, resultado, funcionario_id, modelo_stt, custo))
+        INSERT INTO interacoes (balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback, funcionario_id, modelo_stt, custo_estimado, snr)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (balcao_id, datetime.now(), transcricao, recomendacao, resultado, funcionario_id, modelo_stt, custo, snr))
         conn.commit()
         conn.close()
         print(f"[DB] Interação registrada com sucesso (ID gerado implicitamente).")

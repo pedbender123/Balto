@@ -223,6 +223,7 @@ async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: s
         texto = transcricao_resultado["texto"]
         modelo_usado = transcricao_resultado["modelo"]
         custo_estimado = transcricao_resultado["custo"]
+        snr_calculado = transcricao_resultado.get("snr", 0.0)
         
         if not texto:
             return
@@ -277,7 +278,8 @@ async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: s
             resultado="processado",
             funcionario_id=funcionario_id,
             modelo_stt=modelo_usado,
-            custo=custo_estimado
+            custo=custo_estimado,
+            snr=snr_calculado
         )
 
     except Exception as e:

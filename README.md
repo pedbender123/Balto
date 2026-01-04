@@ -22,6 +22,18 @@ O sistema suporta operação **Híbrida**, podendo rodar tanto em servidores VPS
 *   **LLM (Inteligência)**: xAI (Grok Beta) / OpenAI (GPT-4o)
 *   **Banco de Dados**: PostgreSQL (Container Isolado)
 
+### Smart Routing (Otimização de Custos)
+O sistema decide automaticamente qual modelo de transcrição usar, visando economia sem perda de qualidade.
+Regras configuráveis via `.env`:
+*   `SMART_ROUTING_ENABLE` (Default: `1`): Liga/Desliga o roteamento inteligente.
+*   `SMART_ROUTING_SNR_THRESHOLD` (Default: `15.0`): Nível mínimo de pureza do áudio (dB) para considerar o modelo econômico.
+*   `SMART_ROUTING_MIN_DURATION` (Default: `5.0`): Duração mínima (segundos) para o modelo econômico (que tende a falhar em áudios muito curtos).
+
+**Lógica:**
+1.  **Áudios Curtos** (< 5s) → **ElevenLabs** (Maior precisão).
+2.  **Áudios Longos** (>= 5s) e **Limpos** (> 15dB) → **AssemblyAI** (Economia).
+3.  **Áudios Ruidosos** → **ElevenLabs** (Robustez).
+
 ---
 
 ## ✨ Funcionalidades Principais
