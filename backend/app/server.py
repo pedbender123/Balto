@@ -181,7 +181,7 @@ async def api_test_analisar(request):
         texto = data.get("texto")
         if not texto: return web.json_response({"error": "Texto empty"}, status=400)
         
-        res_json_str = analysis.analisar_texto(texto, "TesteHTTP")
+        res_json_str = analysis.analisar_texto(texto)
         
         if res_json_str:
             try:
@@ -245,7 +245,7 @@ async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: s
 
         # Passo 5: Inteligência (LLM) com Contexto
         analise_json = await asyncio.to_thread(
-            analysis.analisar_texto, texto, nome_funcionario
+            analysis.analisar_texto, texto
         )
 
         sugestao = None
