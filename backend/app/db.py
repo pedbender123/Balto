@@ -2,6 +2,20 @@ import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
+import numpy as np
+from psycopg2.extensions import register_adapter, AsIs
+
+# Adaptadores para NumPy (evita erro can't adapt type 'numpy.float32')
+def addapt_numpy_float(numpy_float):
+    return AsIs(numpy_float)
+
+def addapt_numpy_int(numpy_int):
+    return AsIs(numpy_int)
+
+register_adapter(np.float32, addapt_numpy_float)
+register_adapter(np.float64, addapt_numpy_float)
+register_adapter(np.int64, addapt_numpy_int)
+
 
 # Configuração via variáveis de ambiente
 DB_HOST = os.environ.get("POSTGRES_HOST", "localhost")
