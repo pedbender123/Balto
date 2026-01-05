@@ -110,7 +110,7 @@ def registrar_interacao(balcao_id, transcricao, recomendacao, resultado, funcion
         cursor.execute("""
         INSERT INTO interacoes (balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback, funcionario_id, modelo_stt, custo_estimado, snr, grok_raw_response)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (balcao_id, datetime.now(), transcricao, recomendacao, resultado, funcionario_id, modelo_stt, custo, snr, grok_raw))
+        """, (balcao_id, datetime.now(), transcricao, recomendacao, resultado, funcionario_id, modelo_stt, float(custo), float(snr), grok_raw))
         conn.commit()
         conn.close()
         print(f"[DB] Interação registrada com sucesso (ID gerado implicitamente).")
