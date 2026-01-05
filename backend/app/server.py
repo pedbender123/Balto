@@ -561,6 +561,7 @@ if __name__ == "__main__":
     if transcription.SMART_ROUTING_ENABLE:
         print(f" -> SNR_THRESHOLD: {transcription.SMART_ROUTING_SNR_THRESHOLD} dB")
         print(f" -> MIN_DURATION: {transcription.SMART_ROUTING_MIN_DURATION} s")
+    print(f"RESTRICT_PRODUCTS (Grok): {analysis.RESTRICT_PRODUCTS}")
     print("---------------------------------------")
     
     # Executa Diagnósticos
