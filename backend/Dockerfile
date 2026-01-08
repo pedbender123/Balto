@@ -32,4 +32,4 @@ ENV PYTHONPATH=/backend
 USER balto_user
 
 # Executa o servidor em modo unbuffered (logs aparecem instantaneamente)
-CMD ["python", "-u", "app/server.py"]
+CMD ["python", "-u", "-m", "app.main"]
