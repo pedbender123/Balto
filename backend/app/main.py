@@ -35,6 +35,7 @@ def main():
     app.router.add_post('/admin/login', endpoints.admin_login)
     app.router.add_post('/cadastro/cliente', endpoints.api_cadastro_cliente)
     app.router.add_post('/cadastro/balcao', endpoints.api_cadastro_balcao)
+    app.router.add_post('/cadastro/voz', endpoints.api_cadastro_voz)
     
     # Test Routes
     app.router.add_post('/api/test/segmentar', endpoints.api_test_segmentar)
