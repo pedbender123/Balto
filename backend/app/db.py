@@ -86,6 +86,10 @@ def inicializar_db():
         custo_estimado REAL,
         snr REAL,
         grok_raw_response TEXT,
+        ts_audio_received TIMESTAMP,
+        ts_transcription_ready TIMESTAMP,
+        ts_ai_request TIMESTAMP,
+        ts_ai_response TIMESTAMP,
         FOREIGN KEY (balcao_id) REFERENCES balcoes (balcao_id)
     )
     """)
@@ -94,6 +98,10 @@ def inicializar_db():
     try:
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS snr REAL")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS grok_raw_response TEXT")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_audio_received TIMESTAMP")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_transcription_ready TIMESTAMP")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_ai_request TIMESTAMP")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_ai_response TIMESTAMP")
         conn.commit()
     except Exception as e:
         print(f"[DB WARN] Erro ao migrar schema (colunas): {e}")
@@ -116,15 +124,24 @@ def validate_api_key(api_key):
         print(f"Erro ao validar API Key: {e}")
         return None
 
-def registrar_interacao(balcao_id, transcricao, recomendacao, resultado, funcionario_id=None, modelo_stt=None, custo=0.0, snr=0.0, grok_raw=None):
+def registrar_interacao(balcao_id, transcricao, recomendacao, resultado, funcionario_id=None, modelo_stt=None, custo=0.0, snr=0.0, grok_raw=None,
+                       ts_audio=None, ts_trans_ready=None, ts_ai_req=None, ts_ai_res=None):
     print(f"[DB] Tentando registrar interação para balcao={balcao_id}, SNR={snr:.2f}")
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("""
-        INSERT INTO interacoes (balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback, funcionario_id, modelo_stt, custo_estimado, snr, grok_raw_response)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (balcao_id, datetime.now(), transcricao, recomendacao, resultado, funcionario_id, modelo_stt, float(custo), float(snr), grok_raw))
+        INSERT INTO interacoes (
+            balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback, 
+            funcionario_id, modelo_stt, custo_estimado, snr, grok_raw_response,
+            ts_audio_received, ts_transcription_ready, ts_ai_request, ts_ai_response
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            balcao_id, datetime.now(), transcricao, recomendacao, resultado, 
+            funcionario_id, modelo_stt, float(custo), float(snr), grok_raw,
+            ts_audio, ts_trans_ready, ts_ai_req, ts_ai_res
+        ))
         conn.commit()
         conn.close()
         print(f"[DB] Interação registrada com sucesso (ID gerado implicitamente).")

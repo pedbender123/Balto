@@ -14,10 +14,33 @@ class TranscriptionBuffer:
         self.last_send_time = time.time()
         
     def add_text(self, text: str):
-        ignored = ["(sons de passos)", "(ruído)", "(corte de vídeo)"]
+        # Lista expandida de termos irrelevantes ou alucinações de ruído
+        ignored_substrings = [
+            "(sons de passos)", 
+            "(ruído)", 
+            "(corte de vídeo)", 
+            "(som de batida)",
+            "(som de fundo)",
+            "(música)",
+            "(respiração)",
+            "(tosse)", # Tosse isolada sem fala pode ser ignorada no buffer se for recorrente como ruído
+            "(vento)"
+        ]
+        
         clean = text.strip()
-        if clean and clean not in ignored:
-            self.buffer.append(clean)
+        
+        # Filtro simples: se o texto for exatamente um dos ignorados ou muito curto/vazio
+        if not clean:
+            return
+
+        # Verifica se o texto contém algum dos termos ignorados (normalizado para lower)
+        clean_lower = clean.lower()
+        if any(ign in clean_lower for ign in ignored_substrings):
+             # Se for APENAS o ruído, ignora. Se tiver fala junto, mantemos (mas o prompt vai limpar)
+             if len(clean) < 20: # Heuristica: texto curto que match com ruído é lixo
+                 return
+
+        self.buffer.append(clean)
 
     def should_process(self) -> bool:
         if not self.buffer: return False

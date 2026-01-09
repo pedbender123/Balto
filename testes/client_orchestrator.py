@@ -5,7 +5,7 @@ import json
 import time
 
 # Configurações
-SERVER_URL = "https://balto.pbpmdev.com" # Apontando para VPS Produção
+SERVER_URL = "http://localhost:8765" # Apontando para VPS Produção
 # Se rodar local na VPS, localhost ok. Se rodar do seu PC, tunnel ou IP.
 # O user pediu "script para rodar na minha máquina". Assumindo acesso HTTP à VPS.
 # Mas o user disse "não no servidor".
