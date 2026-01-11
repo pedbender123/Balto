@@ -101,7 +101,12 @@ def inicializar_db():
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_audio_received TIMESTAMP")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_transcription_ready TIMESTAMP")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_ai_request TIMESTAMP")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_audio_received TIMESTAMP")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_transcription_sent TIMESTAMP")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_transcription_ready TIMESTAMP")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_ai_request TIMESTAMP")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_ai_response TIMESTAMP")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_client_sent TIMESTAMP")
         conn.commit()
     except Exception as e:
         print(f"[DB WARN] Erro ao migrar schema (colunas): {e}")
@@ -125,7 +130,7 @@ def validate_api_key(api_key):
         return None
 
 def registrar_interacao(balcao_id, transcricao, recomendacao, resultado, funcionario_id=None, modelo_stt=None, custo=0.0, snr=0.0, grok_raw=None,
-                       ts_audio=None, ts_trans_ready=None, ts_ai_req=None, ts_ai_res=None):
+                       ts_audio=None, ts_trans_sent=None, ts_trans_ready=None, ts_ai_req=None, ts_ai_res=None, ts_client=None):
     print(f"[DB] Tentando registrar interação para balcao={balcao_id}, SNR={snr:.2f}")
     try:
         conn = get_db_connection()
@@ -134,13 +139,13 @@ def registrar_interacao(balcao_id, transcricao, recomendacao, resultado, funcion
         INSERT INTO interacoes (
             balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback, 
             funcionario_id, modelo_stt, custo_estimado, snr, grok_raw_response,
-            ts_audio_received, ts_transcription_ready, ts_ai_request, ts_ai_response
+            ts_audio_received, ts_transcription_sent, ts_transcription_ready, ts_ai_request, ts_ai_response, ts_client_sent
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             balcao_id, datetime.now(), transcricao, recomendacao, resultado, 
             funcionario_id, modelo_stt, float(custo), float(snr), grok_raw,
-            ts_audio, ts_trans_ready, ts_ai_req, ts_ai_res
+            ts_audio, ts_trans_sent, ts_trans_ready, ts_ai_req, ts_ai_res, ts_client
         ))
         conn.commit()
         conn.close()
@@ -161,7 +166,13 @@ def listar_interacoes(limit=50):
         b.nome_balcao,
         i.transcricao_completa,
         i.recomendacao_gerada,
-        i.modelo_stt
+        i.modelo_stt,
+        i.ts_audio_received,
+        i.ts_transcription_sent,
+        i.ts_transcription_ready,
+        i.ts_ai_request,
+        i.ts_ai_response,
+        i.ts_client_sent
     FROM interacoes i
     LEFT JOIN balcoes b ON i.balcao_id = b.balcao_id
     ORDER BY i.timestamp DESC
@@ -175,6 +186,14 @@ def listar_interacoes(limit=50):
     for row in rows:
         if row['timestamp']:
             row['timestamp'] = row['timestamp'].strftime("%d/%m/%Y %H:%M:%S")
+        
+        # Format new timestamps
+        for field in ['ts_audio_received', 'ts_transcription_sent', 'ts_transcription_ready', 'ts_ai_request', 'ts_ai_response', 'ts_client_sent']:
+            if row.get(field):
+                # Show only time for compactness
+                row[field] = row[field].strftime("%H:%M:%S.%f")[:-3] 
+            else:
+                row[field] = "-"
             
     return rows
 
