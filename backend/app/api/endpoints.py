@@ -1,4 +1,3 @@
-
 import json
 import base64
 import asyncio
@@ -7,7 +6,7 @@ import os
 import pandas as pd
 from datetime import datetime
 from aiohttp import web
-from app import db, transcription, audio_processor, vad
+from app import db, transcription, audio_processor, vad, speaker_id
 from app.core import config, audio_utils, ai_client
 
 # --- Test Endpoints ---
@@ -226,3 +225,58 @@ async def api_cadastro_balcao(request):
             return web.json_response({"error": "Codigo invalido ou expirado"}, status=404)
     except Exception as e:
         return web.json_response({"error": str(e)}, status=500)
+
+
+async def api_cadastro_voz(request):
+    """
+    POST multipart/form-data:
+      - balconista_id (text)
+      - audio (file)  # webm/wav/etc (qualquer coisa que o ffmpeg/decoder entenda)
+    """
+    try:
+        reader = await request.multipart()
+
+        balconista_id = None
+        audio_bytes = None
+
+        async for part in reader:
+            if part.name == "balconista_id":
+                balconista_id = (await part.text()).strip()
+            elif part.name == "audio":
+                audio_bytes = await part.read()
+
+        if not balconista_id:
+            return web.json_response(
+                {"success": False, "error": "Campo 'balconista_id' é obrigatório."},
+                status=400,
+            )
+
+        if not audio_bytes:
+            return web.json_response(
+                {"success": False, "error": "Arquivo de áudio ('audio') é obrigatório."},
+                status=400,
+            )
+
+        # Decode -> PCM16 16k mono
+        pcm16 = audio_utils.decode_webm_to_pcm16le(audio_bytes)  # se aceitar bytes diretos
+        if not pcm16:
+            return web.json_response(
+                {"success": False, "error": "Falha ao decodificar o áudio para PCM16."},
+                status=400,
+            )
+
+        # Salva wav + atualiza perfil (speaker_profiles)
+        filepath = speaker_id.salvar_arquivo_cadastro_e_registrar(
+            balconista_id=balconista_id,
+            audio_pcm16=pcm16,
+            sample_rate=16000,
+        )
+
+        return web.json_response(
+            {"success": True, "balconista_id": balconista_id, "arquivo_salvo": filepath},
+            status=201,
+        )
+
+    except Exception as e:
+        print(f"[CADASTRO_VOZ] Erro: {e}")
+        return web.json_response({"success": False, "error": str(e)}, status=500)

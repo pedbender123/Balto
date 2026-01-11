@@ -6,7 +6,8 @@ from app import db, vad, transcription, speaker_id, audio_processor
 from app.core import config, audio_utils, ai_client, buffer
 
 
-async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: str, transcript_buffer: buffer.TranscriptionBuffer, conversation_history: list):
+async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: str, transcript_buffer: buffer.TranscriptionBuffer, conversation_history: list, funcionario_id: str | None, nome_funcionario: str):
+
     ts_audio_received = datetime.now()
     print(f"[{balcao_id}] Processando segmento de fala ({len(speech_segment)} bytes)...")
 
@@ -47,18 +48,6 @@ async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: s
         # Keep history manageable (last 20 turns)
         if len(conversation_history) > 20: 
             conversation_history.pop(0)
-
-        # Speaker ID (Optional)
-        nome_funcionario = "Desconhecido"
-        funcionario_id = None
-        if len(speech_segment) > 32000:
-            identificacao = await asyncio.to_thread(
-                speaker_id.identificar_funcionario, speech_segment, balcao_id
-            )
-            if identificacao:
-                nome_funcionario = identificacao["nome"]
-                funcionario_id = identificacao["id"]
-                print(f"[{balcao_id}] Funcionário Identificado: {nome_funcionario}")
 
         # Check if we should process via AI
         if transcript_buffer.should_process():
@@ -161,6 +150,9 @@ async def websocket_handler(request):
     vad_session = None
     transcript_buffer = buffer.TranscriptionBuffer()
     conversation_history = [] # Local history for this connection
+    voice_tracker = speaker_id.StreamVoiceIdentifier()
+    funcionario_id_atual = None
+    nome_funcionario_atual = "Desconhecido"
     
     webm_buffer = bytearray()
     pcm_offset = 0

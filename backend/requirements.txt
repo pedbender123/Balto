@@ -17,3 +17,5 @@ imageio-ffmpeg
 psycopg2-binary
 pandas
 openpyxl
+librosa
+ffmpeg

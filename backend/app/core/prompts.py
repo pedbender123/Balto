@@ -22,15 +22,11 @@ NORMALIZAÇÃO RÁPIDA (onomatopeias inequívocas => categoria):
 - "enjoo"/"ânsia" => NÁUSEA
 
 ALLOWLIST (obrigatório):
-- Se a evidência for apenas TOSSE/GARGANTA (ex.: só "cof cof"), só pode sugerir:
-  pastilha para garganta; mel/solução para garganta; soro fisiológico; umidificação/inalação com soro (suporte).
+- Se a evidência for apenas TOSSE/GARGANTA (ex.: só "cof cof"), só pode sugerir: pastilha para garganta; mel/solução para garganta; soro fisiológico; umidificação/inalação com soro (suporte).
   Proibido antitérmico e proibido expectorante/mucolítico.
-- Se a evidência for apenas RINITE/RESFRIADO (ex.: só "atchim"), só pode sugerir:
-  soro fisiológico; lenço de papel; pastilha para garganta.
-- Se a evidência for apenas NÁUSEA (ex.: só "enjoo"), só pode sugerir:
-  sais de reidratação oral; chá de gengibre (produto/insumo comum); pulseira antiemese (acupressão).
-- Se a evidência for MOLEZA/FADIGA:
-  Polivitamínico; Energético natural; Vitamina C.
+- Se a evidência for apenas RINITE/RESFRIADO (ex.: só "atchim"), só pode sugerir: soro fisiológico; lenço de papel; pastilha para garganta.
+- Se a evidência for apenas NÁUSEA (ex.: só "enjoo"), só pode sugerir: sais de reidratação oral; chá de gengibre (produto/insumo comum); pulseira antiemese (acupressão).
+- Se a evidência for MOLEZA/FADIGA: Polivitamínico; Energético natural; Vitamina C.
 
 GATILHO DE NULO (obrigatório):
 - Se NÃO houver evidência literal de (A) ou (B) ou (C), retorne exatamente:
