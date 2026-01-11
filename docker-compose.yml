@@ -6,8 +6,17 @@ services:
       - "8765:8765"
     volumes:
       - balto-dados:/backend/app/dados
+
+      # (1) NOVO: bind mount -> grava no HOST
       - ./audio_dumps:/backend/app/audio_dumps
+
+      # (2) IMPORTANTE: mantém o volume antigo montado como "legacy"
+      #     (não perde áudios já existentes no named volume)
+      - balto-audio:/backend/_audio_volume_legacy:ro
+
+      # seu bind do código (ok manter)
       - ./backend:/backend
+
     env_file:
       - ./backend/.env
     restart: unless-stopped
@@ -17,10 +26,6 @@ services:
   db:
     image: postgres:15-alpine
     container_name: balto-db-prod
-    # SEGURANÇA CRÍTICA: Nenhuma porta exposta para o host.
-    # Apenas containers na mesma rede (balto-net) podem acessar.
-    # ports:
-    #   - "5432:5432" 
     volumes:
       - postgres-data:/var/lib/postgresql/data
     env_file:
@@ -30,3 +35,4 @@ services:
 volumes:
   balto-dados:
   postgres-data:
+  balto-audio:

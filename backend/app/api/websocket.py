@@ -138,9 +138,6 @@ async def websocket_handler(request):
     vad_session = None
     transcript_buffer = buffer.TranscriptionBuffer()
     conversation_history = [] # Local history for this connection
-    voice_tracker = speaker_id.StreamVoiceIdentifier()
-    funcionario_id_atual = None
-    nome_funcionario_atual = "Desconhecido"
     
     webm_buffer = bytearray()
     pcm_offset = 0
@@ -157,6 +154,10 @@ async def websocket_handler(request):
         print(f"Conectado: {balcao_id}")
         vad_session = vad.VAD()
         audio_cleaner = audio_processor.AudioCleaner()
+
+        voice_tracker = speaker_id.StreamVoiceIdentifier()
+        funcionario_id_atual = None
+        nome_funcionario_atual = "Desconhecido"
         
     except Exception as e:
         print(f"Erro Auth WS: {e}")
@@ -179,9 +180,22 @@ async def websocket_handler(request):
                     speech = vad_session.process(cleaned_pcm)
                     
                     if speech:
+                        # alimenta o tracker (streaming voice-id)
+                        pred_id, score = voice_tracker.add_segment(balcao_id, speech)
+
+                        # se identificou pela primeira vez, trava o resultado
+                        if pred_id and funcionario_id_atual is None:
+                            funcionario_id_atual = pred_id
+                            nome_funcionario_atual = pred_id  # por enquanto, o id já é o "nome"
+                            print(f"[{balcao_id}] Voice-ID identificado: {nome_funcionario_atual} (score={score:.3f})")
+
                         asyncio.create_task(
-                            process_speech_pipeline(ws, speech, balcao_id, transcript_buffer, conversation_history)
+                            process_speech_pipeline(
+                                ws, speech, balcao_id, transcript_buffer, conversation_history,
+                                funcionario_id_atual, nome_funcionario_atual
+                            )
                         )
+
             elif msg.type == WSMsgType.ERROR:
                 print(f"WS Error: {ws.exception()}")
     except Exception as e:

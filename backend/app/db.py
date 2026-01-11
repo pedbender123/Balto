@@ -1,3 +1,5 @@
+# backend/app/db.py
+
 import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -5,7 +7,9 @@ from datetime import datetime
 import numpy as np
 from psycopg2.extensions import register_adapter, AsIs
 
-# Adaptadores para NumPy (evita erro can't adapt type 'numpy.float32')
+# =========================
+# Adapters NumPy (evita "can't adapt type numpy.float32")
+# =========================
 def addapt_numpy_float(numpy_float):
     return AsIs(numpy_float)
 
@@ -16,8 +20,9 @@ register_adapter(np.float32, addapt_numpy_float)
 register_adapter(np.float64, addapt_numpy_float)
 register_adapter(np.int64, addapt_numpy_int)
 
-
-# Configuração via variáveis de ambiente
+# =========================
+# Config via env
+# =========================
 DB_HOST = os.environ.get("POSTGRES_HOST", "localhost")
 DB_PORT = os.environ.get("POSTGRES_PORT", "5432")
 DB_NAME = os.environ.get("POSTGRES_DB", "balto_db")
@@ -25,20 +30,22 @@ DB_USER = os.environ.get("POSTGRES_USER", "balto_user")
 DB_PASS = os.environ.get("POSTGRES_PASSWORD", "baltopassword123")
 
 def get_db_connection():
-    conn = psycopg2.connect(
+    return psycopg2.connect(
         host=DB_HOST,
         port=DB_PORT,
         database=DB_NAME,
         user=DB_USER,
         password=DB_PASS
     )
-    return conn
 
+# =========================
+# Schema
+# =========================
 def inicializar_db():
     conn = get_db_connection()
     cursor = conn.cursor()
-    
-    # 1. Tabela Users
+
+    # 1) Users
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
         user_id TEXT PRIMARY KEY,
@@ -48,8 +55,8 @@ def inicializar_db():
         codigo_6_digitos TEXT UNIQUE
     )
     """)
-    
-    # 2. Tabela Balcões
+
+    # 2) Balcões
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS balcoes (
         balcao_id TEXT PRIMARY KEY,
@@ -60,19 +67,23 @@ def inicializar_db():
     )
     """)
 
-    # 3. Tabela Funcionários (Fase 3 - Speaker ID)
+    # 3) Funcionários (Speaker ID)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS funcionarios (
         id SERIAL PRIMARY KEY,
         user_id TEXT,
         nome TEXT,
+        audio_file_name TEXT,
         embedding BYTEA,
         criado_em TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users (user_id)
     )
     """)
 
-    # 4. Tabela Interações (Analytics Expandido)
+    # Migração segura (para bancos antigos que não tinham a coluna)
+    cursor.execute("ALTER TABLE funcionarios ADD COLUMN IF NOT EXISTS audio_file_name TEXT")
+
+    # 4) Interações
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS interacoes (
         id SERIAL PRIMARY KEY,
@@ -94,7 +105,7 @@ def inicializar_db():
     )
     """)
 
-    # Migração segura para adicionar colunas novas se não existirem
+    # Migração segura das colunas de interacoes (ok manter)
     try:
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS snr REAL")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS grok_raw_response TEXT")
@@ -104,14 +115,15 @@ def inicializar_db():
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_ai_response TIMESTAMP")
         conn.commit()
     except Exception as e:
-        print(f"[DB WARN] Erro ao migrar schema (colunas): {e}")
+        print(f"[DB WARN] Erro ao migrar schema (interacoes): {e}")
         conn.rollback()
-    
+
     conn.commit()
     conn.close()
 
-# --- Funções Auxiliares ---
-
+# =========================
+# Auxiliares
+# =========================
 def validate_api_key(api_key):
     try:
         conn = get_db_connection()
@@ -124,88 +136,15 @@ def validate_api_key(api_key):
         print(f"Erro ao validar API Key: {e}")
         return None
 
-def registrar_interacao(balcao_id, transcricao, recomendacao, resultado, funcionario_id=None, modelo_stt=None, custo=0.0, snr=0.0, grok_raw=None,
-                       ts_audio=None, ts_trans_ready=None, ts_ai_req=None, ts_ai_res=None):
-    print(f"[DB] Tentando registrar interação para balcao={balcao_id}, SNR={snr:.2f}")
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("""
-        INSERT INTO interacoes (
-            balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback, 
-            funcionario_id, modelo_stt, custo_estimado, snr, grok_raw_response,
-            ts_audio_received, ts_transcription_ready, ts_ai_request, ts_ai_response
-        )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (
-            balcao_id, datetime.now(), transcricao, recomendacao, resultado, 
-            funcionario_id, modelo_stt, float(custo), float(snr), grok_raw,
-            ts_audio, ts_trans_ready, ts_ai_req, ts_ai_res
-        ))
-        conn.commit()
-        conn.close()
-        print(f"[DB] Interação registrada com sucesso (ID gerado implicitamente).")
-    except Exception as e:
-        print(f"[DB] ERRO CRÍTICO ao salvar interação: {e}")
-        import traceback
-        traceback.print_exc()
-
-def listar_interacoes(limit=50):
-    """Retorna as ultimas interacoes para o admin."""
+def get_user_id_by_balcao(balcao_id: str):
     conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
-    query = """
-    SELECT 
-        i.id,
-        i.timestamp,
-        b.nome_balcao,
-        i.transcricao_completa,
-        i.recomendacao_gerada,
-        i.modelo_stt
-    FROM interacoes i
-    LEFT JOIN balcoes b ON i.balcao_id = b.balcao_id
-    ORDER BY i.timestamp DESC
-    LIMIT %s
-    """
-    cursor.execute(query, (limit,))
-    rows = [dict(row) for row in cursor.fetchall()]
+    cur = conn.cursor()
+    cur.execute("SELECT user_id FROM balcoes WHERE balcao_id = %s", (balcao_id,))
+    row = cur.fetchone()
     conn.close()
-    
-    # Converter datetime para string
-    for row in rows:
-        if row['timestamp']:
-            row['timestamp'] = row['timestamp'].strftime("%d/%m/%Y %H:%M:%S")
-            
-    return rows
-
-def adicionar_funcionario(user_id, nome, embedding_blob):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO funcionarios (user_id, nome, embedding, criado_em) VALUES (%s, %s, %s, %s)",
-                   (user_id, nome, embedding_blob, datetime.now()))
-    conn.commit()
-    conn.close()
-
-def listar_funcionarios_por_balcao(balcao_id):
-    """Retorna lista de funcionarios do dono do balcão."""
-    conn = get_db_connection()
-    # Usando RealDictCursor para retornar dicionários compatíveis com o código anterior
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
-    
-    # Join para achar o user_id através do balcao_id
-    query = """
-    SELECT f.id, f.nome, f.embedding 
-    FROM funcionarios f
-    JOIN balcoes b ON f.user_id = b.user_id
-    WHERE b.balcao_id = %s
-    """
-    cursor.execute(query, (balcao_id,))
-    rows = [dict(row) for row in cursor.fetchall()]
-    conn.close()
-    return rows
+    return row[0] if row else None
 
 def get_user_by_code(code):
-    """Retorna user_id pelo código de 6 dígitos."""
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT user_id FROM users WHERE codigo_6_digitos = %s", (code,))
@@ -214,7 +153,6 @@ def get_user_by_code(code):
     return res[0] if res else None
 
 def set_user_code(user_id, code):
-    """Define o código de 6 dígitos para um usuário."""
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("UPDATE users SET codigo_6_digitos = %s WHERE user_id = %s", (code, user_id))
@@ -223,18 +161,19 @@ def set_user_code(user_id, code):
     conn.close()
     return rows > 0
 
+# =========================
+# Clientes / balcões
+# =========================
 def create_client(email, razao_social, telefone):
-    """Cria um novo cliente (user) e gera código de 6 dígitos."""
     import uuid
     import random
-    
+
     conn = get_db_connection()
     cursor = conn.cursor()
-    
+
     user_id = str(uuid.uuid4())
-    # Gera código unico (tentativa simples, em prod faria loop de colisao)
     codigo = str(random.randint(100000, 999999))
-    
+
     try:
         cursor.execute("""
             INSERT INTO users (user_id, email, razao_social, telefone, codigo_6_digitos)
@@ -245,28 +184,159 @@ def create_client(email, razao_social, telefone):
         conn.rollback()
         conn.close()
         raise e
-        
+
     conn.close()
     return codigo
 
 def create_balcao(user_id, nome_balcao):
-    """Cria um novo balcão e retorna (balcao_id, api_key)."""
     import uuid
     conn = get_db_connection()
     cursor = conn.cursor()
-    
+
     balcao_id = str(uuid.uuid4())
     api_key = f"bk_{uuid.uuid4().hex}"
-    
-    # Verifica se já existe um balcão com esse nome para esse user (opcional, mas bom pra evitar duplicata)
-    # Por simplificação, vamos permitir múltiplos por enquanto ou deixar o banco chiar se fosse unique.
-    # Mas api_key é unique.
-    
+
     cursor.execute("""
         INSERT INTO balcoes (balcao_id, user_id, nome_balcao, api_key)
         VALUES (%s, %s, %s, %s)
     """, (balcao_id, user_id, nome_balcao, api_key))
-    
+
     conn.commit()
     conn.close()
     return balcao_id, api_key
+
+# =========================
+# Funcionários (cadastro de voz)
+# =========================
+def upsert_funcionario_por_nome(
+    user_id: str,
+    nome: str,
+    embedding_blob: bytes,
+    audio_file_name: str | None = None,
+):
+    """
+    Se já existe (user_id, nome), atualiza embedding e audio_file_name.
+    Se não existe, cria.
+    Retorna id (SERIAL).
+
+    Obs: sem UNIQUE no banco por enquanto (você garantirá manualmente).
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT id FROM funcionarios WHERE user_id = %s AND nome = %s",
+        (user_id, nome)
+    )
+    row = cursor.fetchone()
+
+    now = datetime.now()
+
+    if row:
+        func_id = row[0]
+        cursor.execute(
+            """
+            UPDATE funcionarios
+            SET embedding = %s,
+                audio_file_name = COALESCE(%s, audio_file_name),
+                criado_em = %s
+            WHERE id = %s
+            """,
+            (embedding_blob, audio_file_name, now, func_id)
+        )
+    else:
+        cursor.execute(
+            """
+            INSERT INTO funcionarios (user_id, nome, audio_file_name, embedding, criado_em)
+            VALUES (%s, %s, %s, %s, %s)
+            RETURNING id
+            """,
+            (user_id, nome, audio_file_name, embedding_blob, now)
+        )
+        func_id = cursor.fetchone()[0]
+
+    conn.commit()
+    conn.close()
+    return func_id
+
+def listar_funcionarios_por_user(user_id: str):
+    """
+    Retorna lista de funcionarios do user:
+      [{id, nome, audio_file_name, embedding}, ...]
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    cursor.execute(
+        "SELECT id, nome, audio_file_name, embedding FROM funcionarios WHERE user_id = %s",
+        (user_id,)
+    )
+    rows = [dict(r) for r in cursor.fetchall()]
+    conn.close()
+    return rows
+
+# =========================
+# Interações / admin
+# =========================
+def registrar_interacao(
+    balcao_id,
+    transcricao,
+    recomendacao,
+    resultado,
+    funcionario_id=None,
+    modelo_stt=None,
+    custo=0.0,
+    snr=0.0,
+    grok_raw=None,
+    ts_audio=None,
+    ts_trans_ready=None,
+    ts_ai_req=None,
+    ts_ai_res=None
+):
+    print(f"[DB] Tentando registrar interação para balcao={balcao_id}, SNR={snr:.2f}")
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+        INSERT INTO interacoes (
+            balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback,
+            funcionario_id, modelo_stt, custo_estimado, snr, grok_raw_response,
+            ts_audio_received, ts_transcription_ready, ts_ai_request, ts_ai_response
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            balcao_id, datetime.now(), transcricao, recomendacao, resultado,
+            funcionario_id, modelo_stt, float(custo), float(snr), grok_raw,
+            ts_audio, ts_trans_ready, ts_ai_req, ts_ai_res
+        ))
+        conn.commit()
+        conn.close()
+        print("[DB] Interação registrada com sucesso.")
+    except Exception as e:
+        print(f"[DB] ERRO ao salvar interação: {e}")
+        import traceback
+        traceback.print_exc()
+
+def listar_interacoes(limit=50):
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    cursor.execute("""
+    SELECT
+        i.id,
+        i.timestamp,
+        b.nome_balcao,
+        i.transcricao_completa,
+        i.recomendacao_gerada,
+        i.modelo_stt
+    FROM interacoes i
+    LEFT JOIN balcoes b ON i.balcao_id = b.balcao_id
+    ORDER BY i.timestamp DESC
+    LIMIT %s
+    """, (limit,))
+    rows = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+
+    for row in rows:
+        if row.get("timestamp"):
+            row["timestamp"] = row["timestamp"].strftime("%d/%m/%Y %H:%M:%S")
+
+    return rows
