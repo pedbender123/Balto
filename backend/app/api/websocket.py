@@ -25,6 +25,7 @@ async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: s
         return
 
     try:
+        ts_transcription_sent = datetime.now()
         transcricao_resultado = await asyncio.to_thread(
             transcription.transcrever_inteligente, speech_segment
         )
@@ -79,33 +80,42 @@ async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: s
                     elif dados.get("sugestao"):
                         items_to_send.append(dados)
                     
-                    # Send up to 3 valid recommendations
-                    count = 0
+                    
+                    # Collect ALL valid suggestions for logging/DB
+                    all_suggestions_list = []
                     for item in items_to_send:
-                        if count >= 3: break
-                        
-                        sugestao = item.get("sugestao")
-                        explicacao = item.get("explicacao")
-                        
-                        if sugestao and sugestao.lower() not in ["null", "nenhuma", "none"]:
-                            payload = {
-                                "comando": "recomendar",
-                                "produto": sugestao,
-                                "explicacao": explicacao,
-                                "transcricao_base": buffer_content, # Envia o trecho recente que gerou isso
-                                "atendente": nome_funcionario
-                            }
-                            await websocket.send_json(payload)
-                            sugestoes_enviadas.append(f"{sugestao} ({explicacao})")
-                            count += 1
-                            # Small delay to ensure client renders cards nicely in sequence
-                            await asyncio.sleep(0.1) 
+                         sug = item.get("sugestao")
+                         expl = item.get("explicacao")
+                         if sug and sug.lower() not in ["null", "nenhuma", "none"]:
+                             all_suggestions_list.append({"sugestao": sug, "explicacao": expl})
+                    
+                    # Prepare log string with ALL suggestions
+                    sugestoes_log_str = [f"{s['sugestao']} ({s['explicacao']})" for s in all_suggestions_list]
+                    recomendacao_log = " | ".join(sugestoes_log_str) if all_suggestions_list else "Nenhuma"
 
+                    # Prepare Payload for Frontend (Max 3)
+                    frontend_items = all_suggestions_list[:3]
+                    
+                    if frontend_items:
+                        payload = {
+                            "comando": "recomendar",
+                            "itens": frontend_items,
+                            "transcricao_base": buffer_content,
+                            "atendente": nome_funcionario
+                        }
+                        await websocket.send_json(payload)
+                        ts_client_sent = datetime.now() # Capture time sent to client (batch)
+                        
+                        # Small delay not needed for batch, but keep minimal yield if needed
+                        # await asyncio.sleep(0.1) 
+                    
                 except Exception as e:
                     print(f"[{balcao_id}] Erro Parse JSON AI: {e}")
+                    recomendacao_log = "Erro Parse"
 
-            # Prepare log string
-            recomendacao_log = " | ".join(sugestoes_enviadas) if sugestoes_enviadas else "Nenhuma"
+            # Prepare log string (Fallback if not set above)
+            if 'recomendacao_log' not in locals():
+                recomendacao_log = "Nenhuma"
 
             # Log interaction
             await asyncio.to_thread(
@@ -120,9 +130,11 @@ async def process_speech_pipeline(websocket, speech_segment: bytes, balcao_id: s
                 snr=snr_calculado,
                 grok_raw=analise_json,
                 ts_audio=ts_audio_received,
+                ts_trans_sent=ts_transcription_sent,
                 ts_trans_ready=ts_transcription_ready,
                 ts_ai_req=ts_ai_request,
-                ts_ai_res=ts_ai_response
+                ts_ai_res=ts_ai_response,
+                ts_client=ts_client_sent if 'ts_client_sent' in locals() else None
             )
 
     except Exception as e:

@@ -13,6 +13,11 @@ class TranscriptionBuffer:
         self.max_wait_seconds = max_wait_seconds
         self.last_send_time = time.time()
         
+        # New State for Gaps
+        self.last_update_time = time.time()
+        self.last_gap = 0.0
+        self.last_segment_word_count = 0
+        
     def add_text(self, text: str):
         # Lista expandida de termos irrelevantes ou alucinações de ruído
         ignored_substrings = [
@@ -40,13 +45,36 @@ class TranscriptionBuffer:
              if len(clean) < 20: # Heuristica: texto curto que match com ruído é lixo
                  return
 
+        # Capture gap BEFORE adding
+        now = time.time()
+        self.last_gap = now - self.last_update_time
+        self.last_update_time = now
+        self.last_segment_word_count = len(clean.split())
+
         self.buffer.append(clean)
 
     def should_process(self) -> bool:
         if not self.buffer: return False
+        
         word_count = len(" ".join(self.buffer).split())
-        time_elapsed = time.time() - self.last_send_time
-        return word_count >= self.min_words or time_elapsed >= self.max_wait_seconds
+        time_since_last_send = time.time() - self.last_send_time
+        
+        # --- New Rules ---
+        
+        # Rule B: Suppress if > 45s gap AND <= 2 words
+        # This prevents "Ok" or noises from triggering a process call after a long silence.
+        is_very_long_gap = (self.last_gap > 45.0)
+        if is_very_long_gap and self.last_segment_word_count <= 2:
+            return False
+
+        # Rule A: Trigger if > 5s gap AND > 3 words
+        # This allows capturing a new full sentence immediately even if buffer < 10 words.
+        is_long_gap = (self.last_gap > 5.0)
+        if is_long_gap and self.last_segment_word_count > 3:
+            return True
+
+        # Standard Rules
+        return word_count >= self.min_words or time_since_last_send >= self.max_wait_seconds
 
     def get_context_and_clear(self) -> str:
         full_text = " ".join(self.buffer)

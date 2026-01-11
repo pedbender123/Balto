@@ -200,6 +200,11 @@
                         let th = `
                             <th class="p-4 border-b">ID</th>
                             <th class="p-4 border-b">Data</th>
+                            <th class="p-4 border-b">Rec. Áudio</th>
+                            <th class="p-4 border-b">Transc. Sent</th>
+                            <th class="p-4 border-b">Transc. Ready</th>
+                            <th class="p-4 border-b">LLM Resp.</th>
+                            <th class="p-4 border-b">Local Sent</th>
                             <th class="p-4 border-b">Balcão</th>
                             <th class="p-4 border-b">Transcrição</th>
                             <th class="p-4 border-b">Sugestão</th>
@@ -216,6 +221,11 @@
                                 <tr class="hover:bg-gray-50 border-b">
                                     <td class="p-4 text-xs font-mono text-gray-500">#${row.id}</td>
                                     <td class="p-4 text-sm text-gray-600">${row.timestamp}</td>
+                                    <td class="p-4 text-xs font-mono text-purple-600">${row.ts_audio_received || '-'}</td>
+                                    <td class="p-4 text-xs font-mono text-gray-500">${row.ts_transcription_sent || '-'}</td>
+                                    <td class="p-4 text-xs font-mono text-blue-600">${row.ts_transcription_ready || '-'}</td>
+                                    <td class="p-4 text-xs font-mono text-green-600">${row.ts_ai_response || '-'}</td>
+                                    <td class="p-4 text-xs font-mono text-orange-600">${row.ts_client_sent || '-'}</td>
                                     <td class="p-4 text-sm font-bold text-blue-800">${row.nome_balcao || '-'}</td>
                                     <td class="p-4 text-sm italic text-gray-600">"${row.transcricao_completa}"</td>
                                     <td class="p-4 text-sm font-bold text-green-700">${row.recomendacao_gerada || '-'}</td>

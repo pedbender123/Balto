@@ -79,7 +79,6 @@ def inicializar_db():
         FOREIGN KEY (user_id) REFERENCES users (user_id)
     )
     """)
-
     # Migração segura (para bancos antigos que não tinham a coluna)
     cursor.execute("ALTER TABLE funcionarios ADD COLUMN IF NOT EXISTS audio_file_name TEXT")
 
@@ -98,21 +97,25 @@ def inicializar_db():
         snr REAL,
         grok_raw_response TEXT,
         ts_audio_received TIMESTAMP,
+        ts_transcription_sent TIMESTAMP,
         ts_transcription_ready TIMESTAMP,
         ts_ai_request TIMESTAMP,
         ts_ai_response TIMESTAMP,
+        ts_client_sent TIMESTAMP,
         FOREIGN KEY (balcao_id) REFERENCES balcoes (balcao_id)
     )
     """)
 
-    # Migração segura das colunas de interacoes (ok manter)
+    # Migração segura das colunas de interacoes (sem duplicar ALTERs)
     try:
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS snr REAL")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS grok_raw_response TEXT")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_audio_received TIMESTAMP")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_transcription_sent TIMESTAMP")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_transcription_ready TIMESTAMP")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_ai_request TIMESTAMP")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_ai_response TIMESTAMP")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_client_sent TIMESTAMP")
         conn.commit()
     except Exception as e:
         print(f"[DB WARN] Erro ao migrar schema (interacoes): {e}")
@@ -274,8 +277,27 @@ def listar_funcionarios_por_user(user_id: str):
     conn.close()
     return rows
 
+def listar_funcionarios_por_balcao(balcao_id: str):
+    """
+    Retorna lista de funcionarios do dono do balcão (via join balcoes -> user_id).
+    Útil se algum ponto do sistema ainda identifica por balcao_id.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    query = """
+    SELECT f.id, f.nome, f.audio_file_name, f.embedding
+    FROM funcionarios f
+    JOIN balcoes b ON f.user_id = b.user_id
+    WHERE b.balcao_id = %s
+    """
+    cursor.execute(query, (balcao_id,))
+    rows = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return rows
+
 # =========================
-# Interações / admin
+# Interações / admin (VERSÃO COM TEMPOS EXTRAS)
 # =========================
 def registrar_interacao(
     balcao_id,
@@ -288,9 +310,11 @@ def registrar_interacao(
     snr=0.0,
     grok_raw=None,
     ts_audio=None,
+    ts_trans_sent=None,
     ts_trans_ready=None,
     ts_ai_req=None,
-    ts_ai_res=None
+    ts_ai_res=None,
+    ts_client=None
 ):
     print(f"[DB] Tentando registrar interação para balcao={balcao_id}, SNR={snr:.2f}")
     try:
@@ -300,43 +324,67 @@ def registrar_interacao(
         INSERT INTO interacoes (
             balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback,
             funcionario_id, modelo_stt, custo_estimado, snr, grok_raw_response,
-            ts_audio_received, ts_transcription_ready, ts_ai_request, ts_ai_response
+            ts_audio_received, ts_transcription_sent, ts_transcription_ready,
+            ts_ai_request, ts_ai_response, ts_client_sent
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             balcao_id, datetime.now(), transcricao, recomendacao, resultado,
             funcionario_id, modelo_stt, float(custo), float(snr), grok_raw,
-            ts_audio, ts_trans_ready, ts_ai_req, ts_ai_res
+            ts_audio, ts_trans_sent, ts_trans_ready, ts_ai_req, ts_ai_res, ts_client
         ))
         conn.commit()
         conn.close()
         print("[DB] Interação registrada com sucesso.")
     except Exception as e:
-        print(f"[DB] ERRO ao salvar interação: {e}")
+        print(f"[DB] ERRO CRÍTICO ao salvar interação: {e}")
         import traceback
         traceback.print_exc()
 
 def listar_interacoes(limit=50):
+    """Retorna as últimas interações para o admin (com tempos extras)."""
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
-    cursor.execute("""
+
+    query = """
     SELECT
         i.id,
         i.timestamp,
         b.nome_balcao,
         i.transcricao_completa,
         i.recomendacao_gerada,
-        i.modelo_stt
+        i.modelo_stt,
+        i.ts_audio_received,
+        i.ts_transcription_sent,
+        i.ts_transcription_ready,
+        i.ts_ai_request,
+        i.ts_ai_response,
+        i.ts_client_sent
     FROM interacoes i
     LEFT JOIN balcoes b ON i.balcao_id = b.balcao_id
     ORDER BY i.timestamp DESC
     LIMIT %s
-    """, (limit,))
+    """
+    cursor.execute(query, (limit,))
     rows = [dict(row) for row in cursor.fetchall()]
     conn.close()
 
+    # Converter datetimes para strings amigáveis
     for row in rows:
         if row.get("timestamp"):
             row["timestamp"] = row["timestamp"].strftime("%d/%m/%Y %H:%M:%S")
+
+        for field in [
+            "ts_audio_received",
+            "ts_transcription_sent",
+            "ts_transcription_ready",
+            "ts_ai_request",
+            "ts_ai_response",
+            "ts_client_sent",
+        ]:
+            if row.get(field):
+                row[field] = row[field].strftime("%H:%M:%S.%f")[:-3]  # HH:MM:SS.mmm
+            else:
+                row[field] = "-"
 
     return rows
