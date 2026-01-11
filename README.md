@@ -109,6 +109,27 @@ Imediatamente após conectar, o cliente **DEVE** enviar um frame JSON contendo a
 }
 ```
 
+ws://localhost:8765/ws
+
+Para testes e desenvolvimento.
+
+Nota: Ao usar a VPS (https), certifique-se de que seu cliente WebSocket utilize wss:// (Secure WebSocket) para evitar erros de conteúdo misto.
+
+🚀 Instalação e Execução
+
+1. Configuração de Variáveis (.env)
+
+Crie um arquivo .env na pasta backend/ baseando-se no modelo abaixo:
+
+XAI_API_KEY="sua-chave-grok-aqui"
+ELEVENLABS_API_KEY="sua-chave-elevenlabs-aqui"
+DB_FILE="/backend/app/dados/registro.db"
+VAD_ENERGY_THRESHOLD=300
+ADMIN_SECRET=x9PeHTY7ouQNvzJH
+MOCK_MODE=0
+SPEAKER_ID_ENABLED=0
+AUDIO_DUMP_DIR=/backend/app/audio_dumps
+
 *   **Sucesso**: A conexão permanece aberta.
 *   **Erro**: O servidor fecha a conexão com Code `4001` (Close Reason: `API Key Invalida`).
 
