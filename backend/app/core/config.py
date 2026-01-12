@@ -18,3 +18,6 @@ if not OPENAI_API_KEY:
 
 # Smart Routing (Legacy Support)
 SMART_ROUTING_ENABLE = os.environ.get("SMART_ROUTING_ENABLE") == "1"
+
+# Startup Test
+RUN_STARTUP_TEST = os.environ.get("RUN_STARTUP_TEST") == "1"

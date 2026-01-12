@@ -60,6 +60,15 @@ def main():
     # Diagnostics
     diagnostics.run_all_checks()
     
+    # Schedule Integration Test (Background Task)
+    import asyncio
+    from app import integration_test
+    
+    async def run_test_bg(app):
+         asyncio.create_task(integration_test.start_startup_test())
+
+    app.on_startup.append(run_test_bg)
+
     web.run_app(app, port=config.PORT)
 
 if __name__ == "__main__":
