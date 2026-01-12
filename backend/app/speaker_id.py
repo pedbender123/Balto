@@ -212,3 +212,58 @@ def extrair_audio_de_speaker(
         return b""
 
     return np.concatenate(trechos).astype(np.int16).tobytes()
+
+# =========================
+# Streaming Voice Identity (Restored/Implemented)
+# =========================
+class StreamVoiceIdentifier:
+    """
+    Mantém estado ou cache de perfis para identificar locutor em tempo real
+    conforme chegam chunks de áudio (segmentos do VAD).
+    """
+    def __init__(self):
+        # Cache simples de perfis carregados: {balcao_id: {nome: embedding, ...}}
+        # Em prod, teria expiração/LRU.
+        self.profiles_cache: Dict[str, Dict[str, np.ndarray]] = {}
+        self.cache_lock = threading.Lock()
+
+    def _load_profiles(self, balcao_id: str):
+        """Carrega do banco se não tiver no cache."""
+        # Se quiser forçar reload sempre, comente o if
+        if balcao_id in self.profiles_cache:
+            return self.profiles_cache[balcao_id]
+
+        rows = db.listar_funcionarios_por_balcao(balcao_id)
+        profiles = {}
+        for r in rows:
+            nome = r['nome']
+            emb_blob = r['embedding']
+             # converter bytes do banco (bytea) para numpy
+            if emb_blob:
+                 emb_arr = np.frombuffer(emb_blob, dtype=np.float32)
+                 profiles[nome] = emb_arr
+        
+        with self.cache_lock:
+            self.profiles_cache[balcao_id] = profiles
+        return profiles
+
+    def add_segment(self, balcao_id: str, speech_chunk: bytes) -> Tuple[Optional[str], float]:
+        """
+        Processa um chunk de fala (VAD True) e tenta identificar.
+        Retorna (nome_funcionario, score).
+        """
+        # 1. Extrair embedding do chunk atual
+        emb_test = extrair_embedding(speech_chunk)
+        if emb_test is None:
+            return None, 0.0
+
+        # 2. Carregar perfis do balcão
+        profiles = self._load_profiles(balcao_id)
+        if not profiles:
+            return None, 0.0
+
+        # 3. Comparar
+        # classificar_por_scores retorna (top1_id, top1_score, list_scores)
+        top_id, top_score, _ = classificar_por_scores(emb_test, profiles)
+
+        return top_id, top_score
