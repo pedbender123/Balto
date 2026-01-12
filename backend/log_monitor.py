@@ -94,6 +94,19 @@ def main_loop():
     
     try:
         client = docker.from_env()
+        
+        # Auto-detect Project Name from own labels if not provided
+        global PROJECT_NAME
+        if not PROJECT_NAME and MY_HOSTNAME:
+            try:
+                # MY_HOSTNAME is usually the container ID (short) in Docker
+                me = client.containers.get(MY_HOSTNAME)
+                PROJECT_NAME = me.labels.get('com.docker.compose.project')
+                if PROJECT_NAME:
+                    print(f"[LogMonitor] Auto-detected Project Filter: {PROJECT_NAME}")
+            except Exception as e:
+                print(f"[LogMonitor] Warning: Could not auto-detect project name: {e}")
+                
     except Exception as e:
         print(f"FATAL: Não foi possível conectar ao Docker Socket. {e}")
         return
