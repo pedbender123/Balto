@@ -88,6 +88,7 @@ def follow_container_logs(container):
         monitored_containers.discard(container.id)
 
 def main_loop():
+    global PROJECT_NAME
     print(f"--- INICIANDO MONITOR DE LOGS ---")
     print(f"Alvo: {WEBHOOK_URL}")
     print(f"Projeto: {PROJECT_NAME if PROJECT_NAME else 'Todos (Sem filtro)'}")
@@ -96,7 +97,6 @@ def main_loop():
         client = docker.from_env()
         
         # Auto-detect Project Name from own labels if not provided
-        global PROJECT_NAME
         if not PROJECT_NAME and MY_HOSTNAME:
             try:
                 # MY_HOSTNAME is usually the container ID (short) in Docker
