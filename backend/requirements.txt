@@ -18,5 +18,5 @@ psycopg2-binary
 pandas
 openpyxl
 librosa
-ffmpeg# Additional deps for integration test
+ffmpeg
 aiohttp
