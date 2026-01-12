@@ -42,6 +42,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - ./backend/.env
+    environment:
+      - APP_UID=0  # Necessário para ler o /var/run/docker.sock
+      - APP_GID=0
     restart: unless-stopped
     depends_on:
       - server
