@@ -56,13 +56,22 @@ class FFmpegWebMToPCMStream:
 
     async def close(self):
         self._closed = True
+
+        # destrava o consumer (sentinela)
+        try:
+            await self.pcm_queue.put(b"")
+        except:
+            pass
+
         if self.proc and self.proc.stdin:
             try:
                 self.proc.stdin.close()
             except:
                 pass
+
         if self._reader_task:
             self._reader_task.cancel()
+
         if self.proc:
             try:
                 self.proc.kill()
@@ -254,13 +263,14 @@ async def websocket_handler(request):
 
         while True:
             pcm_chunk = await decoder.read_pcm()
-            if not pcm_chunk:
-                continue
+
+            # sentinela de shutdown
+            if pcm_chunk == b"":
+                break
 
             pcm_acc.extend(pcm_chunk)
 
-            # processa em blocos pequenos e constantes
-            while len(pcm_acc) >= 1920:  # ~60ms (16kHz * 2 bytes * 0.06)
+            while len(pcm_acc) >= 1920:
                 new_pcm = bytes(pcm_acc[:1920])
                 del pcm_acc[:1920]
 
@@ -288,19 +298,26 @@ async def websocket_handler(request):
         async for msg in ws:
             if msg.type == WSMsgType.BINARY:
                 await decoder.write_webm(msg.data)
-
             elif msg.type == WSMsgType.ERROR:
                 print(f"WS Error: {ws.exception()}")
+
     except Exception as e:
         if "Cannot write to closing transport" not in str(e):
             print(f"WS Loop Error: {e}")
 
-    print(f"Desconectado: {balcao_id}")
-    try:
-        consumer_task.cancel()
-    except:
-        pass
+    finally:
+        print(f"Desconectado: {balcao_id}")
 
-    await decoder.close()
+        # fecha decoder (isso solta o consumer via sentinela)
+        try:
+            await decoder.close()
+        except:
+            pass
+
+        # encerra consumer task
+        try:
+            consumer_task.cancel()
+        except:
+            pass
 
     return ws
