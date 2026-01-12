@@ -4,6 +4,7 @@ import os
 import time
 import threading
 import logging
+from datetime import datetime
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -58,8 +59,9 @@ def send_log_batch(container_name, log_line):
         return
 
     payload = {
-        "level": detect_log_level(log_line),
-        "message": f"[{container_name}] {log_line.strip()}"
+        "container": container_name,
+        "message": log_line.strip(),
+        "created_at": datetime.utcnow().isoformat()
     }
     try:
         # Timeout curto para não travar a thread de leitura
