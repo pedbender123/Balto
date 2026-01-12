@@ -214,56 +214,69 @@ def extrair_audio_de_speaker(
     return np.concatenate(trechos).astype(np.int16).tobytes()
 
 # =========================
-# Streaming Voice Identity (Restored/Implemented)
+# Streaming Voice Identity
 # =========================
 class StreamVoiceIdentifier:
     """
-    Mantém estado ou cache de perfis para identificar locutor em tempo real
-    conforme chegam chunks de áudio (segmentos do VAD).
+    Identifica locutor em tempo real conforme chegam segmentos (VAD).
+    Retorna funcionario_id (int) + nome + score.
     """
     def __init__(self):
-        # Cache simples de perfis carregados: {balcao_id: {nome: embedding, ...}}
-        # Em prod, teria expiração/LRU.
-        self.profiles_cache: Dict[str, Dict[str, np.ndarray]] = {}
+        self.profiles_cache: Dict[str, Dict[int, np.ndarray]] = {}   # balcao_id -> {func_id: emb}
+        self.names_cache: Dict[str, Dict[int, str]] = {}             # balcao_id -> {func_id: nome}
         self.cache_lock = threading.Lock()
 
     def _load_profiles(self, balcao_id: str):
-        """Carrega do banco se não tiver no cache."""
-        # Se quiser forçar reload sempre, comente o if
-        if balcao_id in self.profiles_cache:
-            return self.profiles_cache[balcao_id]
+        # cache hit
+        if balcao_id in self.profiles_cache and balcao_id in self.names_cache:
+            return self.profiles_cache[balcao_id], self.names_cache[balcao_id]
 
         rows = db.listar_funcionarios_por_balcao(balcao_id)
-        profiles = {}
+
+        profiles: Dict[int, np.ndarray] = {}
+        names: Dict[int, str] = {}
+
         for r in rows:
-            nome = r['nome']
-            emb_blob = r['embedding']
-             # converter bytes do banco (bytea) para numpy
+            func_id = int(r["id"])
+            nome = r["nome"]
+            emb_blob = r["embedding"]
+
             if emb_blob:
-                 emb_arr = np.frombuffer(emb_blob, dtype=np.float32)
-                 profiles[nome] = emb_arr
-        
+                emb_arr = np.frombuffer(emb_blob, dtype=np.float32)
+                profiles[func_id] = emb_arr
+                names[func_id] = nome
+
         with self.cache_lock:
             self.profiles_cache[balcao_id] = profiles
-        return profiles
+            self.names_cache[balcao_id] = names
 
-    def add_segment(self, balcao_id: str, speech_chunk: bytes) -> Tuple[Optional[str], float]:
+        return profiles, names
+
+    def add_segment(self, balcao_id: str, speech_chunk: bytes) -> Tuple[Optional[int], Optional[str], float]:
         """
-        Processa um chunk de fala (VAD True) e tenta identificar.
-        Retorna (nome_funcionario, score).
+        Retorna (funcionario_id, nome, score)
         """
-        # 1. Extrair embedding do chunk atual
+        # (opcional mas recomendado) ignora chunks curtos demais — embeddings ficam instáveis
+        dur = len(speech_chunk) / 32000.0  # 16kHz * 2 bytes
+        if dur < 0.8:
+            return None, None, 0.0
+
         emb_test = extrair_embedding(speech_chunk)
         if emb_test is None:
-            return None, 0.0
+            return None, None, 0.0
 
-        # 2. Carregar perfis do balcão
-        profiles = self._load_profiles(balcao_id)
+        profiles, names = self._load_profiles(balcao_id)
         if not profiles:
-            return None, 0.0
+            return None, None, 0.0
 
-        # 3. Comparar
-        # classificar_por_scores retorna (top1_id, top1_score, list_scores)
-        top_id, top_score, _ = classificar_por_scores(emb_test, profiles)
+        top_id, top_score, _scores = classificar_por_scores(emb_test, profiles)
 
-        return top_id, top_score
+        if top_id is None:
+            return None, None, float(top_score)
+
+        return int(top_id), names.get(int(top_id)), float(top_score)
+
+    def invalidate_cache(self, balcao_id: str):
+        with self.cache_lock:
+            self.profiles_cache.pop(balcao_id, None)
+            self.names_cache.pop(balcao_id, None)

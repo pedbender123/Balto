@@ -289,8 +289,3 @@ async def api_cadastro_voz(request):
     except Exception as e:
         print(f"[CADASTRO_VOZ] Erro: {e}")
         return web.json_response({"success": False, "error": str(e)}, status=500)
-
-
-    except Exception as e:
-        print(f"[CADASTRO_VOZ] Erro: {e}")
-        return web.json_response({"success": False, "error": str(e)}, status=500)
