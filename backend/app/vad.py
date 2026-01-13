@@ -41,13 +41,13 @@ class VAD:
         if threshold_multiplier is not None:
              self.threshold_multiplier = float(threshold_multiplier)
         else:
-             self.threshold_multiplier = float(os.environ.get("VAD_THRESHOLD_MULTIPLIER", "1.5"))
+             self.threshold_multiplier = float(os.environ.get("VAD_THRESHOLD_MULTIPLIER", "1.8"))
 
         # Limite mínimo absoluto a partir de env ou parametro
         if min_energy_threshold is not None:
              self.min_energy_threshold = float(min_energy_threshold)
         else:
-             self.min_energy_threshold = float(os.environ.get("VAD_MIN_ENERGY_THRESHOLD", "50.0"))
+             self.min_energy_threshold = float(os.environ.get("VAD_MIN_ENERGY_THRESHOLD", "120.0"))
         
         self.pre_roll_buffer = deque(maxlen=20) # 600ms de pre-roll (pedido > 0.2s)
 
@@ -106,6 +106,17 @@ class VAD:
                 self.speech_buffer.append(frame)
                 self.triggered = True
                 self.silence_frames_count = 0
+
+                # [NEW] Safety Cutoff: 6 seconds limit
+                # 6000ms / 30ms = 200 frames
+                if len(self.speech_buffer) >= 200:
+                    print(f"[VAD WARN] SEGMENT LIMIT REACHED (6s). Forcing cut.")
+                    self.triggered = False
+                    self.silence_frames_count = 0
+                    segment = b''.join(self.speech_buffer)
+                    self.speech_buffer.clear()
+                    return segment
+
             elif self.triggered:
                 # Estava falando, agora parou (silêncio temporário ou fim de frase)
                 self.silence_frames_count += 1
