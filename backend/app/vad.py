@@ -13,7 +13,7 @@ class VAD:
     e só ative a transcrição quando houver um pico de energia real (voz).
     """
     
-    def __init__(self, sample_rate=16000, frame_duration_ms=30, vad_aggressiveness=3):
+    def __init__(self, sample_rate=16000, frame_duration_ms=30, vad_aggressiveness=3, threshold_multiplier=None, min_energy_threshold=None):
         self.sample_rate = sample_rate
         self.frame_duration_ms = frame_duration_ms
         self.frame_bytes = (sample_rate * frame_duration_ms // 1000) * 2
@@ -36,11 +36,18 @@ class VAD:
         # Fator Alpha: Quão rápido nos adaptamos? 
         # 0.05 = adaptação lenta (bom para ruído de fundo constante)
         self.alpha = 0.05
-        # Fator de Segurança: Voz tem que ser X vezes mais alta que o ruído
-        self.threshold_multiplier = 2.5 # Reduzido para 2.5 para pegar onsets suaves
         
-        # Limite mínimo absoluto para evitar ativar com silêncio total
-        self.min_energy_threshold = 800 # Reduzido para 800 (pegar voz baixa)
+        # Fator de Segurança a partir de env ou parametro
+        if threshold_multiplier is not None:
+             self.threshold_multiplier = float(threshold_multiplier)
+        else:
+             self.threshold_multiplier = float(os.environ.get("VAD_THRESHOLD_MULTIPLIER", "1.5"))
+
+        # Limite mínimo absoluto a partir de env ou parametro
+        if min_energy_threshold is not None:
+             self.min_energy_threshold = float(min_energy_threshold)
+        else:
+             self.min_energy_threshold = float(os.environ.get("VAD_MIN_ENERGY_THRESHOLD", "50.0"))
         
         self.pre_roll_buffer = deque(maxlen=20) # 600ms de pre-roll (pedido > 0.2s)
 
@@ -74,11 +81,8 @@ class VAD:
             # 4. Gate de Energia (Fase 1 Limpeza)
             is_loud_enough = energy > dynamic_threshold
 
-            # Debug Log (Opcional: Controlar via env ou verbosidade)
-            # Formato: [VAD] E: {energy:.1f} | N: {noise:.1f} | T: {thresh:.1f} | Speech? {is_loud}
-            # Imprimir a cada X frames para não floodar o console
-            # if self.silence_frames_count % 10 == 0:
-            print(f"[VAD LOG] Energy: {energy:6.1f} | NoiseFlr: {self.noise_level:6.1f} | DynThresh: {dynamic_threshold:6.1f} | Gate: {'OPEN' if is_loud_enough else 'shut'}")
+            # [REMOVED] Verbose Frame-by-frame log
+            # print(f"[VAD LOG] ...")
             
             is_speech = False
             
@@ -91,7 +95,8 @@ class VAD:
             
             # 5. Máquina de Estados
             if is_speech:
-                print(f"   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)")
+                # [REMOVED] Verbose movement log
+                # print(f"   >>> [VAD] MOVEMENT DETECTED (WebRTC Confirmed)")
                 
                 # Se iniciou agora, adicionar pre-roll
                 if not self.triggered:
@@ -106,11 +111,12 @@ class VAD:
                 self.silence_frames_count += 1
                 self.speech_buffer.append(frame) # Mantém o "rabicho" do áudio
                 
-                print(f"   ... [VAD] Silence Hold ({self.silence_frames_count}/{self.silence_frames_needed})")
+                # [REMOVED] Verbose silence hold log
+                # print(f"   ... [VAD] Silence Hold ({self.silence_frames_count}/{self.silence_frames_needed})")
 
                 if self.silence_frames_count >= self.silence_frames_needed:
                     # Fim de frase confirmado
-                    print(f"   <<< [VAD] SEGMENT FINISHED")
+                    print(f"[VAD] SEGMENT FINISHED ({len(self.speech_buffer)} frames)")
                     self.triggered = False
                     self.silence_frames_count = 0
                     

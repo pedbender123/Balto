@@ -116,6 +116,8 @@ def inicializar_db():
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_ai_request TIMESTAMP")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_ai_response TIMESTAMP")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_client_sent TIMESTAMP")
+        # New: Speaker Data
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS speaker_data TEXT")
         conn.commit()
     except Exception as e:
         print(f"[DB WARN] Erro ao migrar schema (interacoes): {e}")
@@ -314,7 +316,8 @@ def registrar_interacao(
     ts_trans_ready=None,
     ts_ai_req=None,
     ts_ai_res=None,
-    ts_client=None
+    ts_client=None,
+    speaker_data=None
 ):
     print(f"[DB] Tentando registrar interação para balcao={balcao_id}, SNR={snr:.2f}")
     try:
@@ -325,13 +328,13 @@ def registrar_interacao(
             balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback,
             funcionario_id, modelo_stt, custo_estimado, snr, grok_raw_response,
             ts_audio_received, ts_transcription_sent, ts_transcription_ready,
-            ts_ai_request, ts_ai_response, ts_client_sent
+            ts_ai_request, ts_ai_response, ts_client_sent, speaker_data
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             balcao_id, datetime.now(), transcricao, recomendacao, resultado,
             funcionario_id, modelo_stt, float(custo), float(snr), grok_raw,
-            ts_audio, ts_trans_sent, ts_trans_ready, ts_ai_req, ts_ai_res, ts_client
+            ts_audio, ts_trans_sent, ts_trans_ready, ts_ai_req, ts_ai_res, ts_client, speaker_data
         ))
         conn.commit()
         conn.close()

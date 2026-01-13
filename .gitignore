@@ -36,3 +36,6 @@ venv_local/
 
 # 6. Vozes de testes para simulação de atendimentos/conversas
 .testes_voiceid/*
+
+# Manual Test Scripts
+testes/*.py

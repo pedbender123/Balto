@@ -251,30 +251,42 @@ class StreamVoiceIdentifier:
             self.names_cache[balcao_id] = names
 
         return profiles, names
+        # Convert int keys to str for profiles to match classificar_por_scores expected type
+        profiles_str_keys = {str(k): v for k, v in profiles.items()}
+        names_str_keys = {str(k): v for k, v in names.items()}
+        return profiles_str_keys, names_str_keys
 
-    def add_segment(self, balcao_id: str, speech_chunk: bytes) -> Tuple[Optional[int], Optional[str], float]:
+    def add_segment(self, balcao_id: str, speech_chunk: bytes) -> Tuple[Optional[str], float, List[Dict]]:
         """
-        Retorna (funcionario_id, nome, score)
+        Processa um chunk de fala (VAD True) e tenta identificar.
+        Retorna (top_id, top_score, all_scores_data).
         """
         # (opcional mas recomendado) ignora chunks curtos demais — embeddings ficam instáveis
         dur = len(speech_chunk) / 32000.0  # 16kHz * 2 bytes
         if dur < 0.8:
-            return None, None, 0.0
+            return None, 0.0, []
 
+        # 1. Extrair embedding do chunk atual
         emb_test = extrair_embedding(speech_chunk)
         if emb_test is None:
-            return None, None, 0.0
+            return None, 0.0, []
 
+        # 2. Carregar perfis do balcão
         profiles, names = self._load_profiles(balcao_id)
         if not profiles:
-            return None, None, 0.0
+            return None, 0.0, []
 
-        top_id, top_score, _scores = classificar_por_scores(emb_test, profiles)
+        # 3. Comparar
+        # classificar_por_scores retorna (top1_id, top1_score, list_scores)
+        top_id, top_score, raw_scores = classificar_por_scores(emb_test, profiles)
 
-        if top_id is None:
-            return None, None, float(top_score)
+        # Formatar raw_scores para dicionário serializável
+        # raw_scores é [(id, score), ...]
+        all_scores_data = [
+            {"id": uid, "name": names.get(uid), "score": float(sc)} for (uid, sc) in raw_scores
+        ]
 
-        return int(top_id), names.get(int(top_id)), float(top_score)
+        return top_id, float(top_score), all_scores_data
 
     def invalidate_cache(self, balcao_id: str):
         with self.cache_lock:

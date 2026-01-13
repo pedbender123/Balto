@@ -85,11 +85,12 @@ async def process_speech_pipeline(
     transcript_buffer: buffer.TranscriptionBuffer,
     conversation_history: list,
     funcionario_id: int | None,
-    nome_funcionario: str
+    nome_funcionario: str,
+    speaker_data_list: list | None = None
 ):
 
     ts_audio_received = datetime.now()
-    print(f"[{balcao_id}] Processando segmento de fala ({len(speech_segment)} bytes)...")
+    # print(f"[{balcao_id}] Processando segmento de fala ({len(speech_segment)} bytes)...")
 
     if config.SAVE_AUDIO or config.MOCK_MODE:
         await asyncio.to_thread(audio_utils.dump_audio_to_disk, speech_segment, balcao_id)
@@ -129,7 +130,8 @@ async def process_speech_pipeline(
         if len(conversation_history) > 20: 
             conversation_history.pop(0)
 
-        # Check if we should process via AI
+            # Check if we should process via AI
+            # Check if we should process via AI
         if transcript_buffer.should_process():
             # Pega o buffer atual (que triggerou a ação)
             buffer_content = transcript_buffer.get_context_and_clear()
@@ -143,11 +145,9 @@ async def process_speech_pipeline(
             analise_json = await asyncio.to_thread(
                 ai_client.ai_client.analisar_texto, full_context_str
             )
-            ts_ai_response = datetime.now()
-
-            sugestoes_enviadas = []
             
             if analise_json:
+                ts_ai_response = datetime.now()
                 try:
                     dados = json.loads(analise_json)
                     items_to_send = []
@@ -185,37 +185,38 @@ async def process_speech_pipeline(
                         }
                         await websocket.send_json(payload)
                         ts_client_sent = datetime.now() # Capture time sent to client (batch)
-                        
-                        # Small delay not needed for batch, but keep minimal yield if needed
-                        # await asyncio.sleep(0.1) 
                     
                 except Exception as e:
                     print(f"[{balcao_id}] Erro Parse JSON AI: {e}")
                     recomendacao_log = "Erro Parse"
+            else:
+                 # AI retornou None/Vazio (erro no request ou timeout interno)
+                 recomendacao_log = "Nenhuma"
 
-            # Prepare log string (Fallback if not set above)
-            if 'recomendacao_log' not in locals():
-                recomendacao_log = "Nenhuma"
+        # Prepare log string (Fallback to NULL if not triggered)
+        if 'recomendacao_log' not in locals():
+            recomendacao_log = None # Explicitly NULL if logic didn't run
 
-            # Log interaction
-            await asyncio.to_thread(
-                db.registrar_interacao,
-                balcao_id=balcao_id,
-                transcricao=full_context_str, # Salva o contexto todo usado
-                recomendacao=recomendacao_log,
-                resultado="processado",
-                funcionario_id=funcionario_id,
-                modelo_stt=modelo_usado,
-                custo=custo_estimado,
-                snr=snr_calculado,
-                grok_raw=analise_json,
-                ts_audio=ts_audio_received,
-                ts_trans_sent=ts_transcription_sent,
-                ts_trans_ready=ts_transcription_ready,
-                ts_ai_req=ts_ai_request,
-                ts_ai_res=ts_ai_response,
-                ts_client=ts_client_sent if 'ts_client_sent' in locals() else None
-            )
+        # Log interaction
+        await asyncio.to_thread(
+            db.registrar_interacao,
+            balcao_id=balcao_id,
+            transcricao=full_context_str if 'full_context_str' in locals() else texto,
+            recomendacao=recomendacao_log,
+            resultado="processado",
+            funcionario_id=funcionario_id,
+            modelo_stt=modelo_usado,
+            custo=custo_estimado,
+            snr=snr_calculado,
+            grok_raw=analise_json if 'analise_json' in locals() else None,
+            ts_audio=ts_audio_received,
+            ts_trans_sent=ts_transcription_sent,
+            ts_trans_ready=ts_transcription_ready,
+            ts_ai_req=ts_ai_request if 'ts_ai_request' in locals() else None,
+            ts_ai_res=ts_ai_response if 'ts_ai_response' in locals() else None,
+            ts_client=ts_client_sent if 'ts_client_sent' in locals() else None,
+            speaker_data=json.dumps(speaker_data_list) if speaker_data_list else None # New: Pass speaker data
+        )
 
     except Exception as e:
         print(f"[{balcao_id}] Erro no Pipeline: {e}")
@@ -234,14 +235,25 @@ async def websocket_handler(request):
     try:
         msg = await ws.receive_json(timeout=10.0)
         api_key = msg.get("api_key")
+        
+        # New: Parse VAD settings
+        vad_settings = msg.get("vad_settings", {})
+        vad_threshold_mult = vad_settings.get("threshold_multiplier") # e.g 1.5
+        vad_min_energy = vad_settings.get("min_energy") # e.g 50.0
+
         balcao_id = db.validate_api_key(api_key)
         
         if not balcao_id:
             await ws.close(code=4001, message=b"API Key Invalida")
             return ws
             
-        print(f"Conectado: {balcao_id}")
-        vad_session = vad.VAD()
+        print(f"Conectado: {balcao_id} (Settings: {vad_settings})")
+        
+        # Pass settings to VAD
+        vad_session = vad.VAD(
+            threshold_multiplier=vad_threshold_mult,
+            min_energy_threshold=vad_min_energy
+        )
         audio_cleaner = audio_processor.AudioCleaner()
 
         decoder = FFmpegWebMToPCMStream(sample_rate=16000)
@@ -278,7 +290,13 @@ async def websocket_handler(request):
                 speech = vad_session.process(cleaned_pcm)
 
                 if speech:
-                    pred_func_id, pred_nome, score = voice_tracker.add_segment(balcao_id, speech)
+                    pred_func_id, score, speaker_data_list = voice_tracker.add_segment(balcao_id, speech)
+                    
+                    # Nome vem dos dados se existir
+                    pred_nome = None
+                    if speaker_data_list:
+                         # speaker_data_list[0] é o top 1
+                         pred_nome = speaker_data_list[0].get("name")
 
                     if pred_func_id is not None and funcionario_id_atual is None:
                         funcionario_id_atual = pred_func_id
@@ -288,7 +306,7 @@ async def websocket_handler(request):
                     asyncio.create_task(
                         process_speech_pipeline(
                             ws, speech, balcao_id, transcript_buffer, conversation_history,
-                            funcionario_id_atual, nome_funcionario_atual
+                            funcionario_id_atual, nome_funcionario_atual, speaker_data_list
                         )
                     )
 

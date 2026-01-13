@@ -105,9 +105,16 @@ Imediatamente após conectar, o cliente **DEVE** enviar um frame JSON contendo a
 **Cliente -> Servidor (JSON):**
 ```json
 {
-  "api_key": "seu_token_de_acesso"
+  "api_key": "seu_token_de_acesso",
+  "vad_settings": {
+    "threshold_multiplier": 1.5,
+    "min_energy": 50.0
+  }
 }
 ```
+> **vad_settings** (Opcional): Permite ajustar a sensibilidade do VAD por balcão.
+> *   `threshold_multiplier`: Quão mais alta que o ruído a voz deve ser (Ex: 1.5x).
+> *   `min_energy`: Energia mínima absoluta para considerar voz (0-1000+).
 
 ws://localhost:8765/ws
 
@@ -125,61 +132,16 @@ XAI_API_KEY="sua-chave-grok-aqui"
 ELEVENLABS_API_KEY="sua-chave-elevenlabs-aqui"
 DB_FILE="/backend/app/dados/registro.db"
 VAD_ENERGY_THRESHOLD=300
-ADMIN_SECRET=x9PeHTY7ouQNvzJH
-MOCK_MODE=0
-SPEAKER_ID_ENABLED=0
-AUDIO_DUMP_DIR=/backend/app/audio_dumps
 
-*   **Sucesso**: A conexão permanece aberta.
-*   **Erro**: O servidor fecha a conexão com Code `4001` (Close Reason: `API Key Invalida`).
+### Métricas (Timestamps)
+Cada interação salva no banco inclui:
+- `ts_audio_received`: Chegada do chunk.
+- `ts_transcription_ready`: Fim do STT.
+- `ts_ai_request`: Início do request LLM.
+- `ts_ai_response`: Fim do request LLM.
+- `ts_client_sent`: Envio da resposta ao cliente.
 
-### 2. Streaming de Áudio
-
-Após a autenticação, envie o áudio capturado através de frames **Binários**.
-
-*   **Formato de Container**: WebM (Recomendado) ou WAV.
-*   **Codec**: Opus (Recomendado) ou PCM.
-*   **Especificações**: 16kHz, 16-bit, Mono.
-
-> **Importante**: Envie chunks pequenos (ex: a cada 250ms ou 500ms) para garantir baixa latência. O servidor processa o stream continuamente usando FFmpeg, permitindo flexibilidade de formatos, mas **WebM/Opus** é fortemente sugerido para eficiência de banda.
-
-**Cliente -> Servidor (Binary):**
-*   `[Binary Data Chunk 1]`
-*   `[Binary Data Chunk 2]`
-*   `...`
-
-### 3. Eventos de Recomendação
-
-O servidor enviará frames JSON assíncronos sempre que o motor de IA detectar uma oportunidade de venda ou sugestão relevante baseada no diálogo.
-
-**Servidor -> Cliente (JSON):**
-```json
-{
-  "comando": "recomendar",
-  "produto": "Nome do Produto Sugerido",
-  "explicacao": "Explicação curta do motivo da recomendação (para o atendente).",
-  "transcricao_base": "Trecho do diálogo que originou a sugestão.",
-  "atendente": "Nome do Atendente (se identificado via biometria)"
-}
-```
-
-### Exemplo de Fluxo
-
-1.  **Client** Conecta em `wss://.../ws`.
-2.  **Client** Envia `{"api_key": "123"}`.
-3.  **Client** Começa a enviar chunks de áudio binário.
-4.  **Server** Processa VAD e silêncio.
-5.  **Server** Detecta fala -> Transcreve -> Analisa.
-6.  **Server** Envia `{"comando": "recomendar", ...}`.
-7.  **Client** Renderiza sugestão na tela.
-
----
-
-## 📂 Estrutura do Projeto
-
-*   `backend/`: Código fonte do servidor (`app/server.py`, `app/vad.py`, etc).
-*   `testes/`: Scripts de teste e geração de relatórios.
-    *   `planilhas`: Onde os relatórios Excel são salvos.
+Consulte `Documentation.md` para o Schema completo do banco.
 *   `venv_local/`: Ambiente virtual recomendado para execução local.
 
 ---
@@ -243,3 +205,14 @@ O dispositivo usa o código do cliente para se registrar e obter sua API Key.
 ```
 
 > **Nota de Segurança**: A `api_key` retornada não expira e deve ser armazenada com segurança pelo cliente. O código de 6 dígitos é usado apenas para o vínculo inicial.
+
+### 6. Métricas e Logs (Database)
+
+A tabela `interacoes` armazena o histórico completo com timestamps detalhados para auditoria de latência:
+
+*   **ts_audio_received**: Data/Hora que o servidor recebeu o chunk de áudio que completou a frase (fim do VAD).
+*   **ts_transcription_ready**: Momento em que a transcrição (STT) ficou pronta.
+*   **ts_transcription_sent**: (Legado) Mesmo que ready ou momento interno.
+*   **ts_ai_request**: Momento que o contexto foi enviado para o LLM.
+*   **ts_ai_response**: Momento que a resposta do LLM chegou.
+*   **ts_client_sent**: Momento que a recomendação foi enviada via WebSocket para o cliente.

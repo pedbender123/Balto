@@ -55,6 +55,7 @@ def main():
         print(f" -> SNR_THRESHOLD: {transcription.SMART_ROUTING_SNR_THRESHOLD} dB")
         print(f" -> MIN_DURATION: {transcription.SMART_ROUTING_MIN_DURATION} s")
     print(f"OPENAI_ENABLED: {bool(config.OPENAI_API_KEY)}")
+    print(f"VAD_MIN_ENERGY: {os.environ.get('VAD_MIN_ENERGY_THRESHOLD', '50.0')}")
     print("---------------------------------------")
     
     # Diagnostics
