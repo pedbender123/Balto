@@ -83,7 +83,6 @@ async def process_speech_pipeline(
     speech_segment: bytes,
     balcao_id: str,
     transcript_buffer: buffer.TranscriptionBuffer,
-    conversation_history: list,
     funcionario_id: int | None,
     nome_funcionario: str,
     speaker_data_list: list | None = None
@@ -124,42 +123,32 @@ async def process_speech_pipeline(
         
         # Add to buffer
         transcript_buffer.add_text(texto)
-        # Add to global history for context
-        conversation_history.append(texto)
-        # Keep history manageable (last 20 turns)
-        if len(conversation_history) > 20: 
-            conversation_history.pop(0)
 
-            # Check if we should process via AI
-            # Check if we should process via AI
+        # Check if we should process via AI
         if transcript_buffer.should_process():
             # Pega o buffer atual (que triggerou a ação)
             buffer_content = transcript_buffer.get_context_and_clear()
-            
-            # Constrói o contexto histórico completo para envio
-            full_context_str = " ... ".join(conversation_history)
-            
-            print(f"[{balcao_id}] Enviando Contexto para AI (Histórico: {len(conversation_history)} itens): {full_context_str[-200:]}...")
-            
+
+            print(f"[{balcao_id}] Enviando para AI: {buffer_content[-200:]}...")
+
             ts_ai_request = datetime.now()
+
             analise_json = await asyncio.to_thread(
-                ai_client.ai_client.analisar_texto, full_context_str
+                ai_client.ai_client.analisar_texto, buffer_content
             )
-            
+
             if analise_json:
                 ts_ai_response = datetime.now()
                 try:
                     dados = json.loads(analise_json)
-                    items_to_send = []
 
-                    # Handle new schema structure which has "itens" array
+                    # Define items_to_send UMA vez, sem loop
                     if "itens" in dados and isinstance(dados["itens"], list):
-                        for item in dados["itens"]:
-                             if item.get("sugestao"):
-                                 items_to_send.append(item)
-                    elif dados.get("sugestao"):
-                        items_to_send.append(dados)
-                    
+                        items_to_send = dados["itens"]
+                    elif "sugestao" in dados:
+                        items_to_send = [dados]
+                    else:
+                        items_to_send = []
                     
                     # Collect ALL valid suggestions for logging/DB
                     all_suggestions_list = []
@@ -201,7 +190,7 @@ async def process_speech_pipeline(
         await asyncio.to_thread(
             db.registrar_interacao,
             balcao_id=balcao_id,
-            transcricao=full_context_str if 'full_context_str' in locals() else texto,
+            transcricao=buffer_content if 'buffer_content' in locals() else texto,
             recomendacao=recomendacao_log,
             resultado="processado",
             funcionario_id=funcionario_id,
@@ -230,7 +219,6 @@ async def websocket_handler(request):
     balcao_id = None
     vad_session = None
     transcript_buffer = buffer.TranscriptionBuffer()
-    conversation_history = [] # Local history for this connection
     
     try:
         msg = await ws.receive_json(timeout=10.0)
@@ -305,7 +293,7 @@ async def websocket_handler(request):
 
                     asyncio.create_task(
                         process_speech_pipeline(
-                            ws, speech, balcao_id, transcript_buffer, conversation_history,
+                            ws, speech, balcao_id, transcript_buffer,
                             funcionario_id_atual, nome_funcionario_atual, speaker_data_list
                         )
                     )
