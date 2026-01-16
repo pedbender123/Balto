@@ -118,6 +118,37 @@ def inicializar_db():
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_client_sent TIMESTAMP")
         # New: Speaker Data
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS speaker_data TEXT")
+
+        # Colunas das características do trecho/áudio para análise de melhoria
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS segment_duration_ms INTEGER")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS segment_bytes INTEGER")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS frames_len INTEGER")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS cut_reason TEXT")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS silence_frames_count_at_cut INTEGER")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS noise_level_start REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS noise_level_end REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS dynamic_threshold_start REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS dynamic_threshold_end REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS energy_rms_mean REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS energy_rms_max REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS peak_dbfs REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS clipping_ratio REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS dc_offset REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS zcr REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS spectral_centroid REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS band_energy_low REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS band_energy_mid REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS band_energy_high REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS snr_estimate REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS audio_cleaner_gain_db REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS threshold_multiplier REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS min_energy_threshold REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS alpha REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS vad_aggressiveness INTEGER")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS silence_frames_needed INTEGER")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS pre_roll_len INTEGER")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS segment_limit_frames INTEGER")
+
         conn.commit()
     except Exception as e:
         print(f"[DB WARN] Erro ao migrar schema (interacoes): {e}")
@@ -317,8 +348,10 @@ def registrar_interacao(
     ts_ai_req=None,
     ts_ai_res=None,
     ts_client=None,
-    speaker_data=None
+    speaker_data=None,
+    audio_metrics=None
 ):
+    audio_metrics = audio_metrics or {}
     print(f"[DB] Tentando registrar interação para balcao={balcao_id}, SNR={snr:.2f}")
     try:
         conn = get_db_connection()
@@ -328,13 +361,73 @@ def registrar_interacao(
             balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback,
             funcionario_id, modelo_stt, custo_estimado, snr, grok_raw_response,
             ts_audio_received, ts_transcription_sent, ts_transcription_ready,
-            ts_ai_request, ts_ai_response, ts_client_sent, speaker_data
+            ts_ai_request, ts_ai_response, ts_client_sent, speaker_data,
+
+            segment_duration_ms, segment_bytes, frames_len, cut_reason, silence_frames_count_at_cut,
+            noise_level_start, noise_level_end, dynamic_threshold_start, dynamic_threshold_end,
+            energy_rms_mean, energy_rms_max,
+            peak_dbfs, clipping_ratio, dc_offset, zcr, spectral_centroid,
+            band_energy_low, band_energy_mid, band_energy_high,
+            snr_estimate, audio_cleaner_gain_db,
+            threshold_multiplier, min_energy_threshold, alpha, vad_aggressiveness,
+            silence_frames_needed, pre_roll_len, segment_limit_frames
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (
+            %s, %s, %s, %s, %s,
+            %s, %s, %s, %s, %s,
+            %s, %s, %s,
+            %s, %s, %s, %s,
+
+            %s, %s, %s, %s, %s,
+            %s, %s, %s, %s,
+            %s, %s,
+            %s, %s, %s, %s, %s,
+            %s, %s, %s,
+            %s, %s,
+            %s, %s, %s, %s,
+            %s, %s, %s
+        )
         """, (
             balcao_id, datetime.now(), transcricao, recomendacao, resultado,
             funcionario_id, modelo_stt, float(custo), float(snr), grok_raw,
-            ts_audio, ts_trans_sent, ts_trans_ready, ts_ai_req, ts_ai_res, ts_client, speaker_data
+            ts_audio, ts_trans_sent, ts_trans_ready,
+            ts_ai_req, ts_ai_res, ts_client, speaker_data,
+
+            audio_metrics.get("segment_duration_ms"),
+            audio_metrics.get("segment_bytes"),
+            audio_metrics.get("frames_len"),
+            audio_metrics.get("cut_reason"),
+            audio_metrics.get("silence_frames_count_at_cut"),
+
+            audio_metrics.get("noise_level_start"),
+            audio_metrics.get("noise_level_end"),
+            audio_metrics.get("dynamic_threshold_start"),
+            audio_metrics.get("dynamic_threshold_end"),
+
+            audio_metrics.get("energy_rms_mean"),
+            audio_metrics.get("energy_rms_max"),
+
+            audio_metrics.get("peak_dbfs"),
+            audio_metrics.get("clipping_ratio"),
+            audio_metrics.get("dc_offset"),
+            audio_metrics.get("zcr"),
+            audio_metrics.get("spectral_centroid"),
+
+            audio_metrics.get("band_energy_low"),
+            audio_metrics.get("band_energy_mid"),
+            audio_metrics.get("band_energy_high"),
+
+            audio_metrics.get("snr_estimate"),
+            audio_metrics.get("audio_cleaner_gain_db"),
+
+            audio_metrics.get("threshold_multiplier"),
+            audio_metrics.get("min_energy_threshold"),
+            audio_metrics.get("alpha"),
+            audio_metrics.get("vad_aggressiveness"),
+
+            audio_metrics.get("silence_frames_needed"),
+            audio_metrics.get("pre_roll_len"),
+            audio_metrics.get("segment_limit_frames"),
         ))
         conn.commit()
         conn.close()

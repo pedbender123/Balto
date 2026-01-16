@@ -85,7 +85,8 @@ async def process_speech_pipeline(
     transcript_buffer: buffer.TranscriptionBuffer,
     funcionario_id: int | None,
     nome_funcionario: str,
-    speaker_data_list: list | None = None
+    speaker_data_list: list | None = None,
+    vad_meta: dict | None = None
 ):
 
     ts_audio_received = datetime.now()
@@ -105,6 +106,13 @@ async def process_speech_pipeline(
         return
 
     try:
+        buffer_content = None
+        analise_json = None
+        ts_ai_request = None
+        ts_ai_response = None
+        ts_client_sent = None
+        recomendacao_log = None
+
         ts_transcription_sent = datetime.now()
         transcricao_resultado = await asyncio.to_thread(
             transcription.transcrever_inteligente, speech_segment
@@ -115,7 +123,22 @@ async def process_speech_pipeline(
         modelo_usado = transcricao_resultado["modelo"]
         custo_estimado = transcricao_resultado["custo"]
         snr_calculado = transcricao_resultado.get("snr", 0.0)
-        
+
+        # ----------------------------
+        # Audio metrics (telemetria)
+        # ----------------------------
+        vad_meta = vad_meta or {}
+
+        segment_bytes = len(speech_segment)
+
+        # speech_segment aqui é PCM16 mono 16kHz (s16le)
+        # bytes por segundo = 16000 samples/s * 2 bytes
+        segment_duration_ms = int((segment_bytes / (16000 * 2)) * 1000)
+
+        audio_metrics = dict(vad_meta)  # copia
+        audio_metrics["segment_bytes"] = int(segment_bytes)
+        audio_metrics["segment_duration_ms"] = int(segment_duration_ms)
+
         if not texto:
             return
 
@@ -182,29 +205,29 @@ async def process_speech_pipeline(
                  # AI retornou None/Vazio (erro no request ou timeout interno)
                  recomendacao_log = "Nenhuma"
 
-        # Prepare log string (Fallback to NULL if not triggered)
-        if 'recomendacao_log' not in locals():
-            recomendacao_log = None # Explicitly NULL if logic didn't run
-
         # Log interaction
         await asyncio.to_thread(
             db.registrar_interacao,
             balcao_id=balcao_id,
-            transcricao=buffer_content if 'buffer_content' in locals() else texto,
+            transcricao=buffer_content or texto,
             recomendacao=recomendacao_log,
             resultado="processado",
             funcionario_id=funcionario_id,
             modelo_stt=modelo_usado,
             custo=custo_estimado,
             snr=snr_calculado,
-            grok_raw=analise_json if 'analise_json' in locals() else None,
+            grok_raw=analise_json,
             ts_audio=ts_audio_received,
             ts_trans_sent=ts_transcription_sent,
             ts_trans_ready=ts_transcription_ready,
-            ts_ai_req=ts_ai_request if 'ts_ai_request' in locals() else None,
-            ts_ai_res=ts_ai_response if 'ts_ai_response' in locals() else None,
-            ts_client=ts_client_sent if 'ts_client_sent' in locals() else None,
-            speaker_data=json.dumps(speaker_data_list) if speaker_data_list else None # New: Pass speaker data
+            ts_ai_req=ts_ai_request,
+            ts_ai_res=ts_ai_response,
+            ts_client=ts_client_sent,
+            speaker_data=json.dumps(speaker_data_list) if speaker_data_list else None,
+            audio_metrics=audio_metrics
+
+
+
         )
 
     except Exception as e:
@@ -227,7 +250,7 @@ async def websocket_handler(request):
         # New: Parse VAD settings
         vad_settings = msg.get("vad_settings", {})
         vad_threshold_mult = vad_settings.get("threshold_multiplier") # e.g 1.5
-        vad_min_energy = vad_settings.get("min_energy") # e.g 50.0
+        vad_min_energy = vad_settings.get("min_energy_threshold") # e.g 50.0
 
         balcao_id = db.validate_api_key(api_key)
         
@@ -275,28 +298,38 @@ async def websocket_handler(request):
                 del pcm_acc[:1920]
 
                 cleaned_pcm = audio_cleaner.process(new_pcm)
-                speech = vad_session.process(cleaned_pcm)
 
-                if speech:
-                    pred_func_id, score, speaker_data_list = voice_tracker.add_segment(balcao_id, speech)
-                    
-                    # Nome vem dos dados se existir
-                    pred_nome = None
-                    if speaker_data_list:
-                         # speaker_data_list[0] é o top 1
-                         pred_nome = speaker_data_list[0].get("name")
+                vad_out = vad_session.process(cleaned_pcm)
+                if not vad_out:
+                    continue
 
-                    if pred_func_id is not None and funcionario_id_atual is None:
-                        funcionario_id_atual = pred_func_id
-                        nome_funcionario_atual = pred_nome or "Desconhecido"
-                        print(f"[{balcao_id}] Voice-ID identificado: id={funcionario_id_atual} nome={nome_funcionario_atual} (score={score:.3f})")
+                speech, vad_meta = vad_out
 
-                    asyncio.create_task(
-                        process_speech_pipeline(
-                            ws, speech, balcao_id, transcript_buffer,
-                            funcionario_id_atual, nome_funcionario_atual, speaker_data_list
-                        )
+                # Add cleaner gain to meta (if your AudioCleaner exposes it)
+                cleaner_gain_db = getattr(audio_cleaner, "last_gain_db", None)
+                if vad_meta is None:
+                    vad_meta = {}
+                vad_meta["audio_cleaner_gain_db"] = cleaner_gain_db
+
+                pred_func_id, score, speaker_data_list = voice_tracker.add_segment(balcao_id, speech)
+
+                pred_nome = None
+                if speaker_data_list:
+                    pred_nome = speaker_data_list[0].get("name")
+
+                if pred_func_id is not None and funcionario_id_atual is None:
+                    funcionario_id_atual = pred_func_id
+                    nome_funcionario_atual = pred_nome or "Desconhecido"
+                    print(f"[{balcao_id}] Voice-ID identificado: id={funcionario_id_atual} nome={nome_funcionario_atual} (score={score:.3f})")
+
+                asyncio.create_task(
+                    process_speech_pipeline(
+                        ws, speech, balcao_id, transcript_buffer,
+                        funcionario_id_atual, nome_funcionario_atual, speaker_data_list,
+                        vad_meta=vad_meta
                     )
+                )
+
 
     consumer_task = asyncio.create_task(pcm_consumer_loop())
 

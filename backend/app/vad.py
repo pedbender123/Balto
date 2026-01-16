@@ -51,11 +51,23 @@ class VAD:
         
         self.pre_roll_buffer = deque(maxlen=20) # 600ms de pre-roll (pedido > 0.2s)
 
+        self.vad_aggressiveness = vad_aggressiveness
+        self.segment_limit_frames = 200  # mesmo valor do seu cutoff atual
+
+        # Telemetria do segmento corrente
+        self._seg_started = False
+        self._seg_noise_start = None
+        self._seg_thr_start = None
+        self._seg_energy_sum = 0.0
+        self._seg_energy_max = 0.0
+        self._seg_energy_count = 0
+
+
     def _calculate_energy(self, frame):
         """Calcula a energia RMS (Root Mean Square) do frame."""
         return audioop.rms(frame, 2)
 
-    def process(self, audio_chunk: bytes) -> bytes | None:
+    def process(self, audio_chunk: bytes) -> tuple[bytes, dict] | None:
         """
         Processa o chunk de áudio aplicando o VAD Adaptativo.
         Retorna bytes de áudio (frase completa) se finalizou uma fala, ou None.
@@ -102,20 +114,61 @@ class VAD:
                 if not self.triggered:
                     self.speech_buffer.extend(self.pre_roll_buffer)
                     self.pre_roll_buffer.clear()
-                    
+                    # segmento começou agora
+                    self._seg_started = True
+                    self._seg_noise_start = float(self.noise_level)
+                    self._seg_thr_start = float(dynamic_threshold)
+                    self._seg_energy_sum = 0.0
+                    self._seg_energy_max = 0.0
+                    self._seg_energy_count = 0
+
                 self.speech_buffer.append(frame)
+
+                self._seg_energy_sum += float(energy)
+                self._seg_energy_count += 1
+                if energy > self._seg_energy_max:
+                    self._seg_energy_max = float(energy)
+
                 self.triggered = True
                 self.silence_frames_count = 0
 
                 # [NEW] Safety Cutoff: 6 seconds limit
                 # 6000ms / 30ms = 200 frames
-                if len(self.speech_buffer) >= 200:
+                if len(self.speech_buffer) >= self.segment_limit_frames:
                     print(f"[VAD WARN] SEGMENT LIMIT REACHED (6s). Forcing cut.")
+                    cut_reason = "safety_limit"
+                    noise_end = float(self.noise_level)
+                    thr_end = float(dynamic_threshold)
+
+                    energy_mean = (self._seg_energy_sum / self._seg_energy_count) if self._seg_energy_count else 0.0
+                    meta = {
+                        "frames_len": len(self.speech_buffer),
+                        "cut_reason": cut_reason,
+                        "silence_frames_count_at_cut": int(self.silence_frames_count),
+
+                        "noise_level_start": self._seg_noise_start,
+                        "noise_level_end": noise_end,
+                        "dynamic_threshold_start": self._seg_thr_start,
+                        "dynamic_threshold_end": thr_end,
+
+                        "energy_rms_mean": float(energy_mean),
+                        "energy_rms_max": float(self._seg_energy_max),
+
+                        # snapshots params
+                        "threshold_multiplier": float(self.threshold_multiplier),
+                        "min_energy_threshold": float(self.min_energy_threshold),
+                        "alpha": float(self.alpha),
+                        "vad_aggressiveness": int(self.vad_aggressiveness),
+                        "silence_frames_needed": int(self.silence_frames_needed),
+                        "pre_roll_len": int(self.pre_roll_buffer.maxlen),
+                        "segment_limit_frames": int(self.segment_limit_frames),
+                    }
+
                     self.triggered = False
                     self.silence_frames_count = 0
-                    segment = b''.join(self.speech_buffer)
+                    segment = b"".join(self.speech_buffer)
                     self.speech_buffer.clear()
-                    return segment
+                    return segment, meta
 
             elif self.triggered:
                 # Estava falando, agora parou (silêncio temporário ou fim de frase)
@@ -126,14 +179,49 @@ class VAD:
                 # print(f"   ... [VAD] Silence Hold ({self.silence_frames_count}/{self.silence_frames_needed})")
 
                 if self.silence_frames_count >= self.silence_frames_needed:
-                    # Fim de frase confirmado
                     print(f"[VAD] SEGMENT FINISHED ({len(self.speech_buffer)} frames)")
+
+                    cut_reason = "silence_end"
+                    noise_end = float(self.noise_level)
+                    thr_end = float(dynamic_threshold)
+
+                    # (opcional) acumula energy também nesses frames de rabicho:
+                    self._seg_energy_sum += float(energy)
+                    self._seg_energy_count += 1
+                    if energy > self._seg_energy_max:
+                        self._seg_energy_max = float(energy)
+
+                    energy_mean = (self._seg_energy_sum / self._seg_energy_count) if self._seg_energy_count else 0.0
+
+                    meta = {
+                        "frames_len": len(self.speech_buffer),
+                        "cut_reason": cut_reason,
+                        "silence_frames_count_at_cut": int(self.silence_frames_count),
+
+                        "noise_level_start": self._seg_noise_start,
+                        "noise_level_end": noise_end,
+                        "dynamic_threshold_start": self._seg_thr_start,
+                        "dynamic_threshold_end": thr_end,
+
+                        "energy_rms_mean": float(energy_mean),
+                        "energy_rms_max": float(self._seg_energy_max),
+
+                        "threshold_multiplier": float(self.threshold_multiplier),
+                        "min_energy_threshold": float(self.min_energy_threshold),
+                        "alpha": float(self.alpha),
+                        "vad_aggressiveness": int(self.vad_aggressiveness),
+                        "silence_frames_needed": int(self.silence_frames_needed),
+                        "pre_roll_len": int(self.pre_roll_buffer.maxlen),
+                        "segment_limit_frames": int(self.segment_limit_frames),
+                    }
+
                     self.triggered = False
                     self.silence_frames_count = 0
-                    
-                    segment = b''.join(self.speech_buffer)
+
+                    segment = b"".join(self.speech_buffer)
                     self.speech_buffer.clear()
-                    return segment
+                    return segment, meta
+
             else:
                 # Silêncio absoluto, mantendo pre-roll
                 self.pre_roll_buffer.append(frame)
