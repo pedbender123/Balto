@@ -149,6 +149,17 @@ def inicializar_db():
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS pre_roll_len INTEGER")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS segment_limit_frames INTEGER")
 
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS segment_limit_frames INTEGER")
+
+        # New: Enhanced Logging & Mock Mode
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS config_snapshot TEXT")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS mock_status TEXT")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS cpu_usage_percent REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ram_usage_mb REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS audio_pitch_mean REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS audio_pitch_std REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS spectral_centroid_mean REAL")
+        
         conn.commit()
     except Exception as e:
         print(f"[DB WARN] Erro ao migrar schema (interacoes): {e}")
@@ -365,7 +376,15 @@ def registrar_interacao(
     ts_ai_res=None,
     ts_client=None,
     speaker_data=None,
-    audio_metrics=None
+    audio_metrics=None,
+    # New Params
+    config_snapshot=None,
+    mock_status=None,
+    cpu_usage=0.0,
+    ram_usage=0.0,
+    audio_pitch_mean=0.0,
+    audio_pitch_std=0.0,
+    spectral_centroid_mean=0.0
 ):
     audio_metrics = audio_metrics or {}
     print(f"[DB] Tentando registrar interação para balcao={balcao_id}, SNR={snr:.2f}")
@@ -378,6 +397,9 @@ def registrar_interacao(
             funcionario_id, modelo_stt, custo_estimado, snr, grok_raw_response,
             ts_audio_received, ts_transcription_sent, ts_transcription_ready,
             ts_ai_request, ts_ai_response, ts_client_sent, speaker_data,
+
+            config_snapshot, mock_status, cpu_usage_percent, ram_usage_mb,
+            audio_pitch_mean, audio_pitch_std, spectral_centroid_mean,
 
             segment_duration_ms, segment_bytes, frames_len, cut_reason, silence_frames_count_at_cut,
             noise_level_start, noise_level_end, dynamic_threshold_start, dynamic_threshold_end,
@@ -394,6 +416,9 @@ def registrar_interacao(
             %s, %s, %s,
             %s, %s, %s, %s,
 
+            %s, %s, %s, %s,
+            %s, %s, %s,
+
             %s, %s, %s, %s, %s,
             %s, %s, %s, %s,
             %s, %s,
@@ -408,6 +433,9 @@ def registrar_interacao(
             funcionario_id, modelo_stt, float(custo), float(snr), grok_raw,
             ts_audio, ts_trans_sent, ts_trans_ready,
             ts_ai_req, ts_ai_res, ts_client, speaker_data,
+
+            config_snapshot, mock_status, cpu_usage, ram_usage,
+            audio_pitch_mean, audio_pitch_std, spectral_centroid_mean,
 
             audio_metrics.get("segment_duration_ms"),
             audio_metrics.get("segment_bytes"),
@@ -471,14 +499,20 @@ def listar_interacoes(limit=50):
         i.ts_transcription_ready,
         i.ts_ai_request,
         i.ts_ai_response,
-        i.ts_client_sent
+        i.ts_client_sent,
+        i.snr,
+        f.nome as nome_funcionario,
+        i.cpu_usage_percent,
+        i.ram_usage_mb,
+        i.mock_status
     FROM interacoes i
     LEFT JOIN balcoes b ON i.balcao_id = b.balcao_id
+    LEFT JOIN funcionarios f ON i.funcionario_id = f.id
     ORDER BY i.timestamp DESC
     LIMIT %s
     """
     cursor.execute(query, (limit,))
-    rows = [dict(row) for row in cursor.fetchall()]
+    rows = cursor.fetchall()
     conn.close()
 
     # Converter datetimes para strings amigáveis

@@ -288,4 +288,22 @@ async def api_cadastro_voz(request):
 
     except Exception as e:
         print(f"[CADASTRO_VOZ] Erro: {e}")
-        return web.json_response({"success": False, "error": str(e)}, status=500)
+
+async def api_interacoes_balcao_metricas(request):
+    """
+    Retorna métricas de performance das interações de um balcão.
+    GET /api/data/balcao/{balcao_id}/metricas
+    """
+    balcao_id = request.match_info.get('balcao_id')
+    try:
+        rows = db.listar_metricas_por_balcao(balcao_id, limit=2000)
+        
+        # Convert datetime objects to string for JSON serialization
+        for r in rows:
+            for k, v in r.items():
+                if isinstance(v, datetime):
+                     r[k] = v.isoformat()
+                     
+        return web.json_response({"balcao_id": balcao_id, "interacoes": rows})
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)

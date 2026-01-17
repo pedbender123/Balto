@@ -21,3 +21,4 @@ librosa
 ffmpeg
 aiohttp
 docker
+psutil

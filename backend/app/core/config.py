@@ -7,6 +7,9 @@ load_dotenv()
 # Server Settings
 PORT = int(os.environ.get("PORT", 8765))
 MOCK_MODE = os.environ.get("MOCK_MODE") == "1"
+MOCK_VOICE = os.environ.get("MOCK_VOICE") == "1"
+MOCK_LATENCY_MIN = float(os.environ.get("MOCK_LATENCY_MIN", 0.5))
+MOCK_LATENCY_MAX = float(os.environ.get("MOCK_LATENCY_MAX", 2.0))
 ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "admin123")
 SAVE_AUDIO = os.environ.get("SAVE_AUDIO_DUMPS") == "1"
 AUDIO_DUMP_DIR = os.environ.get("AUDIO_DUMP_DIR", "./audio_dumps")
@@ -37,3 +40,8 @@ if STRESS_TEST_MODE:
 else:
     OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL", None) # Default to official if None
     ASSEMBLYAI_BASE_URL = "https://api.assemblyai.com"
+
+# Capacity Watchdog
+CAPACITY_MAX_CPU_PERCENT = float(os.environ.get("CAPACITY_MAX_CPU_PERCENT", 90.0))
+CAPACITY_MAX_RAM_PERCENT = float(os.environ.get("CAPACITY_MAX_RAM_PERCENT", 85.0))
+CAPACITY_MAX_LATENCY_RATIO = float(os.environ.get("CAPACITY_MAX_LATENCY_RATIO", 3.0))

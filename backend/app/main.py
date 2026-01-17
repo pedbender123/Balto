@@ -45,6 +45,7 @@ def main():
     # Export Routes
     app.router.add_get('/api/export/xlsx', endpoints.api_export_xlsx)
     app.router.add_get('/api/data/interacoes', endpoints.api_data_interacoes)
+    app.router.add_get('/api/data/balcao/{balcao_id}/metricas', endpoints.api_interacoes_balcao_metricas)
 
     print("---------------------------------------")
     print(f"Balto Server 3.0 (Modular) Running on port {config.PORT}")

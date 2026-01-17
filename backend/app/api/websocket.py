@@ -3,8 +3,11 @@ import json
 from datetime import datetime
 from aiohttp import web, WSMsgType
 from app import db, vad, transcription, speaker_id, audio_processor
-from app.core import config, audio_utils, ai_client, buffer
+from app import db, vad, transcription, speaker_id, audio_processor
+from app.core import config, audio_utils, ai_client, buffer, audio_analysis, capacity_guard
 import imageio_ffmpeg
+import psutil
+import random
 
 class FFmpegWebMToPCMStream:
     """
@@ -86,21 +89,72 @@ async def process_speech_pipeline(
     funcionario_id: int | None,
     nome_funcionario: str,
     speaker_data_list: list | None = None,
-    vad_meta: dict | None = None
+    vad_meta: dict | None = None,
+    config_snapshot: dict | None = None
 ):
 
     ts_audio_received = datetime.now()
     # print(f"[{balcao_id}] Processando segmento de fala ({len(speech_segment)} bytes)...")
 
-    if config.SAVE_AUDIO or config.MOCK_MODE:
-        await asyncio.to_thread(audio_utils.dump_audio_to_disk, speech_segment, balcao_id)
+    # Resource Snapshot
+    cpu_usage = psutil.cpu_percent()
+    ram_usage = psutil.Process().memory_info().rss / (1024 * 1024) # MB
 
+    # Audio Analysis (Feature Extraction)
+    features = await asyncio.to_thread(audio_analysis.extract_features, speech_segment)
+    audio_pitch_mean = features.get("pitch_mean", 0.0)
+    audio_pitch_std = features.get("pitch_std", 0.0)
+    spectral_centroid_mean = features.get("spectral_centroid_mean", 0.0)
+
+    # MOCK VOICE MODE (The "Polite" Mock)
+    if config.MOCK_VOICE:
+        latency = random.uniform(config.MOCK_LATENCY_MIN, config.MOCK_LATENCY_MAX)
+        print(f"[{balcao_id}] MOCK VOICE: Sleeping for {latency:.2f}s...")
+        await asyncio.sleep(latency)
+        
+        mock_resp = {
+            "comando": "recomendar",
+            "produto": "Produto MOCK Voice",
+            "explicacao": f"Resposta simulada (Latency: {latency:.2f}s)",
+            "transcricao_base": "Audio Simulado (Feature Extraction Active)"
+        }
+        await websocket.send_json(mock_resp)
+
+        # Log Interaction even in Mock Mode
+        await asyncio.to_thread(
+            db.registrar_interacao,
+            balcao_id=balcao_id,
+            transcricao="[MOCK VOICE] Audio Processed",
+            recomendacao=mock_resp["explicacao"],
+            resultado="mock_voice",
+            funcionario_id=funcionario_id,
+            modelo_stt="mock",
+            custo=0.0,
+            snr=0.0,
+            grok_raw=None,
+            ts_audio=ts_audio_received,
+            ts_client=datetime.now(),
+            speaker_data=json.dumps(speaker_data_list) if speaker_data_list else None,
+            audio_metrics=audio_metrics,
+            # Enhanced Metrics
+            config_snapshot=json.dumps(config_snapshot) if config_snapshot else None,
+            mock_status=json.dumps({"mode": "mock_voice", "latency": latency}),
+            cpu_usage=cpu_usage,
+            ram_usage=ram_usage,
+            audio_pitch_mean=audio_pitch_mean,
+            audio_pitch_std=audio_pitch_std,
+            spectral_centroid_mean=spectral_centroid_mean
+        )
+        return
+
+    # Check Legacy Mock Mode (LLM only mock, usually immediate)
     if config.MOCK_MODE:
+        await asyncio.to_thread(audio_utils.dump_audio_to_disk, speech_segment, balcao_id)
         await asyncio.sleep(1)
         await websocket.send_json({
             "comando": "recomendar",
-            "produto": "Produto MOCK",
-            "explicacao": "Modo de Teste Ativo",
+            "produto": "Produto MOCK LLM",
+            "explicacao": "Modo de Teste LLM Ativo",
             "transcricao_base": "Teste de áudio simulado"
         })
         return
@@ -141,6 +195,11 @@ async def process_speech_pipeline(
 
         if not texto:
             return
+
+
+        ts_transcription_end = datetime.now()
+        processing_time_so_far = (ts_transcription_end - ts_transcription_sent).total_seconds()
+        capacity_guard.CapacityGuard.report_processing_metrics(segment_duration_ms / 1000.0, processing_time_so_far)
 
         print(f"[{balcao_id}] Transcrição ({modelo_usado}): {texto}")
         
@@ -224,7 +283,15 @@ async def process_speech_pipeline(
             ts_ai_res=ts_ai_response,
             ts_client=ts_client_sent,
             speaker_data=json.dumps(speaker_data_list) if speaker_data_list else None,
-            audio_metrics=audio_metrics
+            audio_metrics=audio_metrics,
+            # Enhanced Metrics
+            config_snapshot=json.dumps(config_snapshot) if config_snapshot else None,
+            mock_status=None, # Real processing
+            cpu_usage=cpu_usage,
+            ram_usage=ram_usage,
+            audio_pitch_mean=audio_pitch_mean,
+            audio_pitch_std=audio_pitch_std,
+            spectral_centroid_mean=spectral_centroid_mean
 
 
 
@@ -258,6 +325,13 @@ async def websocket_handler(request):
             await ws.close(code=4001, message=b"API Key Invalida")
             return ws
             
+        # Capacity Check
+        is_available, reason = capacity_guard.CapacityGuard.check_availability()
+        if not is_available:
+            print(f"[REJECT] Connection Rejected ({balcao_id}): {reason}")
+            await ws.close(code=4002, message=f"Server Overload: {reason}".encode('utf-8'))
+            return ws
+
         print(f"Conectado: {balcao_id} (Settings: {vad_settings})")
         
         # Pass settings to VAD
@@ -266,6 +340,15 @@ async def websocket_handler(request):
             min_energy_threshold=vad_min_energy
         )
         audio_cleaner = audio_processor.AudioCleaner()
+        
+        # Configure Snapshot for this connection
+        current_config_snapshot = {
+            "MOCK_MODE": config.MOCK_MODE,
+            "MOCK_VOICE": config.MOCK_VOICE,
+            "VAD_THRESHOLD": vad_threshold_mult,
+            "VAD_MIN_ENERGY": vad_min_energy,
+            "SMART_ROUTING": config.SMART_ROUTING_ENABLE
+        }
 
         decoder = FFmpegWebMToPCMStream(sample_rate=16000)
         await decoder.start()
@@ -326,7 +409,8 @@ async def websocket_handler(request):
                     process_speech_pipeline(
                         ws, speech, balcao_id, transcript_buffer,
                         funcionario_id_atual, nome_funcionario_atual, speaker_data_list,
-                        vad_meta=vad_meta
+                        vad_meta=vad_meta,
+                        config_snapshot=current_config_snapshot
                     )
                 )
 
