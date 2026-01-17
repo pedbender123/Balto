@@ -1,229 +1,73 @@
-
 import os
 import sys
 import threading
 import time
 import asyncio
 import aiohttp
-import subprocess
 import statistics
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from datetime import datetime
+from fastapi import FastAPI, BackgroundTasks, HTTPException
+from pydantic import BaseModel
+from typing import Optional
 
-# Add parent dir to path to find app modules if needed
+# Add parent dir to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# --- Configuration ---
-# Load from Environment (Passed via docker-compose)
+# Load Env
 from dotenv import load_dotenv
 load_dotenv()
 
-STRESS_DURATION_MINUTES = int(os.environ.get("STRESS_DURATION_MINUTES", 60))
-STRESS_CLIENTS = int(os.environ.get("STRESS_CLIENTS", 5))
-AUDIO_FILE = os.environ.get("STRESS_AUDIO_FILE")
-REPORT_EMAIL = os.environ.get("STRESS_REPORT_EMAIL")
+app = FastAPI(title="Balto War Mode Orchestrator")
 
-# If running inside docker stack, 'server' is the hostname.
-# Fallback to localhost if running manually.
-SERVER_HOST = os.environ.get("SERVER_HOST", "server") 
+# --- Configuration & State ---
+class GlobalState:
+    is_running = False
+    stop_event = threading.Event()
+    active_clients = 0
+    cpu_ram_log = []
+    error_log = []
+    start_time = None
+    duration_minutes = 0
+    report_path = None
+
+state = GlobalState()
+
+# Defaults
+DEFAULT_DURATION = int(os.environ.get("STRESS_DURATION_MINUTES", 60))
+DEFAULT_CLIENTS = int(os.environ.get("STRESS_CLIENTS", 5))
+AUDIO_FILE = os.environ.get("STRESS_AUDIO_FILE", "/backend/test_audio.webm")
+SERVER_HOST = os.environ.get("SERVER_HOST", "server")
 WS_URL = f"ws://{SERVER_HOST}:8765/ws"
+SHADOW_API_URL = "http://shadow-api:8000"
 
-# Metrics & Logs
-cpu_ram_log = []
-error_log = []
-active_clients = 0
-impostor_stats = {"requests": 0}
+# --- Pydantic Models ---
+class StartRequest(BaseModel):
+    clients: int = DEFAULT_CLIENTS
+    duration_minutes: int = DEFAULT_DURATION
+    audio_file: Optional[str] = AUDIO_FILE
 
-print(f"--- WAR MODE ORCHESTRATOR ---")
-print(f"Clients: {STRESS_CLIENTS}")
-print(f"Duration: {STRESS_DURATION_MINUTES} minutes")
-print(f"Audio: {AUDIO_FILE}")
-print(f"Email: {REPORT_EMAIL}")
-print(f"Target: {WS_URL}")
-
-# --- Client Robot ---
-async def client_robot(client_id):
-    global active_clients
-    active_clients += 1
-    print(f"[Robot-{client_id}] Starting...")
-    
-    # Needs db access? In docker, we might share the volume or use API setup.
-    # For now, let's assume valid API key is hardcoded or config-based for simplicity in War Mode?
-    # Or reuse the DB logic if mapped.
-    # If the orchestrator is in a separate container, it needs DB access to insert keys.
-    # Simplification: Use a known key if possible.
-    # But let's try to use the 'integration_client' approach since we mount backend code.
-    
-    # Idempotent DB Setup
-    from app import db
-    try:
-        # Retry loop for DB readiness
-        for _ in range(10):
-            try:
-                email = f"war_robot_{client_id}@test.com"
-                balcao_name = f"Balcao War {client_id}"
-                
-                # 1. Get or Create User
-                uid = db.get_user_by_email(email)
-                if not uid:
-                    user_code = db.create_client(email, "War Corp", "00000")
-                    uid = db.get_user_by_code(user_code)
-                
-                # 2. Get or Create Balcao
-                existing_balcao = db.get_balcao_by_name(uid, balcao_name)
-                if existing_balcao:
-                    _, api_key = existing_balcao
-                else:
-                    _, api_key = db.create_balcao(uid, balcao_name)
-                
-                break
-            except Exception as e:
-                print(f"[Robot-{client_id}] DB Wait... {e}")
-                time.sleep(2)
-        else:
-             print(f"[Robot-{client_id}] DB Setup Failed.")
-             return
-
-    except Exception as e:
-        print(f"[Robot-{client_id}] Setup Error: {e}")
-        return
-
-    # Loop for Duration
-    end_time = time.time() + (STRESS_DURATION_MINUTES * 60)
-    
-    while time.time() < end_time:
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.ws_connect(WS_URL) as ws:
-                    await ws.send_json({"api_key": api_key})
-                    
-                    if not os.path.exists(AUDIO_FILE):
-                         print(f"[Robot-{client_id}] Audio file missing: {AUDIO_FILE}")
-                         break
-
-                    with open(AUDIO_FILE, "rb") as f:
-                        data = f.read(4096)
-                        while data:
-                            await ws.send_bytes(data)
-                            await asyncio.sleep(0.1) 
-                            data = f.read(4096)
-                            
-                            if time.time() > end_time: break
-                    
-                    try:
-                        while True:
-                            msg = await ws.receive_json(timeout=5.0)
-                    except asyncio.TimeoutError:
-                        pass
-                        
-        except Exception as e:
-            error_log.append(f"[Robot-{client_id}] {datetime.now()}: {e}")
-            await asyncio.sleep(5) 
-
-    print(f"[Robot-{client_id}] Finished.")
-    active_clients -= 1
-
-def run_robot(cid):
-    asyncio.run(client_robot(cid))
-
-# --- Monitors --- (Logic moved to new hardware_watchdog definition above)
-
-def log_janitor():
-    print("[Janitor] Started.")
-    end_time = time.time() + (STRESS_DURATION_MINUTES * 60) + 60
-    while time.time() < end_time:
-        time.sleep(300) # 5 mins
-        # Filtering logs requires python docker sdk too
-        pass
-
-# --- Grand Finale ---
-
-def parse_size(size_str):
-    # Quick dirty parser for "12.5MiB", "1.2GiB"
-    units = {"B": 1, "KiB": 1024, "MiB": 1024**2, "GiB": 1024**3, "TiB": 1024**4}
-    size_str = size_str.strip()
-    for unit, multiplier in units.items():
-        if size_str.endswith(unit):
-            try:
-                num = float(size_str[:-len(unit)].strip())
-                return num * multiplier
-            except:
-                pass
-    # Fallback try parsing just number
-    try:
-        return float(size_str)
-    except:
-        return 0.0
-
-def generate_report():
-    import openai
-    
-    print("[Finale] Generating Analytics...")
-    
-    # Process Metrics
-    total_cpu = 0.0
-    total_mem_bytes = 0.0
-    samples = 0
-    
-    # Log format: "HH:MM:SS | Name,CPUPerc,MemUsage"
-    # Example: "10:00:00 | CPU_Abstract: 0.5% | Mem: 120MiB" -- WAIT, looking at hardware_watchdog above:
-    # It appends: f"{timestamp} | CPU_Abstract: {cpu} | Mem: {mem}"
-    # cpu is from stats['cpu_stats']['cpu_usage']['total_usage'] which is raw nanoseconds in Docker API usually?
-    # Wait, in the updated hardware_watchdog I used docker client stats(stream=False).
-    # 'cpu_stats'['cpu_usage']['total_usage'] is cumulative counter in nanoseconds.
-    # To get % usage we need delta between two samples. 
-    # BUT, `docker stats` cli returns percentage. The python lib `stats` returns raw json.
-    # Calculating CPU % from raw stats is complex (delta_cpu / delta_system * num_cpus).
-    
-    # HACK: Let's assume the user meant the previous visual log check or just wants the final numbers.
-    # If I want true Avg CPU, I need to calculate it properly or switch back to CLI parsing if installed.
-    # The previous `hardware_watchdog` implementation (which I replaced in step 136) was trying to be clever.
-    # Let's check `hardware_watchdog` again. 
-    # It does: `cpu = stats['cpu_stats']['cpu_usage']['total_usage']` -> This is a counter, not %.
-    # It does: `mem = stats['memory_stats']['usage']` -> This is bytes.
-    
-    # I should change hardware_watchdog to calculate proper percentage or just use raw bytes for memory.
-    # For CPU, getting a meaningful "Avg CPU %" from raw cumulative counter requires deltas.
-    # SIMPLIFICATION: I will use the raw memory bytes (convert to MB) and for CPU... 
-    # I will try to rely on the fact that I want "Average". 
-    # Total CPU used (in seconds) / Duration (seconds) * 100 / Cores ?
-    # Better: Re-implement hardware_watchdog to use the CLI if available or use a library that gives %.
-    # Or just calc memory for now and show raw CPU counter difference?
-    # User asked for "Uso de CPU". 
-    # Let's fix hardware_watchdog to run `docker stats` via subprocess since the container has docker CLI ?
-    # Wait, the container `server` image is based on python-slim. It does NOT have docker CLI installed unless added.
-    # check Dockerfile... Step 155 output: "RUN apt-get update && apt-get install -y libsndfile1..." 
-    # It does not seem to install docker-cli.
-    # So `subprocess.run(["docker", ...])` will fail inside `stress-orchestrator`.
-    # Using python `docker` lib is correct.
-    # To get CPU %, we need two samples.
-    
-    # Refactoring hardware_watchdog loop in this same replacement to get proper metrics? 
-    # Yes, let's fix the data collection first in `hardware_watchdog` then report it.
-    pass
-
+# --- Logic: Watchdog ---
 def hardware_watchdog():
     print("[Watchdog] Started.")
     import docker
     client = docker.from_env()
     
-    time.sleep(10)
-    end_time = time.time() + (STRESS_DURATION_MINUTES * 60) + 60
-    
-    # For CPU calculation
     prev_cpu = 0
     prev_system = 0
     
-    while time.time() < end_time:
+    while not state.stop_event.is_set():
         try:
-            stats = client.containers.get(f"{os.environ.get('SERVER_HOST', 'balto-server-prod')}").stats(stream=False)
+            # Check timeout
+            if state.start_time and (time.time() - state.start_time) > (state.duration_minutes * 60):
+                print("[Watchdog] Time limit reached. Stopping...")
+                stop_test()
+                break
+
+            stats = client.containers.get(SERVER_HOST.replace("server", "balto-server-prod")).stats(stream=False)
             
             # MEMORY
             mem_usage = stats['memory_stats'].get('usage', 0)
             mem_limit = stats['memory_stats'].get('limit', 1)
-            mem_percent = (mem_usage / mem_limit) * 100
             
             # CPU
             cpu_delta = 0.0
@@ -244,122 +88,166 @@ def hardware_watchdog():
             prev_system = system_usage
             
             timestamp = datetime.now().strftime("%H:%M:%S")
-            # Store structured data: "TIME | CPU_PERC | MEM_BYTES"
-            cpu_ram_log.append(f"{timestamp}|{cpu_percent:.2f}|{mem_usage}")
+            state.cpu_ram_log.append(f"{timestamp}|{cpu_percent:.2f}|{mem_usage}")
             
         except Exception as e:
-            # cpu_ram_log.append(f"Error|0|0")
-            print(f"Watchdog error: {e}")
-            pass
-        time.sleep(15) # Sample every 15s
+            print(f"[Watchdog] Error: {e}")
+            
+        time.sleep(5)
 
-def generate_report():
-    import openai
-    import statistics
+# --- Logic: Clients ---
+async def client_robot(client_id, api_key):
+    state.active_clients += 1
+    print(f"[Robot-{client_id}] Starting...")
     
-    print("[Finale] Generating Analytics...")
+    end_time = time.time() + (state.duration_minutes * 60)
+    
+    while not state.stop_event.is_set() and time.time() < end_time:
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.ws_connect(WS_URL) as ws:
+                    await ws.send_json({"api_key": api_key})
+                    
+                    if not os.path.exists(AUDIO_FILE):
+                         print(f"[Robot-{client_id}] Audio missing")
+                         break
+
+                    with open(AUDIO_FILE, "rb") as f:
+                        data = f.read(4096)
+                        while data and not state.stop_event.is_set():
+                            await ws.send_bytes(data)
+                            await asyncio.sleep(0.1) 
+                            data = f.read(4096)
+                    
+                    # Wait for responses or timeout
+                    try:
+                        while not state.stop_event.is_set():
+                            await ws.receive_json(timeout=2.0)
+                    except asyncio.TimeoutError:
+                        pass
+                        
+        except Exception as e:
+            if not state.stop_event.is_set():
+                state.error_log.append(f"[Robot-{client_id}] {e}")
+                await asyncio.sleep(5) 
+    
+    state.active_clients -= 1
+
+def run_robot_thread(cid, api_key):
+    asyncio.run(client_robot(cid, api_key))
+
+def ensure_user_balcao(client_id):
+    # Idempotent DB Setup
+    from app import db
+    try:
+        email = f"war_robot_{client_id}@test.com"
+        balcao_name = f"Balcao War {client_id}"
+        
+        # 1. Get or Create User
+        uid = db.get_user_by_email(email)
+        if not uid:
+            user_code = db.create_client(email, "War Corp", "00000")
+            uid = db.get_user_by_code(user_code)
+        
+        # 2. Get or Create Balcao
+        existing_balcao = db.get_balcao_by_name(uid, balcao_name)
+        if existing_balcao:
+            return existing_balcao[1]
+        else:
+            _, api_key = db.create_balcao(uid, balcao_name)
+            return api_key
+    except Exception as e:
+        print(f"DB Error for robot {client_id}: {e}")
+        return None
+
+def start_stress_test(clients: int, duration: int):
+    # 0. Reset Shadow API
+    try:
+        import requests
+        requests.post(f"{SHADOW_API_URL}/reset")
+    except:
+        print("Warning: Could not reset Shadow API")
+
+    # 1. Reset State
+    state.is_running = True
+    state.stop_event.clear()
+    state.cpu_ram_log = []
+    state.error_log = []
+    state.start_time = time.time()
+    state.duration_minutes = duration
+    state.report_path = None
+    
+    # 2. Start Watchdog
+    threading.Thread(target=hardware_watchdog, daemon=True).start()
+    
+    # 3. Start Clients
+    for i in range(clients):
+        # Setup DB first (blocking is fine here to avoid race conditions)
+        api_key = ensure_user_balcao(i)
+        if api_key:
+            threading.Thread(target=run_robot_thread, args=(i, api_key), daemon=True).start()
+        else:
+            state.error_log.append(f"[Setup] Failed to create credentials for Robot {i}")
+
+def stop_test():
+    state.stop_event.set()
+    state.is_running = False
+    generate_final_report()
+
+def generate_final_report():
+    print("[Finale] Generating Report...")
     
     cpu_samples = []
     mem_samples = []
-    
-    for entry in cpu_ram_log:
+    for entry in state.cpu_ram_log:
         try:
             parts = entry.split('|')
             if len(parts) == 3:
                 cpu_samples.append(float(parts[1]))
                 mem_samples.append(float(parts[2]))
-        except:
-            pass
-            
+        except: pass
+
     avg_cpu = statistics.mean(cpu_samples) if cpu_samples else 0.0
     avg_mem_mb = (statistics.mean(mem_samples) / (1024*1024)) if mem_samples else 0.0
-    max_mem_mb = (max(mem_samples) / (1024*1024)) if mem_samples else 0.0
     
-    # Per Client Normalization
-    clients = max(1, STRESS_CLIENTS)
-    avg_cpu_per_client = avg_cpu / clients
-    avg_mem_per_client = avg_mem_mb / clients
-    
-    summary = f"""
-=========================================
-      BALTO WAR MODE REPORT
-=========================================
-Date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-Duration: {STRESS_DURATION_MINUTES} minutes
-Concurrent Clients: {STRESS_CLIENTS}
-Audio Source: {AUDIO_FILE}
-
---- SYSTEM METRICS (CONTAINER: balto-server-prod) ---
-Samples Collected: {len(cpu_samples)}
-
-[CPU USAGE]
-Average Total: {avg_cpu:.2f}%
-Average Per Client: {avg_cpu_per_client:.2f}%
-
-[MEMORY RAM USAGE]
-Average Total: {avg_mem_mb:.2f} MB
-Max Peak: {max_mem_mb:.2f} MB
-Average Per Client: {avg_mem_per_client:.2f} MB
-
---- STABILITY ---
-Total App Errors Logged: {len(error_log)}
-Sample Errors:
-{chr(10).join(error_log[:10])}
-"""
-    
-    # AI Analysis
-    real_key = os.environ.get("OPENAI_API_KEY")
-    if real_key and "placeholder" in real_key: real_key = None
-
-    if real_key:
-        client = openai.OpenAI(api_key=real_key) 
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": "DevOps Engineer"},
-                    {"role": "user", "content": f"Analyze:\n{summary}"}
-                ]
-            )
-            analysis = response.choices[0].message.content
-        except Exception as e:
-            analysis = f"AI Error: {e}"
-    else:
-        analysis = "AI Analysis Skipped (No valid Key)"
-
-    full_report = f"{summary}\n\n--- AI ANALYSIS ---\n{analysis}"
-    
-    # Save Locally with Timestamp
     timestamp_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    report_filename = f"stress_test_{timestamp_str}.txt"
+    report_filename = f"stress_test_ONDEMAND_{timestamp_str}.txt"
     report_path = f"/backend/{report_filename}"
+    state.report_path = report_path
     
-    try:
-        with open(report_path, "w") as f:
-            f.write(full_report)
-        print(f"[Orchestrator] Report saved to {report_path}")
-    except Exception as e:
-        print(f"[Orchestrator] Failed to save report locally: {e}") 
+    with open(report_path, "w") as f:
+        f.write(f"WAR MODE REPORT (On-Demand)\nDate: {timestamp_str}\n")
+        f.write(f"Duration: {state.duration_minutes}m\nClients: {state.active_clients}\n")
+        f.write(f"Avg CPU: {avg_cpu:.2f}%\nAvg Mem: {avg_mem_mb:.2f}MB\n")
+        f.write(f"Errors: {len(state.error_log)}\n")
 
+# --- API Endpoints ---
+@app.get("/")
+def home():
+    return {"name": "Balto War Mode Orchestrator", "status": "Ready" if not state.is_running else "Running"}
 
-# --- Main ---
-if __name__ == "__main__":
-    # Delay to ensure server is up
-    print("Waiting 10s for server startup...")
-    time.sleep(10)
-
-    # Start Monitors
-    threading.Thread(target=hardware_watchdog, daemon=True).start()
+@app.post("/start")
+def start_endpoint(req: StartRequest, background_tasks: BackgroundTasks):
+    if state.is_running:
+        raise HTTPException(status_code=400, detail="Test already running")
     
-    # Start Clients
-    threads = []
-    for i in range(STRESS_CLIENTS):
-        t = threading.Thread(target=run_robot, args=(i,))
-        t.start()
-        threads.append(t)
-    
-    for t in threads:
-        t.join()
-        
-    generate_report()
+    background_tasks.add_task(start_stress_test, req.clients, req.duration_minutes)
+    return {"message": "War Mode Initiated", "config": req.dict()}
 
+@app.post("/stop")
+def stop_endpoint():
+    if not state.is_running:
+        return {"message": "Not running"}
+    stop_test()
+    return {"message": "Stopping test..."}
+
+@app.get("/status")
+def status_endpoint():
+    return {
+        "running": state.is_running,
+        "active_clients": state.active_clients,
+        "elapsed": round(time.time() - state.start_time) if state.start_time and state.is_running else 0,
+        "samples_collected": len(state.cpu_ram_log),
+        "errors": len(state.error_log),
+        "last_report": state.report_path
+    }

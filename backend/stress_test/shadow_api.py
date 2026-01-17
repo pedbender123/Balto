@@ -27,6 +27,12 @@ def is_spy_mode():
     # Minute 0-1 is Spy Mode
     return (time.time() - START_TIME) < 60
 
+@app.post("/reset")
+def reset_timer():
+    global START_TIME
+    START_TIME = time.time()
+    return {"message": "Timer reset. Spy Mode active for 60s."}
+
 # --- OpenAI Handler ---
 
 @app.post("/v1/chat/completions")
