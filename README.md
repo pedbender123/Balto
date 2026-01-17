@@ -1,66 +1,120 @@
-🤖 Balto Server Backend
+# 🤖 Balto Server Backend
 
-Sistema de Inteligência Farmacêutica em Tempo Real
+**Sistema de Inteligência Farmacêutica em Tempo Real**
 
-O Balto Server é um serviço de backend assíncrono de alta performance desenvolvido em Python. Ele atua como o cérebro da operação, orquestrando o reconhecimento de fala, processamento de linguagem natural e a lógica de sugestão farmacêutica.
+O Balto Server é um serviço de backend assíncrono de alta performance desenvolvido em Python. Ele atua como o cérebro da operação, orquestrando o reconhecimento de fala (STT), processamento de linguagem natural (LLM) e a lógica de sugestão farmacêutica.
 
-📋 Stack Tecnológica
+O sistema suporta operação **Híbrida**, podendo rodar tanto em servidores VPS quanto localmente para testes e desenvolvimento.
 
-Linguagem: Python 3.10
+---
 
-Server: AIOHTTP (Async/WebSockets)
+## 📋 Stack Tecnológica
 
-VAD (Voice Activity Detection): WebRTCVAD + Energy Gate (Filtragem avançada de ruído/silêncio)
+*   **Linguagem**: Python 3.12+
+*   **Server**: AIOHTTP (Async/WebSockets & REST API)
+*   **Audio Pipeline**:
+    *   **Cleaning**: `noisereduce` (Stationary Noise Reduction)
+    *   **VAD**: `webrtcvad` + Adaptive Energy Gate (Detecção precisa de fala vs. ruído)
+    *   **Decoding**: `ffmpeg` (via `imageio-ffmpeg` para portabilidade local)
+*   **STT (Speech-to-Text)**:
+    *   ElevenLabs (Scribe)
+    *   AssemblyAI (Backup/Comparativo)
+*   **LLM (Inteligência)**: xAI (Grok Beta) / OpenAI (GPT-4o)
+*   **Banco de Dados**: PostgreSQL (Container Isolado)
 
-STT (Speech-to-Text): ElevenLabs (Scribe)
+### Smart Routing (Otimização de Custos)
+O sistema decide automaticamente qual modelo de transcrição usar, visando economia sem perda de qualidade.
+Regras configuráveis via `.env`:
+*   `SMART_ROUTING_ENABLE` (Default: `1`): Liga/Desliga o roteamento inteligente.
+*   `SMART_ROUTING_SNR_THRESHOLD` (Default: `15.0`): Nível mínimo de pureza do áudio (dB) para considerar o modelo econômico.
+*   `SMART_ROUTING_MIN_DURATION` (Default: `5.0`): Duração mínima (segundos) para o modelo econômico (que tende a falhar em áudios muito curtos).
 
-LLM (Inteligência): xAI (Grok Beta)
+**Lógica:**
+1.  **Áudios Curtos** (< 5s) → **ElevenLabs** (Maior precisão).
+2.  **Áudios Longos** (>= 5s) e **Limpos** (> 15dB) → **AssemblyAI** (Economia).
+3.  **Áudios Ruidosos** → **ElevenLabs** (Robustez).
 
-Banco de Dados: SQLite (Gerenciado via SQLAlchemy/Direct Access)
+---
 
-Infraestrutura: Docker & Docker Compose
+## ✨ Funcionalidades Principais
 
-✨ Novidades e Funcionalidades
+### 1. 🛡️ Área Administrativa & Analytics
+O sistema conta com um painel de administração e endpoints de análise:
+*   **Monitoramento em Tempo Real**: Status do serviço e conexões.
+*   **Histórico Completo**: Logs de sugestões, transcrições e feedback.
+*   **Relatórios Comparativos**: Endpoint `/api/export/xlsx` para download direto de relatórios detalhados de interações e custos em formato Excel.
 
-1. 🛡️ Nova Área Administrativa
+### 2. 🚀 Pipeline de Áudio Avançado
+O fluxo de processamento de áudio foi rigorosamente otimizado:
+1.  **Limpeza**: O áudio bruto passa por um filtro de redução de ruído estacionário para remover zumbidos de ar-condicionado e chiados.
+2.  **VAD Adaptativo**: O sistema detecta apenas segmentos de voz humana, ignorando silêncio e ruídos impulsivos (bips, portas).
+3.  **Segmentação Inteligente**: O áudio é cortado precisamente nas pausas de fala para maximizar a acurácia da transcrição.
 
-O sistema agora conta com um painel de administração integrado para gestão e auditoria.
+---
 
-Monitoramento em Tempo Real: Visualize o status do serviço e conexões ativas.
+## 📡 Endereços de Acesso
 
-Histórico de Transações: Acesso completo aos logs de sugestões, transcrições e produtos recomendados.
+| Ambiente | URL Base (HTTP) | WebSocket (WSS) | Descrição |
+| :--- | :--- | :--- | :--- |
+| **Produção (VPS)** | `https://balto.pbpmdev.com` | `wss://balto.pbpmdev.com/ws` | Ambiente protegido com SSL/TLS. |
+| **Local (Dev)** | `http://localhost:8765` | `ws://localhost:8765/ws` | Para testes locais e desenvolvimento. |
 
-Ajuste Fino: Capacidade de verificar a precisão das transcrições e das respostas da IA.
+> **Nota**: O ambiente local pode rodar na porta **8766** caso a 8765 esteja ocupada. Verifique os logs ao iniciar.
 
-2. 🚀 Pipeline de IA Otimizada
+---
 
-Processamento de Áudio: O VAD foi recalibrado para ignorar ruídos de farmácia (bips, impressoras) e focar na voz humana.
+## 🚀 Instalação e Execução
 
-Grok Beta: Integração atualizada com o modelo xAI para respostas mais rápidas e contextualizadas com bula de medicamentos.
+Para um guia passo-a-passo detalhado de como rodar tudo localmente, veja o arquivo **[MANUAL_EXECUCAO_LOCAL.md](MANUAL_EXECUCAO_LOCAL.md)**.
 
-📡 Endereços de Acesso (Endpoints)
+### Resumo Rápido (Local)
 
-O backend pode ser acessado localmente (desenvolvimento) ou através da VPS de produção.
+1.  **Instale dependências**:
+    ```bash
+    pip install -r backend/requirements.txt
+    pip install imageio-ffmpeg
+    ```
 
-Ambiente
+2.  **Configure `.env`** em `backend/`:
+    ```env
+    ELEVENLABS_API_KEY=...
+    ASSEMBLYAI_API_KEY=...
+    ADMIN_SECRET=admin123
+    ```
 
-URL Base (HTTP/Admin)
+3.  **Inicie o Servidor**:
+    ```bash
+    cd backend
+    PYTHONPATH=. PORT=8766 ../venv_local/bin/python3 app/server.py
+    ```
 
-WebSocket (WSS/WS)
 
-Descrição
 
-Produção (VPS)
+---
 
-https://balto.pbpmdev.com
+## 🔌 Manual de Integração WebSocket
 
-wss://balto.pbpmdev.com/ws
+O Balto Server expõe um endpoint WebSocket (`/ws`) para comunicação full-duplex em tempo real. Este manual descreve como implementar um cliente compatível.
 
-Ambiente estável com SSL.
+**Endpoint**: `/ws` (Ex: `wss://balto.pbpmdev.com/ws` ou `ws://localhost:8765/ws`)
 
-Local (Dev)
+### 1. Autenticação (Handshake)
 
-http://localhost:8765
+Imediatamente após conectar, o cliente **DEVE** enviar um frame JSON contendo a chave de API (Balcão ID). O servidor validará a chave antes de aceitar áudio.
+
+**Cliente -> Servidor (JSON):**
+```json
+{
+  "api_key": "seu_token_de_acesso",
+  "vad_settings": {
+    "threshold_multiplier": 1.5,
+    "min_energy": 50.0
+  }
+}
+```
+> **vad_settings** (Opcional): Permite ajustar a sensibilidade do VAD por balcão.
+> *   `threshold_multiplier`: Quão mais alta que o ruído a voz deve ser (Ex: 1.5x).
+> *   `min_energy`: Energia mínima absoluta para considerar voz (0-1000+).
 
 ws://localhost:8765/ws
 
@@ -78,82 +132,87 @@ XAI_API_KEY="sua-chave-grok-aqui"
 ELEVENLABS_API_KEY="sua-chave-elevenlabs-aqui"
 DB_FILE="/backend/app/dados/registro.db"
 VAD_ENERGY_THRESHOLD=300
-ADMIN_SECRET=x9PeHTY7ouQNvzJH
-MOCK_MODE=0
-AUDIO_DUMP_DIR=/backend/app/audio_dumps
 
-2. Rodando com Docker (Recomendado)
+### Métricas (Timestamps)
+Cada interação salva no banco inclui:
+- `ts_audio_received`: Chegada do chunk.
+- `ts_transcription_ready`: Fim do STT.
+- `ts_ai_request`: Início do request LLM.
+- `ts_ai_response`: Fim do request LLM.
+- `ts_client_sent`: Envio da resposta ao cliente.
 
-Utilize o Docker Compose para subir a aplicação. O volume balto-dados garante que seu banco de dados persista mesmo após reiniciar os containers.
+Consulte `Documentation.md` para o Schema completo do banco.
+*   `venv_local/`: Ambiente virtual recomendado para execução local.
 
-Iniciar o serviço:
+---
 
-docker-compose up --build -d
+## 5. Segurança do Banco de Dados
 
+Para proteger contra ataques, o Banco de Dados roda em um container isolado **sem portas expostas** para a internet.
 
-Verificar logs em tempo real:
+### Acesso Administrativo (Via Docker)
+Como a porta 5432 está fechada externamente, para acessar o banco você deve entrar no container:
 
-docker-compose logs -f
+```bash
+# Entrar no container do banco
+docker exec -it balto-db-prod psql -U balto_user -d balto_db
+```
 
+### Resetar Senha (Se necessário)
+Se precisar trocar a senha:
+1.  Edite `backend/.env`.
+2.  Recrie o container: `docker-compose up -d --force-recreate db`.
 
-Parar o serviço:
+---
 
-docker-compose down
+## 4. Cadastro e Provisionamento
 
+O sistema utiliza um fluxo de hierárquico para gerenciar **Clientes** (Redes/Donos) e seus **Balcões** (Dispositivos).
 
-🔌 Protocolo WebSocket
+### A. Cadastro de Cliente (Admin/Backoffice)
+Cria o registro do responsável e gera o **código de vinculação** (6 dígitos).
 
-O cliente deve se conectar ao endpoint /ws e seguir o fluxo abaixo.
-
-1. Autenticação (Cliente -> Servidor)
-
-Imediatamente após conectar, envie:
-
+**Endpoint**: `POST /cadastro/cliente`
+**Payload**:
+```json
 {
-  "comando": "auth",
-  "api_key": "sua-api-key-do-balcao"
+  "email": "contato@redepharma.com",
+  "razao_social": "Rede Pharma LTDA",
+  "telefone": "11999998888"
 }
+```
+**Resposta**: `{"codigo": "123456"}`
 
+### B. Cadastro de Balcão (Dispositivo)
+O dispositivo usa o código do cliente para se registrar e obter sua API Key.
 
-2. Streaming de Áudio (Cliente -> Servidor)
-
-Envie o áudio em formato binário continuamente:
-
-Formato: PCM 16-bit, 16kHz, Mono.
-
-Chunk Size: Idealmente frames de 20ms a 30ms.
-
-Otimização: O servidor possui Silence Suppression. Áudios contendo apenas silêncio ou ruído estático são descartados antes de gerar custos nas APIs de STT/LLM.
-
-3. Recebimento de Sugestões (Servidor -> Cliente)
-
-Quando o sistema detecta uma oportunidade de venda ou necessidade de intervenção:
-
+**Endpoint**: `POST /cadastro/balcao`
+**Payload**:
+```json
 {
-  "comando": "recomendar",
-  "produto": "Vitamina C 1g",
-  "explicacao": "Cliente relatou sintomas de gripe e fadiga.",
-  "transcricao_base": "Estou me sentindo muito cansado e gripado ultimamente.",
-  "confianca": "alta"
+  "nome_balcao": "Balcão Entrada 01",
+  "user_codigo": "123456"
 }
+```
 
+**Resposta**:
+```json
+{
+  "api_key": "bk_a1b2c3d4...",
+  "balcao_id": "uuid...",
+  "status": "registered"
+}
+```
 
-🛠️ Manutenção e Banco de Dados
+> **Nota de Segurança**: A `api_key` retornada não expira e deve ser armazenada com segurança pelo cliente. O código de 6 dígitos é usado apenas para o vínculo inicial.
 
-Localização: O banco SQLite fica salvo no volume Docker e mapeado internamente em /backend/app/dados/registro.db.
+### 6. Métricas e Logs (Database)
 
-Backups: Para realizar backup, copie o arquivo .db do volume ou utilize a nova interface Admin para exportar os dados relevantes.
+A tabela `interacoes` armazena o histórico completo com timestamps detalhados para auditoria de latência:
 
-📂 Estrutura de Pastas
-
-/
-├── backend/
-│   ├── app/
-│   │   ├── admin/       # Rotas e templates da Área Admin
-│   │   ├── core/        # Lógica de VAD e WebSocket
-│   │   ├── services/    # Integrações (ElevenLabs, xAI)
-│   │   └── main.py      # Entrypoint
-│   ├── Dockerfile
-│   └── .env
-├── docker-compose.yml
-└── README.md
+*   **ts_audio_received**: Data/Hora que o servidor recebeu o chunk de áudio que completou a frase (fim do VAD).
+*   **ts_transcription_ready**: Momento em que a transcrição (STT) ficou pronta.
+*   **ts_transcription_sent**: (Legado) Mesmo que ready ou momento interno.
+*   **ts_ai_request**: Momento que o contexto foi enviado para o LLM.
+*   **ts_ai_response**: Momento que a resposta do LLM chegou.
+*   **ts_client_sent**: Momento que a recomendação foi enviada via WebSocket para o cliente.

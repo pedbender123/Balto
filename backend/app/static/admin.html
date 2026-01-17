@@ -1,62 +1,152 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Balto Admin</title>
+    <title>Balto 2.0 Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen">
 
+<body class="bg-gray-100 min-h-screen text-gray-800">
+
+    <!-- Login -->
     <div id="login-screen" class="flex items-center justify-center h-screen">
-        <div class="bg-white p-8 rounded shadow-md w-96">
-            <h1 class="text-2xl font-bold mb-4 text-center">Balto Admin</h1>
-            <input type="password" id="password" placeholder="Senha Mestra" 
-                   class="w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <button onclick="login()" 
-                    class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Entrar</button>
-            <p id="error-msg" class="text-red-500 text-sm mt-2 hidden">Senha incorreta.</p>
+        <div class="bg-white p-8 rounded shadow-lg w-96">
+            <h1 class="text-3xl font-bold mb-6 text-center text-blue-600">Balto Admin</h1>
+            <input type="password" id="password" placeholder="Senha Mestra"
+                class="w-full p-3 border rounded mb-4 focus:ring-2 focus:ring-blue-500 outline-none">
+            <button onclick="login()"
+                class="w-full bg-blue-600 text-white p-3 rounded font-bold hover:bg-blue-700 transition">Entrar</button>
+            <p id="error-msg" class="text-red-500 text-sm mt-3 hidden text-center">Acesso Negado.</p>
         </div>
     </div>
 
+    <!-- Dashboard -->
     <div id="dashboard" class="hidden">
-        <nav class="bg-blue-800 text-white p-4 flex justify-between items-center">
-            <span class="font-bold text-xl">🤖 Balto Dashboard</span>
-            <div>
-                <button onclick="logout()" class="text-sm bg-blue-700 px-3 py-1 rounded">Sair</button>
+        <nav class="bg-blue-900 text-white p-4 shadow-md flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">💊</span>
+                <span class="font-bold text-xl">Balto Control Center</span>
             </div>
+            <button onclick="logout()"
+                class="text-sm bg-blue-800 hover:bg-blue-700 px-4 py-2 rounded transition">Sair</button>
         </nav>
 
-        <div class="container mx-auto p-4">
-            <div class="flex gap-4 mb-4 border-b pb-2">
-                <button onclick="loadTable('users')" class="px-4 py-2 bg-white rounded shadow hover:bg-gray-50 active:bg-blue-50">Usuários</button>
-                <button onclick="loadTable('balcoes')" class="px-4 py-2 bg-white rounded shadow hover:bg-gray-50 active:bg-blue-50">Balcões</button>
-                <button onclick="loadTable('interacoes')" class="px-4 py-2 bg-white rounded shadow hover:bg-gray-50 active:bg-blue-50">Interações</button>
+        <div class="container mx-auto p-6">
+            <!-- KPIs Rápidos -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded shadow border-l-4 border-green-500">
+                    <h3 class="text-gray-500 text-sm font-bold uppercase">Economia (Smart Routing)</h3>
+                    <p class="text-3xl font-bold text-gray-800">R$ --,--</p>
+                    <p class="text-xs text-green-600 mt-1">vs Modelo Full ElevenLabs</p>
+                </div>
+                <div class="bg-white p-6 rounded shadow border-l-4 border-blue-500">
+                    <h3 class="text-gray-500 text-sm font-bold uppercase">Interações Hoje</h3>
+                    <p class="text-3xl font-bold text-gray-800">--</p>
+                </div>
+                <div class="bg-white p-6 rounded shadow border-l-4 border-purple-500">
+                    <h3 class="text-gray-500 text-sm font-bold uppercase">Funcionários Ativos</h3>
+                    <p class="text-3xl font-bold text-gray-800">--</p>
+                </div>
             </div>
 
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="table-title" class="text-xl font-semibold capitalize">Selecione uma tabela</h2>
-                <button onclick="downloadCSV()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center gap-2">
-                    ⬇ Baixar CSV
+            <!-- Controles -->
+            <div class="flex gap-4 mb-6 border-b pb-4 overflow-x-auto">
+                <button onclick="loadTable('interacoes')"
+                    class="tab-btn px-6 py-2 bg-white rounded shadow hover:bg-gray-50 font-medium text-blue-600">Interações</button>
+                <button onclick="loadTable('funcionarios')"
+                    class="tab-btn px-6 py-2 bg-white rounded shadow hover:bg-gray-50 font-medium text-gray-600">Funcionários</button>
+                <button onclick="loadTable('balcoes')"
+                    class="tab-btn px-6 py-2 bg-white rounded shadow hover:bg-gray-50 font-medium text-gray-600">Balcões</button>
+                <button onclick="loadBatchTab()"
+                    class="tab-btn px-6 py-2 bg-white rounded shadow hover:bg-gray-50 font-medium text-gray-600">Processamento
+                    em Lote</button>
+
+                <!-- Botão Exportar Excel -->
+                <button onclick="downloadExcel()"
+                    class="px-6 py-2 bg-green-600 text-white rounded shadow hover:bg-green-700 font-medium flex items-center gap-2">
+                    📥 Baixar Excel
+                </button>
+
+                <button onclick="showEnrollment()"
+                    class="ml-auto bg-purple-600 text-white px-6 py-2 rounded shadow hover:bg-purple-700 font-bold flex items-center gap-2">
+                    🎙️ Cadastrar Voz
                 </button>
             </div>
 
-            <div class="bg-white rounded shadow overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-gray-200">
-                        <tr id="table-head"></tr>
-                    </thead>
-                    <tbody id="table-body"></tbody>
-                </table>
-                <p id="loading" class="text-center p-4 text-gray-500 hidden">Carregando...</p>
+            <!-- Batch Progress (Hidden by default) -->
+            <div id="batch-container" class="hidden bg-white rounded shadow p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    🔄 Status do Processamento
+                    <span id="batch-status-badge" class="text-xs bg-gray-200 px-2 py-1 rounded uppercase">Idle</span>
+                </h2>
+
+                <div class="w-full bg-gray-200 rounded-full h-4 mb-2">
+                    <div id="batch-progress-bar" class="bg-blue-600 h-4 rounded-full transition-all duration-500"
+                        style="width: 0%"></div>
+                </div>
+
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span id="batch-percent">0%</span>
+                    <span id="batch-counts">0/0</span>
+                </div>
+
+                <div class="mt-4 p-4 bg-gray-50 border rounded font-mono text-sm text-gray-700">
+                    <span class="font-bold">Arquivo Atual:</span> <span id="batch-current-file">...</span>
+                </div>
+            </div>
+
+            <!-- Tabela -->
+            <div id="table-container" class="bg-white rounded shadow overflow-hidden">
+                <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                    <h2 id="table-title" class="text-lg font-semibold capitalize text-gray-700">Dados</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-100 text-gray-600 text-sm uppercase">
+                            <tr id="table-head"></tr>
+                        </thead>
+                        <tbody id="table-body" class="text-gray-700"></tbody>
+                    </table>
+                </div>
+                <p id="loading" class="text-center p-8 text-gray-500 hidden">Carregando dados...</p>
+            </div>
+
+            <!-- Modal Cadastro Voz (Simples) -->
+            <div id="enroll-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div class="bg-white p-8 rounded shadow-xl w-96">
+                    <h2 class="text-xl font-bold mb-4">Novo Funcionário</h2>
+                    <input type="text" id="func-name" placeholder="Nome Completo"
+                        class="w-full border p-2 mb-4 rounded">
+                    <div class="mb-4 p-4 bg-gray-100 rounded text-center">
+                        <p class="text-sm text-gray-500 mb-2">Grave 30s de áudio</p>
+                        <button class="bg-red-500 text-white w-12 h-12 rounded-full shadow hover:bg-red-600">●</button>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button onclick="document.getElementById('enroll-modal').classList.add('hidden')"
+                            class="px-4 py-2 text-gray-600">Cancelar</button>
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded">Salvar</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        let currentData = [];
-        let currentTable = '';
+        // State
+        let currentTab = 'interacoes';
+        let refreshInterval = null;
 
+        // Auto-Login on Load
+        window.addEventListener('load', () => {
+            console.log("Checking cookie:", document.cookie);
+            if (document.cookie.includes('admin_token=auth_ok')) {
+                showDashboard();
+            }
+        });
+
+        // Lógica JS Básica para SPA
         async function login() {
             const pwd = document.getElementById('password').value;
             const res = await fetch('/admin/login', {
@@ -64,93 +154,152 @@
                 body: JSON.stringify({ password: pwd })
             });
             if (res.ok) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-                loadTable('interacoes'); // Default
+                showDashboard();
             } else {
                 document.getElementById('error-msg').classList.remove('hidden');
             }
         }
 
-        async function loadTable(table) {
-            currentTable = table;
+        function showDashboard() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            loadTable('interacoes');
+            startAutoRefresh();
+        }
+
+        function startAutoRefresh() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(() => {
+                if (!document.hidden && currentTab === 'interacoes') {
+                    loadTable('interacoes', true); // quiet reload
+                }
+            }, 5000);
+        }
+
+        async function loadTable(table, silent = false) {
+            currentTab = table;
+
+            if (table !== 'processamento') {
+                document.getElementById('batch-container').classList.add('hidden');
+                document.getElementById('table-container').classList.remove('hidden');
+            }
+
+            if (!silent) {
+                document.getElementById('loading').classList.remove('hidden');
+                document.getElementById('table-body').innerHTML = '';
+            }
             document.getElementById('table-title').innerText = table;
-            document.getElementById('loading').classList.remove('hidden');
-            document.getElementById('table-body').innerHTML = '';
-            
+
+            if (table === 'interacoes') {
+                try {
+                    const res = await fetch('/api/data/interacoes');
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (!silent) document.getElementById('loading').classList.add('hidden');
+
+                        let th = `
+                            <th class="p-4 border-b">ID</th>
+                            <th class="p-4 border-b">Data</th>
+                            <th class="p-4 border-b">Rec. Áudio</th>
+                            <th class="p-4 border-b">Transc. Sent</th>
+                            <th class="p-4 border-b">Transc. Ready</th>
+                            <th class="p-4 border-b">LLM Resp.</th>
+                            <th class="p-4 border-b">Local Sent</th>
+                            <th class="p-4 border-b">Balcão</th>
+                            <th class="p-4 border-b">Transcrição</th>
+                            <th class="p-4 border-b">Sugestão</th>
+                        `;
+                        // Avoid flickering
+                        if (document.getElementById('table-head').innerHTML !== th) {
+                            document.getElementById('table-head').innerHTML = th;
+                        }
+
+                        let rowsHtml = '';
+                        // ... existing loop ...
+                        data.forEach(row => {
+                            rowsHtml += `
+                                <tr class="hover:bg-gray-50 border-b">
+                                    <td class="p-4 text-xs font-mono text-gray-500">#${row.id}</td>
+                                    <td class="p-4 text-sm text-gray-600">${row.timestamp}</td>
+                                    <td class="p-4 text-xs font-mono text-purple-600">${row.ts_audio_received || '-'}</td>
+                                    <td class="p-4 text-xs font-mono text-gray-500">${row.ts_transcription_sent || '-'}</td>
+                                    <td class="p-4 text-xs font-mono text-blue-600">${row.ts_transcription_ready || '-'}</td>
+                                    <td class="p-4 text-xs font-mono text-green-600">${row.ts_ai_response || '-'}</td>
+                                    <td class="p-4 text-xs font-mono text-orange-600">${row.ts_client_sent || '-'}</td>
+                                    <td class="p-4 text-sm font-bold text-blue-800">${row.nome_balcao || '-'}</td>
+                                    <td class="p-4 text-sm italic text-gray-600">"${row.transcricao_completa}"</td>
+                                    <td class="p-4 text-sm font-bold text-green-700">${row.recomendacao_gerada || '-'}</td>
+                                </tr>
+                            `;
+                        });
+                        document.getElementById('table-body').innerHTML = rowsHtml || '<tr><td colspan="5" class="p-4 text-center">Nenhuma interação encontrada.</td></tr>';
+
+                    } else {
+                        if (!silent) throw new Error("Erro API " + res.status);
+                    }
+                } catch (e) {
+                    if (!silent) document.getElementById('loading').innerText = "Erro ao carregar: " + e;
+                }
+            } else {
+                // Mock para outros
+                setTimeout(() => {
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('table-head').innerHTML = '<th class="p-4">Info</th>';
+                    document.getElementById('table-body').innerHTML = '<tr><td class="p-4">Tabela ainda não implementada no backend.</td></tr>';
+                }, 500);
+            }
+        }
+
+        // --- Batch Processing Logic ---
+        let batchInterval = null;
+
+        function loadBatchTab() {
+            currentTab = 'processamento';
+            document.getElementById('table-container').classList.add('hidden');
+            document.getElementById('batch-container').classList.remove('hidden');
+
+            if (!batchInterval) {
+                fetchBatchStatus();
+                batchInterval = setInterval(fetchBatchStatus, 2000);
+            }
+        }
+
+        async function fetchBatchStatus() {
             try {
-                const res = await fetch(`/api/data/${table}`);
-                if (!res.ok) throw new Error('Falha ao carregar');
-                
+                const res = await fetch('/api/batch_status');
                 const data = await res.json();
-                currentData = data;
-                renderTable(data);
+
+                document.getElementById('batch-progress-bar').style.width = (data.percent || 0) + "%";
+                document.getElementById('batch-percent').innerText = (data.percent || 0) + "%";
+                document.getElementById('batch-counts').innerText = `${data.current || 0}/${data.total || 0}`;
+                document.getElementById('batch-current-file').innerText = data.current_file || "Aguardando início...";
+                document.getElementById('batch-status-badge').innerText = data.status || "Idle";
+
+                if (data.status === 'processing') {
+                    document.getElementById('batch-status-badge').className = "text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded uppercase";
+                } else if (data.status === 'done') {
+                    document.getElementById('batch-status-badge').className = "text-xs bg-green-200 text-green-800 px-2 py-1 rounded uppercase";
+                }
+
             } catch (e) {
-                alert(e.message);
-            } finally {
-                document.getElementById('loading').classList.add('hidden');
+                console.error("Erro ao buscar status:", e);
             }
         }
 
-        function renderTable(data) {
-            const thead = document.getElementById('table-head');
-            const tbody = document.getElementById('table-body');
-            thead.innerHTML = '';
-            tbody.innerHTML = '';
-
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td class="p-4">Sem dados.</td></tr>';
-                return;
-            }
-
-            // Headers
-            const keys = Object.keys(data[0]);
-            keys.forEach(k => {
-                const th = document.createElement('th');
-                th.className = "p-3 border-b border-gray-300";
-                th.innerText = k;
-                thead.appendChild(th);
-            });
-
-            // Rows
-            data.forEach(row => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50";
-                keys.forEach(k => {
-                    const td = document.createElement('td');
-                    td.className = "p-3 border-b border-gray-200 text-sm";
-                    td.innerText = row[k] !== null ? row[k] : '-';
-                    tr.appendChild(td);
-                });
-                tbody.appendChild(tr);
-            });
+        function showEnrollment() {
+            document.getElementById('enroll-modal').classList.remove('hidden');
         }
 
-        function downloadCSV() {
-            if (!currentData.length) return alert("Nada para exportar");
-            const keys = Object.keys(currentData[0]);
-            let csv = keys.join(",") + "\n";
-            
-            currentData.forEach(row => {
-                const values = keys.map(k => {
-                    let val = row[k] ? String(row[k]) : "";
-                    return `"${val.replace(/"/g, '""')}"`; // Escape quotes
-                });
-                csv += values.join(",") + "\n";
-            });
-
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `balto_${currentTable}.csv`;
-            a.click();
+        function downloadExcel() {
+            window.location.href = '/api/export/xlsx';
         }
 
         function logout() {
+            // Clear cookie
             document.cookie = "admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             location.reload();
         }
     </script>
 </body>
+
 </html>

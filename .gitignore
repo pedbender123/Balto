@@ -11,3 +11,23 @@ __pycache__/
 
 # 4. Pasta de arquivos de áudio quando MOCK_MODE=1 (usado para teste local)
 .audio_dumps
+
+# 5. Arquivos de Mídia e Relatórios
+*.webm
+*.wav
+*.mp3
+backend/stress_test_*.txt
+testes/artifacts/
+testes/3_transcricoes/
+testes/2_cortados/
+testes/1_input/
+
+# 6. Dependências e Ambientes Virtuais
+stress_venv/
+venv/
+env/
+backend/vendor/silero-vad/examples/
+backend/vendor/silero-vad/tests/
+
+# 7. Logs
+*.log
