@@ -2,7 +2,7 @@
 import os
 import requests
 from app import transcription
-from app.core import ai_client
+from app.core import ai_client, config
 
 def check_openai():
     """Verifica conexão com a OpenAI."""
@@ -69,4 +69,8 @@ def run_all_checks():
     print(f"OpenAI (GPT-4o): {check_openai()}")
     print(f"ElevenLabs:      {check_elevenlabs()}")
     print(f"AssemblyAI:      {check_assemblyai()}")
+    
+    # Mock Configs
+    print(f"Mock Mode (LLM): {config.MOCK_MODE}")
+    print(f"Mock Voice:      {config.MOCK_VOICE} (Latency: {config.MOCK_LATENCY_MIN}-{config.MOCK_LATENCY_MAX}s)")
     print("---------------------------------------\n")
