@@ -120,6 +120,12 @@ def register_balcao(user_codigo, client_id):
             return res.json().get("api_key")
         else:
             print(f"[Robot-{client_id}] Erro cadastro balcao: {res.text}")
+            if "Codigo invalido" in res.text or "not found" in res.text.lower():
+                 if os.path.exists(IDENTITY_FILE):
+                     try:
+                        os.remove(IDENTITY_FILE)
+                        print(f"[CRITICAL] IDENTIDADE INVÁLIDA DETECTADA! Arquivo {IDENTITY_FILE} foi apagado. REINICIE O TESTE.")
+                     except: pass
             return None
     except Exception as e:
         print(f"[Robot-{client_id}] Erro Conexão Balcao: {e}")
