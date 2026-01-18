@@ -45,10 +45,9 @@ pip install -q -r requirements-stress.txt
 
 
 # 3. Executa o Orquestrador
-# Forçamos a variável aqui para garantir que pegue localhost
-export STRESS_TARGET_URL="ws://localhost:8765/ws"
-export POSTGRES_HOST="localhost"
-export POSTGRES_PORT="5432"
+# Aponta para o servidor de produção (com SSL/wss) para testar rede
+export STRESS_TARGET_URL="wss://balto.pbpmdev.com/ws"
+# export POSTGRES_HOST="localhost" # Não necessário (usa API)
 
-echo "[!] Iniciando Ataque..."
+echo "[!] Iniciando Ataque contra $STRESS_TARGET_URL..."
 python3 stress_test/orchestrator.py
