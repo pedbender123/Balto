@@ -19,6 +19,11 @@ if not OPENAI_API_KEY:
 # Smart Routing (Legacy Support)
 SMART_ROUTING_ENABLE = os.environ.get("SMART_ROUTING_ENABLE") == "1"
 
+# Mock Details
+MOCK_VOICE = os.environ.get("MOCK_VOICE") == "1"
+MOCK_LATENCY_MIN = float(os.environ.get("MOCK_LATENCY_MIN", 0.5))
+MOCK_LATENCY_MAX = float(os.environ.get("MOCK_LATENCY_MAX", 2.0))
+
 # Startup Test
 RUN_STARTUP_TEST = os.environ.get("RUN_STARTUP_TEST") == "1"
 
@@ -29,11 +34,6 @@ STRESS_CLIENTS = int(os.environ.get("STRESS_CLIENTS", 5))
 STRESS_AUDIO_FILE = os.environ.get("STRESS_AUDIO_FILE", "../8_20250702093051.webm")
 STRESS_REPORT_EMAIL = os.environ.get("STRESS_REPORT_EMAIL")
 
-# API Base URLs (Dynamic Redirection)
-if STRESS_TEST_MODE:
-    print("[WAR MODE] STRESS_TEST_MODE is ENABLED. Redirecting traffic to Shadow API.")
-    OPENAI_BASE_URL = "http://shadow-api:8000/v1"
-    ASSEMBLYAI_BASE_URL = "http://shadow-api:8000/assemblyai"
-else:
-    OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL", None) # Default to official if None
-    ASSEMBLYAI_BASE_URL = "https://api.assemblyai.com"
+# API Base URLs
+OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL", None) # Default to official if None
+ASSEMBLYAI_BASE_URL = "https://api.assemblyai.com"

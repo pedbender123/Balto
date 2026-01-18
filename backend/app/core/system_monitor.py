@@ -18,7 +18,7 @@ async def start_monitor_task(app):
     """
     Background task that logs system metrics every 5 minutes (300s).
     """
-    print(f"[MONITOR] Iniciando monitoramento de sistema. Log: {CSV_PATH_REL}")
+    print(f"[MONITOR] Iniciando monitoramento de sistema. Log: {CSV_PATH}")
     
     # Ensure dir exists
     os.makedirs(os.path.dirname(CSV_PATH), exist_ok=True)

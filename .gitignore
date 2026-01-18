@@ -14,7 +14,7 @@ __pycache__/
 
 # 5. Arquivos de Mídia e Relatórios
 *.webm
-!8_20250702093051.webm
+!test_audio.webm
 *.wav
 *.mp3
 backend/stress_test_*.txt

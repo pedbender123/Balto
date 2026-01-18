@@ -29,7 +29,7 @@ def main():
     # Startup Events
     async def on_startup(app):
         print("--- Starting System Monitor ---")
-        asyncio.create_task(system_monitor.start_monitor_task())
+        asyncio.create_task(system_monitor.start_monitor_task(app))
         
     app.on_startup.append(on_startup)
     

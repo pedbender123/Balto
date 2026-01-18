@@ -22,23 +22,9 @@ services:
     environment:
       - RUN_STARTUP_TEST=1
     restart: unless-stopped
-    depends_on:
+
     depends_on:
       - db
-
-  shadow-api:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.stress
-    container_name: balto-shadow-api
-    command: uvicorn stress_test.shadow_api:app --host 0.0.0.0 --port 8000
-    volumes:
-      - ./backend:/backend
-    env_file:
-      - ./backend/.env
-    restart: "no"
-    depends_on:
-      - server
 
   stress-orchestrator:
     build:
@@ -61,7 +47,6 @@ services:
     profiles: [stress]
     depends_on:
       - server
-      - shadow-api
 
   db:
     image: postgres:15-alpine

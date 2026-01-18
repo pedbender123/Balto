@@ -1,10 +1,9 @@
 fastapi
 uvicorn
-httpx
+httpsutil
+requests
 python-dotenv
 psycopg2-binary
 numpy
 aiohttp
-docker
-openai
 requests

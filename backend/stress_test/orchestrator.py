@@ -10,6 +10,8 @@ import statistics
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import json
+import requests
 from datetime import datetime
 
 # Add parent dir to path to find app modules if needed
@@ -45,50 +47,104 @@ print(f"Email: {REPORT_EMAIL}")
 print(f"Target: {WS_URL}")
 
 # --- Client Robot ---
-async def client_robot(client_id):
+# --- Client Robot ---
+# --- Identity Management ---
+IDENTITY_FILE = "stress_identity.json"
+
+def get_or_create_identity_code():
+    """
+    Tenta carregar identidade (user_codigo) do arquivo.
+    Se não existir, cria um NOVO cliente na API e salva no arquivo.
+    Isso garante que todos os testes rodem sob o mesmo 'cliente pai',
+    a menos que o arquivo seja deletado.
+    """
+    # 1. Tenta carregar
+    if os.path.exists(IDENTITY_FILE):
+        try:
+            with open(IDENTITY_FILE, "r") as f:
+                data = json.load(f)
+                code = data.get("user_codigo")
+                if code:
+                    print(f"[Identity] Identidade carregada: {code}")
+                    return code
+        except Exception as e:
+            print(f"[Identity] Erro ao ler arquivo: {e}")
+
+    # 2. Se falhou, Cria Novo via API
+    # Deriva URL HTTP
+    base_url = WS_URL.replace("/ws", "").replace("ws://", "http://").replace("wss://", "https://")
+    
+    # Email único para garantir criação
+    email = f"war_master_{int(time.time())}@stress.com"
+    razao = "War Stress Corp"
+    
+    print(f"[Identity] Criando NOVA identidade master em {base_url} ({email})...")
+    
+    try:
+        res = requests.post(f"{base_url}/cadastro/cliente", json={
+            "email": email,
+            "razao_social": razao,
+            "telefone": "00000000"
+        }, timeout=10)
+        
+        if res.status_code in [200, 201]:
+            code = res.json().get("codigo")
+            # Salva
+            with open(IDENTITY_FILE, "w") as f:
+                json.dump({"user_codigo": code, "email": email, "created_at": str(datetime.now())}, f)
+            print(f"[Identity] Identidade criada e salva: {code}")
+            return code
+        else:
+            print(f"[Identity] Falha API Cliente: {res.text}")
+            return None
+    except Exception as e:
+        print(f"[Identity] Erro Conexão: {e}")
+        return None
+
+def register_balcao(user_codigo, client_id):
+    """
+    Registra um balcão para o código de usuário fornecido.
+    Retorna a API Key.
+    """
+    base_url = WS_URL.replace("/ws", "").replace("ws://", "http://").replace("wss://", "https://")
+    balcao_name = f"Balcao Robot {client_id}"
+    
+    try:
+        res = requests.post(f"{base_url}/cadastro/balcao", json={
+            "nome_balcao": balcao_name,
+            "user_codigo": user_codigo
+        }, timeout=10)
+        
+        if res.status_code in [200, 201]:
+            return res.json().get("api_key")
+        else:
+            print(f"[Robot-{client_id}] Erro cadastro balcao: {res.text}")
+            return None
+    except Exception as e:
+        print(f"[Robot-{client_id}] Erro Conexão Balcao: {e}")
+        return None
+
+async def client_robot(client_id, user_codigo):
     global active_clients
     active_clients += 1
-    print(f"[Robot-{client_id}] Starting...")
     
-    # Needs db access? In docker, we might share the volume or use API setup.
-    # For now, let's assume valid API key is hardcoded or config-based for simplicity in War Mode?
-    # Or reuse the DB logic if mapped.
-    # If the orchestrator is in a separate container, it needs DB access to insert keys.
-    # Simplification: Use a known key if possible.
-    # But let's try to use the 'integration_client' approach since we mount backend code.
-    
-    # Idempotent DB Setup
-    from app import db
-    try:
-        # Retry loop for DB readiness
-        for _ in range(10):
-            try:
-                email = f"war_robot_{client_id}@test.com"
-                balcao_name = f"Balcao War {client_id}"
-                
-                # 1. Get or Create User
-                uid = db.get_user_by_email(email)
-                if not uid:
-                    user_code = db.create_client(email, "War Corp", "00000")
-                    uid = db.get_user_by_code(user_code)
-                
-                # 2. Get or Create Balcao
-                existing_balcao = db.get_balcao_by_name(uid, balcao_name)
-                if existing_balcao:
-                    _, api_key = existing_balcao
-                else:
-                    _, api_key = db.create_balcao(uid, balcao_name)
-                
-                break
-            except Exception as e:
-                print(f"[Robot-{client_id}] DB Wait... {e}")
-                time.sleep(2)
-        else:
-             print(f"[Robot-{client_id}] DB Setup Failed.")
-             return
+    if not user_codigo:
+        print(f"[Robot-{client_id}] Sem user_codigo. Abortando.")
+        active_clients -= 1
+        return
 
-    except Exception as e:
-        print(f"[Robot-{client_id}] Setup Error: {e}")
+    print(f"[Robot-{client_id}] Starting (User: {user_codigo})...")
+    
+    # Registra Balcão deste robô
+    api_key = None
+    for _ in range(3):
+        api_key = register_balcao(user_codigo, client_id)
+        if api_key: break
+        time.sleep(1)
+        
+    if not api_key:
+        print(f"[Robot-{client_id}] Abortando: Falha ao obter API Key do balcão.")
+        active_clients -= 1
         return
 
     # Loop for Duration
@@ -126,8 +182,8 @@ async def client_robot(client_id):
     print(f"[Robot-{client_id}] Finished.")
     active_clients -= 1
 
-def run_robot(cid):
-    asyncio.run(client_robot(cid))
+def run_robot(cid, user_codigo):
+    asyncio.run(client_robot(cid, user_codigo))
 
 # --- Monitors --- (Logic moved to new hardware_watchdog definition above)
 
@@ -219,7 +275,9 @@ def hardware_watchdog():
     
     while time.time() < end_time:
         try:
-            stats = client.containers.get(f"{os.environ.get('SERVER_HOST', 'balto-server-prod')}").stats(stream=False)
+             # Use the implicit container name or allow override
+            target_container = os.environ.get("STRESS_CONTAINER_NAME", "balto-server-prod")
+            stats = client.containers.get(target_container).stats(stream=False)
             
             # MEMORY
             mem_usage = stats['memory_stats'].get('usage', 0)
@@ -333,7 +391,7 @@ Sample Errors:
     # Save Locally with Timestamp
     timestamp_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     report_filename = f"stress_test_{timestamp_str}.txt"
-    report_path = f"/backend/{report_filename}"
+    report_path = report_filename
     
     try:
         with open(report_path, "w") as f:
@@ -352,15 +410,33 @@ if __name__ == "__main__":
     # Start Monitors
     threading.Thread(target=hardware_watchdog, daemon=True).start()
     
+    # 1. Obtain Shared Identity (One Client to rule them all)
+    MASTER_CODE = get_or_create_identity_code()
+    if not MASTER_CODE:
+        print("[Fatal] Não foi possível obter o código do cliente mestre. Abortando.")
+        sys.exit(1)
+    
     # Start Clients
     threads = []
-    for i in range(STRESS_CLIENTS):
-        t = threading.Thread(target=run_robot, args=(i,))
-        t.start()
-        threads.append(t)
     
-    for t in threads:
-        t.join()
+    try:
+        for i in range(STRESS_CLIENTS):
+            # Passa o MASTER_CODE para todos
+            t = threading.Thread(target=run_robot, args=(i, MASTER_CODE))
+            t.start()
+            threads.append(t)
         
-    generate_report()
+        # Wait for completion, but allow KeyboardInterrupt
+        for t in threads:
+            while t.is_alive():
+                t.join(timeout=1.0)
+                
+    except KeyboardInterrupt:
+        print("\n[Orchestrator] Interrupção detectada! Finalizando graciosamente...")
+        # (Opcional: Poderíamos setar uma flag global para parar os threads mais rápido, 
+        # mas elas vão morrer quando o processo principal sair ou podemos deixar assim)
+        
+    finally:
+        generate_report()
+        print("[Orchestrator] Fim.")
 
