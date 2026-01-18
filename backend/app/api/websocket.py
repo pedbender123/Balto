@@ -118,7 +118,11 @@ async def process_speech_pipeline(
             "explicacao": f"Resposta simulada (Latency: {latency:.2f}s)",
             "transcricao_base": "Audio Simulado (Feature Extraction Active)"
         }
-        await websocket.send_json(mock_resp)
+        try:
+            if not websocket.closed:
+                await websocket.send_json(mock_resp)
+        except Exception as e:
+            print(f"[{balcao_id}] Warning: Connection closed during Mock Latency. Response skipped.")
 
         # Log Interaction even in Mock Mode
         await asyncio.to_thread(
