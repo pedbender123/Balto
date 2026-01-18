@@ -4,6 +4,7 @@ from aiohttp import web
 from app import db, diagnostics, transcription
 from app.core import config
 from app.api import websocket, endpoints
+from app.core import system_monitor
 
 @web.middleware
 async def cors_middleware(request, handler):
@@ -24,6 +25,13 @@ def main():
         print("[WARN] Server starting in DEGRADED mode (No DB Connection)")
     
     app = web.Application(middlewares=[cors_middleware])
+    
+    # Startup Events
+    async def on_startup(app):
+        print("--- Starting System Monitor ---")
+        asyncio.create_task(system_monitor.start_monitor_task())
+        
+    app.on_startup.append(on_startup)
     
     # WebSocket
     app.router.add_get('/ws', websocket.websocket_handler)
