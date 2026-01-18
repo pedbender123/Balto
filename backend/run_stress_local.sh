@@ -39,12 +39,10 @@ fi
 
 source stress_venv/bin/activate
 
-# 2. Instala Dependências
-if [ ! -f "stress_venv/updated" ]; then
-    echo "[!] Instalando dependências..."
-    pip install -q -r requirements-stress.txt
-    touch stress_venv/updated
-fi
+# 2. Instala Dependências (Sempre tenta atualizar para garantir)
+echo "[!] Verificando dependências..."
+pip install -q -r requirements-stress.txt
+
 
 # 3. Executa o Orquestrador
 # Forçamos a variável aqui para garantir que pegue localhost
