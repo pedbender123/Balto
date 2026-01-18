@@ -1,0 +1,70 @@
+
+=========================================
+      BALTO WAR MODE REPORT
+=========================================
+Date: 2026-01-18 19:22:34
+Duration: 1 minutes
+Concurrent Clients: 5
+Audio Source: test_audio.webm
+
+--- SYSTEM METRICS (CONTAINER: balto-server-prod) ---
+Samples Collected: 0
+
+[CPU USAGE]
+Average Total: 0.00%
+Average Per Client: 0.00%
+
+[MEMORY RAM USAGE]
+Average Total: 0.00 MB
+Max Peak: 0.00 MB
+Average Per Client: 0.00 MB
+
+--- STABILITY ---
+Total App Errors Logged: 0
+Sample Errors:
+
+
+
+--- AI ANALYSIS ---
+### Analysis of the Balto War Mode Report
+
+The report provides system metrics and performance data for an application (presumably a server named "balto-server-prod") during a specific test run on January 18, 2026. The test ran for a duration of 1 minute with 5 concurrent clients. Here are the key findings from the report:
+
+#### Key Metrics:
+- **Duration**: 1 minute
+- **Concurrent Clients**: 5
+- **Audio Source Used**: test_audio.webm
+
+#### System Metrics:
+1. **Samples Collected**: 0
+   - Indicates that no data samples were collected during the performance test, which might suggest that the application did not have enough load or usage during this period to generate measurable data.
+
+2. **CPU Usage**:
+   - **Average Total**: 0.00%
+   - **Average Per Client**: 0.00%
+   - This suggests that the application did not utilize any CPU resources, which could indicate either that the server was idle or that the clients did not actually engage the application in any meaningful way.
+
+3. **Memory RAM Usage**:
+   - **Average Total**: 0.00 MB
+   - **Max Peak**: 0.00 MB
+   - **Average Per Client**: 0.00 MB
+   - Similar to CPU usage, this shows that there was no memory consumption recorded, potentially indicating that the application was inactive during the test.
+
+#### Stability:
+- **Total App Errors Logged**: 0
+   - This is a positive indication in terms of application stability, as there were no errors logged during the test.
+- **Sample Errors**: 
+   - This section is empty, again indicating that there were no issues encountered during the test.
+
+### Conclusions:
+- The application was either not properly tested under load or was not ready to receive requests from the concurrent clients during the test.
+- The report shows that there are no performance concerns, but this is largely due to the lack of any activity recorded.
+- It may be beneficial to further investigate the reason for zero samples collected. Possible areas to consider include:
+   - Verifying the testing setup to ensure the clients were effectively interacting with the application.
+   - Investigating network issues or misconfigurations that could prevent the clients from communicating with the server.
+   - Checking the application logs to see if there were any underlying issues that need addressing.
+
+### Recommendations:
+- Conduct a follow-up test to ensure that the application is functioning correctly and capable of collecting performance data.
+- Monitor the application closely during peak usage to identify any bottlenecks or issues that arise under load.
+- Ensure that clients are appropriately configured to send requests and interact with the server correctly.

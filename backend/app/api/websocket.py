@@ -116,6 +116,9 @@ async def process_speech_pipeline(
 
 
 
+    # Initialize generic metrics
+    audio_metrics = features.get("metrics", {})
+
     audio_pitch_mean = features.get("pitch_mean", 0.0)
     audio_pitch_std = features.get("pitch_std", 0.0)
     spectral_centroid_mean = features.get("spectral_centroid_mean", 0.0)
