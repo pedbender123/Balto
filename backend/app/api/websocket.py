@@ -114,6 +114,8 @@ async def process_speech_pipeline(
         print(f"[{balcao_id}] Audio Analysis Failed: {e}")
         features = {}
 
+
+
     audio_pitch_mean = features.get("pitch_mean", 0.0)
     audio_pitch_std = features.get("pitch_std", 0.0)
     spectral_centroid_mean = features.get("spectral_centroid_mean", 0.0)
