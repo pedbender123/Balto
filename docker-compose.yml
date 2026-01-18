@@ -7,7 +7,8 @@ services:
     volumes:
       - balto-dados:/backend/app/dados
 
-
+      # (1) NOVO: bind mount -> grava no HOST
+      - ./audio_dumps:/backend/app/audio_dumps
 
       # (2) IMPORTANTE: mantém o volume antigo montado como "legacy"
       #     (não perde áudios já existentes no named volume)
@@ -22,7 +23,45 @@ services:
       - RUN_STARTUP_TEST=1
     restart: unless-stopped
     depends_on:
+    depends_on:
       - db
+
+  shadow-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.stress
+    container_name: balto-shadow-api
+    command: uvicorn stress_test.shadow_api:app --host 0.0.0.0 --port 8000
+    volumes:
+      - ./backend:/backend
+    env_file:
+      - ./backend/.env
+    restart: "no"
+    depends_on:
+      - server
+
+  stress-orchestrator:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.stress
+    user: "0:0"
+    container_name: balto-stress-orchestrator
+    command: python -u stress_test/orchestrator.py
+    volumes:
+      - ./backend:/backend
+      - ./8_20250702093051.webm:/backend/test_audio.webm
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - ./backend/.env
+    environment:
+      - STRESS_AUDIO_FILE=/backend/test_audio.webm
+      - SERVER_HOST=server
+      - APP_UID=0
+      - APP_GID=0
+    profiles: [stress]
+    depends_on:
+      - server
+      - shadow-api
 
   db:
     image: postgres:15-alpine

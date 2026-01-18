@@ -1,5 +1,12 @@
+import logging
+from datetime import datetime
+import os
 
-import psutil
+try:
+    import psutil
+except ImportError:
+    psutil = None
+
 import time
 from collections import deque
 from app.core import config
@@ -20,17 +27,24 @@ class CapacityGuard:
         Returns (True, None) if system is healthy.
         Returns (False, Reason) if system is overloaded.
         """
+        if psutil is None:
+            # If psutil is not available, we cannot check system load.
+            # Assume available for now, or return an error if strict.
+            # For this context, let's assume it's available if psutil is missing,
+            # as the primary concern is latency ratio.
+            # Or, more safely, indicate it's unavailable due to missing dependency.
+            return False, "System monitoring unavailable (psutil not installed)"
+
         # 1. Check CPU
-        cpu_usage = psutil.cpu_percent(interval=None) # Non-blocking
+        cpu_usage, mem_percent = cls.get_system_load()
         if cpu_usage > config.CAPACITY_MAX_CPU_PERCENT:
              # Check again with small interval to be sure it's not a micro-spike?
              # For real-time audio, immediate rejection is safer.
              return False, f"CPU Overloaded ({cpu_usage:.1f}%)"
 
         # 2. Check RAM
-        mem = psutil.virtual_memory()
-        if mem.percent > config.CAPACITY_MAX_RAM_PERCENT:
-             return False, f"RAM Overloaded ({mem.percent:.1f}%)"
+        if mem_percent > config.CAPACITY_MAX_RAM_PERCENT:
+             return False, f"RAM Overloaded ({mem_percent:.1f}%)"
 
         # 3. Check Latency Ratio (Voortrack)
         # If the average ratio > Threshold (e.g. 3.0), we are too slow.

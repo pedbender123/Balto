@@ -6,7 +6,10 @@ from app import db, vad, transcription, speaker_id, audio_processor
 from app import db, vad, transcription, speaker_id, audio_processor
 from app.core import config, audio_utils, ai_client, buffer, audio_analysis, capacity_guard
 import imageio_ffmpeg
-import psutil
+try:
+    import psutil
+except ImportError:
+    psutil = None
 import random
 
 class FFmpegWebMToPCMStream:
@@ -97,8 +100,12 @@ async def process_speech_pipeline(
     # print(f"[{balcao_id}] Processando segmento de fala ({len(speech_segment)} bytes)...")
 
     # Resource Snapshot
-    cpu_usage = psutil.cpu_percent()
-    ram_usage = psutil.Process().memory_info().rss / (1024 * 1024) # MB
+    if psutil:
+        cpu_usage = psutil.cpu_percent()
+        ram_usage = psutil.Process().memory_info().rss / (1024 * 1024) # MB
+    else:
+        cpu_usage = 0.0
+        ram_usage = 0.0
 
     # Audio Analysis (Feature Extraction)
     try:

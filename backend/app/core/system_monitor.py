@@ -1,17 +1,24 @@
 import asyncio
-import psutil
 import csv
 import os
 from datetime import datetime
+try:
+    import psutil
+except ImportError:
+    psutil = None
+    print("[MONITOR] Warning: psutil not installed. Monitoring disabled.")
 
 # Path to persistent storage
 CSV_PATH = "/backend/app/dados/monitoramento_server.csv"
 
-async def start_monitor_task():
+async def start_monitor_task(app):
+    if psutil is None:
+         print("[MONITOR] psutil missing. Task cancelled.")
+         return
     """
     Background task that logs system metrics every 5 minutes (300s).
     """
-    print(f"[MONITOR] Iniciando monitoramento de sistema. Log: {CSV_PATH}")
+    print(f"[MONITOR] Iniciando monitoramento de sistema. Log: {CSV_PATH_REL}")
     
     # Ensure dir exists
     os.makedirs(os.path.dirname(CSV_PATH), exist_ok=True)
