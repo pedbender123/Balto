@@ -49,9 +49,29 @@ def detect_log_level(log_line):
         return "DEBUG"
     return "INFO"
 
+# Filtros de Log (ignorar logs irrelevantes para o monitor)
+IGNORED_PATTERNS = [
+    "[DB] Tentando registrar interação",
+    "[DB] Interação registrada com sucesso",
+    "[VAD] SEGMENT FINISHED",
+    "MOCK VOICE: Sleeping",
+    "Connection closed during Mock Latency",
+    "[LogMonitor]", # Ignora logs do próprio monitor
+]
+
+def should_ignore(log_line):
+    line_check = log_line.strip()
+    for pattern in IGNORED_PATTERNS:
+        if pattern in line_check:
+            return True
+    return False
+
 def send_log_batch(container_name, log_line):
     """Envia o log formatado para a API."""
     if not log_line.strip():
+        return
+        
+    if should_ignore(log_line):
         return
     
     # Se não temos API Key, só imprime no stdout (debug local)
