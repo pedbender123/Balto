@@ -79,6 +79,7 @@ def get_or_create_identity_code():
     razao = "War Stress Corp"
     
     print(f"[Identity] Criando NOVA identidade master em {base_url} ({email})...")
+    print(f"[Identity] Using API URL: {base_url}")
     
     try:
         res = requests.post(f"{base_url}/cadastro/cliente", json={
