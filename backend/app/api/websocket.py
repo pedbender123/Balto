@@ -101,7 +101,12 @@ async def process_speech_pipeline(
     ram_usage = psutil.Process().memory_info().rss / (1024 * 1024) # MB
 
     # Audio Analysis (Feature Extraction)
-    features = await asyncio.to_thread(audio_analysis.extract_features, speech_segment)
+    try:
+        features = await asyncio.to_thread(audio_analysis.extract_features, speech_segment)
+    except Exception as e:
+        print(f"[{balcao_id}] Audio Analysis Failed: {e}")
+        features = {}
+
     audio_pitch_mean = features.get("pitch_mean", 0.0)
     audio_pitch_std = features.get("pitch_std", 0.0)
     spectral_centroid_mean = features.get("spectral_centroid_mean", 0.0)
