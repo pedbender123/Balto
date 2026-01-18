@@ -37,3 +37,8 @@ STRESS_REPORT_EMAIL = os.environ.get("STRESS_REPORT_EMAIL")
 # API Base URLs
 OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL", None) # Default to official if None
 ASSEMBLYAI_BASE_URL = "https://api.assemblyai.com"
+
+# Capacity Guard Defaults
+CAPACITY_MAX_CPU_PERCENT = float(os.environ.get("CAPACITY_MAX_CPU_PERCENT", 90.0))
+CAPACITY_MAX_RAM_PERCENT = float(os.environ.get("CAPACITY_MAX_RAM_PERCENT", 90.0))
+CAPACITY_MAX_LATENCY_RATIO = float(os.environ.get("CAPACITY_MAX_LATENCY_RATIO", 3.0))
