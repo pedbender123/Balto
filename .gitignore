@@ -31,6 +31,3 @@ backend/vendor/silero-vad/tests/
 
 # 7. Logs
 *.log
-
-# 8. Local Stress Tests
-local_stress/
