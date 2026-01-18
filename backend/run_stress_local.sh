@@ -18,13 +18,15 @@ if ! command -v python3 &> /dev/null; then
     fi
 fi
 
-# Verifica se o módulo venv existe (comum faltar no Ubuntu/Debian)
-if ! python3 -m venv --help > /dev/null 2>&1; then
-    echo "[!] Módulo venv não encontrado. Instalando python3-venv..."
+# Verifica se o ensurepip está disponível (venv quebrado no Debian/Ubuntu)
+if ! python3 -c "import ensurepip" &> /dev/null; then
+    echo "[!] 'ensurepip' não encontrado. O venv provavelmente está quebrado."
+    echo "[!] Tentando instalar python3-venv genérico..."
     if [ -x "$(command -v apt-get)" ]; then
+         # Tenta instalar o genérico, que geralmente puxa a versão certa
          sudo apt-get update && sudo apt-get install -y python3-venv
     else
-         echo "[Err] Instale o pacote python3-venv manualmente."
+         echo "[Err] Instale o pacote python3-venv (ou python3.X-venv) manualmente."
          exit 1
     fi
 fi
