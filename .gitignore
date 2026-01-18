@@ -21,7 +21,9 @@ backend/stress_test_*.txt
 testes/artifacts/
 testes/3_transcricoes/
 testes/2_cortados/
+testes/2_cortados/
 testes/1_input/
+stress_identity.json
 
 # 6. Dependências e Ambientes Virtuais
 stress_venv/
