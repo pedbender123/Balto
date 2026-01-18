@@ -43,4 +43,4 @@ def dump_audio_to_disk(audio_bytes: bytes, balcao_id: str):
         wf.setsampwidth(2)
         wf.setframerate(16000)
         wf.writeframes(audio_bytes)
-    print(f"[DUMP] Áudio salvo: {filepath}")
+    # print(f"[DUMP] Áudio salvo: {filepath}")

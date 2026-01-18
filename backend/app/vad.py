@@ -135,7 +135,7 @@ class VAD:
                 # [NEW] Safety Cutoff: 6 seconds limit
                 # 6000ms / 30ms = 200 frames
                 if len(self.speech_buffer) >= self.segment_limit_frames:
-                    print(f"[VAD WARN] SEGMENT LIMIT REACHED (6s). Forcing cut.")
+                    # print(f"[VAD WARN] SEGMENT LIMIT REACHED (6s). Forcing cut.")
                     cut_reason = "safety_limit"
                     noise_end = float(self.noise_level)
                     thr_end = float(dynamic_threshold)
