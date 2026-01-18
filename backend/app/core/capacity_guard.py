@@ -71,15 +71,3 @@ class CapacityGuard:
         
         # Optional debug
         # print(f"[CapacityGuard] Latency Ratio: {ratio:.2f}x")
-
-    @classmethod
-    def get_system_load(cls) -> tuple[float, float]:
-        """
-        Returns (cpu_percent, ram_percent)
-        """
-        if psutil is None:
-            return 0.0, 0.0
-            
-        cpu = psutil.cpu_percent(interval=None) # Non-blocking immediate
-        ram = psutil.virtual_memory().percent
-        return cpu, ram
