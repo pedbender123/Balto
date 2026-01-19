@@ -100,12 +100,16 @@ async def process_speech_pipeline(
     # print(f"[{balcao_id}] Processando segmento de fala ({len(speech_segment)} bytes)...")
 
     # Resource Snapshot
-    if psutil:
-        cpu_usage = psutil.cpu_percent()
-        ram_usage = psutil.Process().memory_info().rss / (1024 * 1024) # MB
-    else:
-        cpu_usage = 0.0
-        ram_usage = 0.0
+    # Resource Snapshot (From Global Cache to avoid Too Many Open Files)
+    # if psutil:
+    #     cpu_usage = psutil.cpu_percent()
+    #     ram_usage = psutil.Process().memory_info().rss / (1024 * 1024) # MB
+    # else:
+    
+    # [FIX] Read from background update
+    from app.core import system_monitor
+    cpu_usage = system_monitor.SYSTEM_METRICS["cpu"]
+    ram_usage = system_monitor.SYSTEM_METRICS["ram"]
 
     # Audio Analysis (Feature Extraction)
     try:
