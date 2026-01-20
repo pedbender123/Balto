@@ -50,6 +50,13 @@ def get_encoder() -> VoiceEncoder:
                 _encoder = VoiceEncoder()
     return _encoder
 
+def initialize_model():
+    """Forces the model to load immediately."""
+    print("[SpeakerID] Pre-loading Voice Encoder model...")
+    get_encoder()
+    print("[SpeakerID] Voice Encoder loaded!")
+
+
 # =========================
 # Áudio -> embedding
 # =========================

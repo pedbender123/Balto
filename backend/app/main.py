@@ -1,8 +1,8 @@
 
 import os
 from aiohttp import web
-from app import db, diagnostics, transcription
-from app.core import config
+from app import db, diagnostics, transcription, speaker_id
+from app.core import config, audio_analysis
 from app.api import websocket, endpoints
 from app.core import system_monitor
 
@@ -30,6 +30,12 @@ def main():
     async def on_startup(app):
         print("--- Starting System Monitor ---")
         asyncio.create_task(system_monitor.start_monitor_task(app))
+        
+        # Init Models (Prevent Latency on First Request)
+        print("--- Pre-loading Models ---")
+        await asyncio.to_thread(speaker_id.initialize_model)
+        await asyncio.to_thread(audio_analysis.warmup)
+        print("--- Models Ready ---")
         
     app.on_startup.append(on_startup)
     

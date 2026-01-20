@@ -53,3 +53,17 @@ def extract_features(pcm_data: bytes, sample_rate: int = 16000):
             "pitch_std": 0.0,
             "spectral_centroid_mean": 0.0
         }
+
+def warmup():
+    """
+    Executes a dummy extraction to force library loading (librosa/numba JIT)
+    at startup, avoiding latency on the first real request.
+    """
+    print("[AudioAnalysis] Warming up librosa/numba...")
+    try:
+        # 16k mono silent frame (1024 samples)
+        dummy_audio = b'\x00' * 2048
+        extract_features(dummy_audio)
+    except Exception as e:
+        print(f"[AudioAnalysis] Warmup failed (non-critical): {e}")
+
