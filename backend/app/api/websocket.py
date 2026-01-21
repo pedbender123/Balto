@@ -232,7 +232,7 @@ async def process_speech_pipeline(
         transcript_buffer.add_text(texto)
 
         # Check if we should process via AI
-        if transcript_buffer.should_process():
+        if transcript_buffer.should_process() and not config.MOCK_RECOMMENDATION:
             # Pega o buffer atual (que triggerou a ação)
             buffer_content = transcript_buffer.get_context_and_clear()
 

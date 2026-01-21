@@ -73,4 +73,5 @@ def run_all_checks():
     # Mock Configs
     print(f"Mock Mode (LLM): {config.MOCK_MODE}")
     print(f"Mock Voice:      {config.MOCK_VOICE} (Latency: {config.MOCK_LATENCY_MIN}-{config.MOCK_LATENCY_MAX}s)")
+    print(f"Mock Rec:        {config.MOCK_RECOMMENDATION}")
     print("---------------------------------------\n")
