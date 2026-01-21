@@ -113,7 +113,8 @@ async def process_speech_pipeline(
 
     # Audio Analysis (Feature Extraction)
     try:
-        features = await asyncio.to_thread(audio_analysis.extract_features, speech_segment)
+        # [MODIFIED] Use Advanced Features
+        features = await asyncio.to_thread(audio_analysis.extract_advanced_features, speech_segment)
     except Exception as e:
         print(f"[{balcao_id}] Audio Analysis Failed: {e}")
         features = {}
@@ -126,6 +127,14 @@ async def process_speech_pipeline(
     audio_pitch_mean = features.get("pitch_mean", 0.0)
     audio_pitch_std = features.get("pitch_std", 0.0)
     spectral_centroid_mean = features.get("spectral_centroid_mean", 0.0)
+
+    # Merge features into audio_metrics for DB
+    # We want ZCR, Peak, etc to be in audio_metrics dict
+    # features dict already has them.
+    # We should merge them.
+    # audio_metrics_initial = features (but features has pitch_mean separate)
+    # let's wait until we actually build audio_metrics dict later in code
+
 
     # MOCK VOICE MODE (The "Polite" Mock)
     if config.MOCK_VOICE:
@@ -176,7 +185,8 @@ async def process_speech_pipeline(
             ram_usage=ram_usage,
             audio_pitch_mean=audio_pitch_mean,
             audio_pitch_std=audio_pitch_std,
-            spectral_centroid_mean=spectral_centroid_mean
+            spectral_centroid_mean=spectral_centroid_mean,
+            interaction_type="mock_voice"
         )
         return
 
@@ -234,10 +244,47 @@ async def process_speech_pipeline(
         segment_duration_ms = int((segment_bytes / (16000 * 2)) * 1000)
 
         audio_metrics = dict(vad_meta)  # copia
+        audio_metrics.update(features) # Add ZCR, BandEnergy, etc
+        
         audio_metrics["segment_bytes"] = int(segment_bytes)
         audio_metrics["segment_duration_ms"] = int(segment_duration_ms)
 
+        interaction_type = "valid"
+
         if not texto:
+            print(f"[{balcao_id}] Transcrição vazia (Noise/Silence). Salvando como 'discarded_empty'.")
+            interaction_type = "discarded_empty"
+            # We CONTINUE to log interaction, but skip AI/Buffer stuff
+            
+            await asyncio.to_thread(
+                db.registrar_interacao,
+                balcao_id=balcao_id,
+                transcricao="",
+                recomendacao="Recusado (Vazio)",
+                resultado="discarded",
+                funcionario_id=funcionario_id,
+                modelo_stt=modelo_usado,
+                custo=custo_estimado,
+                snr=snr_calculado,
+                grok_raw=None,
+                ts_audio=ts_audio_received,
+                ts_trans_sent=ts_transcription_sent,
+                ts_trans_ready=ts_transcription_ready,
+                ts_ai_req=None,
+                ts_ai_res=None,
+                ts_client=None,
+                speaker_data=json.dumps(speaker_data_list) if speaker_data_list else None,
+                audio_metrics=audio_metrics,
+                # Enhanced Metrics
+                config_snapshot=json.dumps(config_snapshot) if config_snapshot else None,
+                mock_status=None,
+                cpu_usage=cpu_usage,
+                ram_usage=ram_usage,
+                audio_pitch_mean=audio_pitch_mean,
+                audio_pitch_std=audio_pitch_std,
+                spectral_centroid_mean=spectral_centroid_mean,
+                interaction_type=interaction_type
+            )
             return
 
 
@@ -342,10 +389,8 @@ async def process_speech_pipeline(
             ram_usage=ram_usage,
             audio_pitch_mean=audio_pitch_mean,
             audio_pitch_std=audio_pitch_std,
-            spectral_centroid_mean=spectral_centroid_mean
-
-
-
+            spectral_centroid_mean=spectral_centroid_mean,
+            interaction_type="valid"
         )
 
     except Exception as e:

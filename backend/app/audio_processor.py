@@ -40,6 +40,16 @@ class AudioCleaner:
                 n_std_thresh_stationary=1.5
             )
 
+            # Calculate Gain (Reduction) in dB
+            # Gain = 10 * log10(Energy_Out / Energy_In)
+            energy_in = np.sum(audio_data.astype(np.float32) ** 2)
+            energy_out = np.sum(reduced_noise.astype(np.float32) ** 2)
+            
+            if energy_in > 0 and energy_out > 0:
+                self.last_gain_db = float(10 * np.log10(energy_out / energy_in))
+            else:
+                self.last_gain_db = 0.0
+
             # Converter de volta para bytes (int16)
             return reduced_noise.astype(np.int16).tobytes()
 

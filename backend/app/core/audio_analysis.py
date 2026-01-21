@@ -26,11 +26,7 @@ def extract_features(pcm_data: bytes, sample_rate: int = 16000):
         centroid_mean = float(np.mean(cent))
 
         # 2. Pitch (Fundamental Frequency F0) using Yin algorithm
-        # F0 range for human speech: 50Hz to 300Hz (broadly)
         f0 = librosa.yin(y, fmin=50, fmax=400, sr=sample_rate)
-        
-        # Filter valid pitches (Yin can return wild values on silence/noise)
-        # But we accept whatever librosa gives for now, or maybe filter NaN
         f0 = f0[~np.isnan(f0)]
         
         if len(f0) > 0:
@@ -40,10 +36,83 @@ def extract_features(pcm_data: bytes, sample_rate: int = 16000):
             pitch_mean = 0.0
             pitch_std = 0.0
 
+        # --- New Extended Metrics ---
+        
+        # 3. Zero Crossing Rate (ZCR)
+        zcr = librosa.feature.zero_crossing_rate(y)
+        zcr_mean = float(np.mean(zcr))
+
+        # 4. Energy & dBFS
+        # RMS Energy
+        rmse = librosa.feature.rms(y=y)
+        energy_rms_mean = float(np.mean(rmse))
+        energy_rms_max = float(np.max(rmse))
+        
+        # Peak dBFS (assuming float32 -1.0 to 1.0, reference=1.0)
+        # Avoid log(0)
+        peak_amp = np.max(np.abs(y))
+        if peak_amp > 0:
+            peak_dbfs = float(20 * np.log10(peak_amp))
+        else:
+            peak_dbfs = -96.0 # Silence floor
+
+        # 5. Clipping Ratio
+        # Count samples close to 1.0 or -1.0 (threshold 0.995)
+        clipping_count = np.sum(np.abs(y) > 0.995)
+        clipping_ratio = float(clipping_count / len(y))
+
+        # 6. DC Offset
+        dc_offset = float(np.mean(y))
+
+        # 7. Band Energy (Low/Mid/High)
+        # Simple FFT-based band energy
+        S = np.abs(librosa.stft(y))
+        freqs = librosa.fft_frequencies(sr=sample_rate)
+        
+        # Define bands
+        # Low: 0-250Hz, Mid: 250-4000Hz, High: 4000-8000Hz (Nyquist)
+        # Find indices
+        idx_low = (freqs <= 250)
+        idx_mid = (freqs > 250) & (freqs <= 4000)
+        idx_high = (freqs > 4000)
+
+        # Sum energy in bands (mean across time)
+        # S is Magnitude, Energy ~ S^2
+        S_energy = S**2
+        
+        band_energy_low = float(np.mean(np.sum(S_energy[idx_low, :], axis=0)))
+        band_energy_mid = float(np.mean(np.sum(S_energy[idx_mid, :], axis=0)))
+        band_energy_high = float(np.mean(np.sum(S_energy[idx_high, :], axis=0)))
+
+        # 8. SNR Estimate (Very Basic)
+        # Estimate noise floor dynamically using the 10th percentile of RMSE energy frames
+        # This is a rough approximation for a single segment
+        rmse_flat = rmse.flatten()
+        if len(rmse_flat) > 0:
+            noise_floor_rms = np.percentile(rmse_flat, 10)
+            signal_peak_rms = np.max(rmse_flat)
+            if noise_floor_rms > 0:
+                snr_estimate = float(20 * np.log10(signal_peak_rms / noise_floor_rms))
+            else:
+                snr_estimate = 0.0 # Clean/Silence
+        else:
+            snr_estimate = 0.0
+
         return {
             "pitch_mean": pitch_mean,
             "pitch_std": pitch_std,
-            "spectral_centroid_mean": centroid_mean
+            "spectral_centroid_mean": centroid_mean,
+            
+            "zcr": zcr_mean,
+            "energy_rms_mean": energy_rms_mean,
+            "energy_rms_max": energy_rms_max,
+            "peak_dbfs": peak_dbfs,
+            "clipping_ratio": clipping_ratio,
+            "dc_offset": dc_offset,
+            "band_energy_low": band_energy_low,
+            "band_energy_mid": band_energy_mid,
+            "band_energy_high": band_energy_high,
+            "snr_estimate": snr_estimate
         }
 
     except Exception as e:
@@ -53,6 +122,9 @@ def extract_features(pcm_data: bytes, sample_rate: int = 16000):
             "pitch_std": 0.0,
             "spectral_centroid_mean": 0.0
         }
+
+# Alias for backward compatibility
+extract_advanced_features = extract_features
 
 def warmup():
     """

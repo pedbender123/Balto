@@ -118,6 +118,9 @@ def inicializar_db():
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS ts_client_sent TIMESTAMP")
         # New: Speaker Data
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS speaker_data TEXT")
+        
+        # New: Interaction Type (valid, discarded_empty, discarded_noise, etc)
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS interaction_type TEXT DEFAULT 'valid'")
 
         # Colunas das características do trecho/áudio para análise de melhoria
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS segment_duration_ms INTEGER")
@@ -384,10 +387,11 @@ def registrar_interacao(
     ram_usage=0.0,
     audio_pitch_mean=0.0,
     audio_pitch_std=0.0,
-    spectral_centroid_mean=0.0
+    spectral_centroid_mean=0.0,
+    interaction_type="valid"
 ):
     audio_metrics = audio_metrics or {}
-    print(f"[DB] Tentando registrar interação para balcao={balcao_id}, SNR={snr:.2f}")
+    print(f"[DB] Tentando registrar interação para balcao={balcao_id}, TYPE={interaction_type}")
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -399,7 +403,7 @@ def registrar_interacao(
             ts_ai_request, ts_ai_response, ts_client_sent, speaker_data,
 
             config_snapshot, mock_status, cpu_usage_percent, ram_usage_mb,
-            audio_pitch_mean, audio_pitch_std, spectral_centroid_mean,
+            audio_pitch_mean, audio_pitch_std, spectral_centroid_mean, interaction_type,
 
             segment_duration_ms, segment_bytes, frames_len, cut_reason, silence_frames_count_at_cut,
             noise_level_start, noise_level_end, dynamic_threshold_start, dynamic_threshold_end,
@@ -417,7 +421,7 @@ def registrar_interacao(
             %s, %s, %s, %s,
 
             %s, %s, %s, %s,
-            %s, %s, %s,
+            %s, %s, %s, %s,
 
             %s, %s, %s, %s, %s,
             %s, %s, %s, %s,
@@ -435,7 +439,7 @@ def registrar_interacao(
             ts_ai_req, ts_ai_res, ts_client, speaker_data,
 
             config_snapshot, mock_status, cpu_usage, ram_usage,
-            audio_pitch_mean, audio_pitch_std, spectral_centroid_mean,
+            audio_pitch_mean, audio_pitch_std, spectral_centroid_mean, interaction_type,
 
             audio_metrics.get("segment_duration_ms"),
             audio_metrics.get("segment_bytes"),
@@ -475,7 +479,7 @@ def registrar_interacao(
         ))
         conn.commit()
         conn.close()
-        print("[DB] Interação registrada com sucesso.")
+        print(f"[DB] Interação ({interaction_type}) registrada com sucesso.")
     except Exception as e:
         print(f"[DB] ERRO CRÍTICO ao salvar interação: {e}")
         import traceback
