@@ -139,18 +139,26 @@ async def process_speech_pipeline(
             "explicacao": f"Resposta simulada (Latency: {latency:.2f}s)",
             "transcricao_base": "Audio Simulado (Feature Extraction Active)"
         }
-        try:
-            if not websocket.closed:
-                await websocket.send_json(mock_resp)
-        except Exception as e:
-            print(f"[{balcao_id}] Warning: Connection closed during Mock Latency. Response skipped.")
+        
+        rec_log = mock_resp["explicacao"]
+        
+        # [FIX] Check if we should suppress recommendations
+        if config.MOCK_RECOMMENDATION:
+             rec_log = "🚫 MOCK REC: Desativado (Simulação Bloqueada)"
+             print(f"[{balcao_id}] Recomendação MOCK VOICE bloqueada por configuração.")
+        else:
+            try:
+                if not websocket.closed:
+                    await websocket.send_json(mock_resp)
+            except Exception as e:
+                print(f"[{balcao_id}] Warning: Connection closed during Mock Latency. Response skipped.")
 
         # Log Interaction even in Mock Mode
         await asyncio.to_thread(
             db.registrar_interacao,
             balcao_id=balcao_id,
             transcricao="[MOCK VOICE] Audio Processed",
-            recomendacao=mock_resp["explicacao"],
+            recomendacao=rec_log,
             resultado="mock_voice",
             funcionario_id=funcionario_id,
             modelo_stt="mock",
@@ -176,6 +184,17 @@ async def process_speech_pipeline(
     if config.MOCK_MODE:
         await asyncio.to_thread(audio_utils.dump_audio_to_disk, speech_segment, balcao_id)
         await asyncio.sleep(1)
+        
+        if config.MOCK_RECOMMENDATION:
+             print(f"[{balcao_id}] Recomendação MOCK MODE bloqueada por configuração.")
+             # No log needed for legacy mock in this specific flow as it doesn't call registrar_interacao usually? 
+             # Wait, the legacy flow returns immediately. The logic below handles real processing.
+             # If MOCK_MODE is true, it returns here. 
+             # We should probably log if we want visibility, but the legacy mock code block 
+             # didn't have a DB call originally (lines 176-185 in original).
+             # It just returned. 
+             return
+
         await websocket.send_json({
             "comando": "recomendar",
             "produto": "Produto MOCK LLM",
@@ -232,11 +251,18 @@ async def process_speech_pipeline(
         transcript_buffer.add_text(texto)
 
         # Check if we should process via AI
-        if transcript_buffer.should_process() and not config.MOCK_RECOMMENDATION:
-            # Pega o buffer atual (que triggerou a ação)
-            buffer_content = transcript_buffer.get_context_and_clear()
+        if transcript_buffer.should_process():
+            # [FIX] Check suppression FIRST
+            if config.MOCK_RECOMMENDATION:
+                print(f"[{balcao_id}] Recomendação AI bloqueada por configuração (MOCK_RECOMMENDATION=True).")
+                recomendacao_log = "🚫 MOCK REC: Desativado"
+                # Skip the rest of the AI block
+            
+            else:
+                # Pega o buffer atual (que triggerou a ação)
+                buffer_content = transcript_buffer.get_context_and_clear()
 
-            print(f"[{balcao_id}] Enviando para AI: {buffer_content[-200:]}...")
+                print(f"[{balcao_id}] Enviando para AI: {buffer_content[-200:]}...")
 
             ts_ai_request = datetime.now()
 
