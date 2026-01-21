@@ -121,19 +121,17 @@ async def process_speech_pipeline(
 
 
 
-    # Initialize generic metrics
-    audio_metrics = features.get("metrics", {})
+    # Initialize audio_metrics with all features from analysis
+    # This ensures ZCR, BandEnergy, Peak, etc are stored even in mock mode
+    audio_metrics = dict(features)  # Copy all metrics
+    
+    # Also store vad_meta if available
+    if vad_meta:
+        audio_metrics.update(vad_meta)
 
     audio_pitch_mean = features.get("pitch_mean", 0.0)
     audio_pitch_std = features.get("pitch_std", 0.0)
     spectral_centroid_mean = features.get("spectral_centroid_mean", 0.0)
-
-    # Merge features into audio_metrics for DB
-    # We want ZCR, Peak, etc to be in audio_metrics dict
-    # features dict already has them.
-    # We should merge them.
-    # audio_metrics_initial = features (but features has pitch_mean separate)
-    # let's wait until we actually build audio_metrics dict later in code
 
 
     # MOCK VOICE MODE (The "Polite" Mock)
@@ -243,9 +241,7 @@ async def process_speech_pipeline(
         # bytes por segundo = 16000 samples/s * 2 bytes
         segment_duration_ms = int((segment_bytes / (16000 * 2)) * 1000)
 
-        audio_metrics = dict(vad_meta)  # copia
-        audio_metrics.update(features) # Add ZCR, BandEnergy, etc
-        
+        # Add segment info to existing audio_metrics (already has features + vad_meta)
         audio_metrics["segment_bytes"] = int(segment_bytes)
         audio_metrics["segment_duration_ms"] = int(segment_duration_ms)
 
