@@ -137,7 +137,7 @@ def main_loop():
             active_containers = client.containers.list()
             for container in active_containers:
                 # 1. Ignora o próprio monitor (evita loop infinito de logs)
-                if container.id.startswith(MY_HOSTNAME) or container.name == MY_HOSTNAME:
+                if MY_HOSTNAME and (container.id.startswith(MY_HOSTNAME) or container.name == MY_HOSTNAME):
                     continue
                 
                 # 2. Se já estamos monitorando, pula
