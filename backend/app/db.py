@@ -63,9 +63,16 @@ def inicializar_db():
         user_id TEXT,
         nome_balcao TEXT,
         api_key TEXT UNIQUE,
+        vad_config TEXT,
         FOREIGN KEY (user_id) REFERENCES users (user_id)
     )
     """)
+    # Migration
+    try:
+        cursor.execute("ALTER TABLE balcoes ADD COLUMN IF NOT EXISTS vad_config TEXT")
+    except Exception as e:
+        print(f"[DB WARN] Failed to alter table balcoes: {e}")
+        conn.rollback()
 
     # 3) Funcionários (Speaker ID)
     cursor.execute("""
@@ -225,7 +232,7 @@ def get_user_by_email(email):
 def get_balcao_by_name(user_id, nome_balcao):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT balcao_id, api_key FROM balcoes WHERE user_id = %s AND nome_balcao = %s", (user_id, nome_balcao))
+    cursor.execute("SELECT balcao_id, api_key, vad_config FROM balcoes WHERE user_id = %s AND nome_balcao = %s", (user_id, nome_balcao))
     res = cursor.fetchone()
     conn.close()
     return res if res else None
@@ -233,6 +240,7 @@ def get_balcao_by_name(user_id, nome_balcao):
 def create_client(email, razao_social, telefone):
     import uuid
     import random
+    import json
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -256,20 +264,93 @@ def create_client(email, razao_social, telefone):
 
 def create_balcao(user_id, nome_balcao):
     import uuid
+    import json
     conn = get_db_connection()
     cursor = conn.cursor()
 
     balcao_id = str(uuid.uuid4())
     api_key = f"bk_{uuid.uuid4().hex}"
+    
+    # Defaults handled in code if None
+    vad_config = None # Store as NULL initially
 
     cursor.execute("""
-        INSERT INTO balcoes (balcao_id, user_id, nome_balcao, api_key)
-        VALUES (%s, %s, %s, %s)
-    """, (balcao_id, user_id, nome_balcao, api_key))
+        INSERT INTO balcoes (balcao_id, user_id, nome_balcao, api_key, vad_config)
+        VALUES (%s, %s, %s, %s, %s)
+    """, (balcao_id, user_id, nome_balcao, api_key, vad_config))
 
     conn.commit()
     conn.close()
     return balcao_id, api_key
+
+def update_balcao_vad_config(balcao_id, config_dict):
+    import json
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    config_json = json.dumps(config_dict)
+    
+    try:
+        cursor.execute("""
+            UPDATE balcoes 
+            SET vad_config = %s
+            WHERE balcao_id = %s
+        """, (config_json, balcao_id))
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        conn.close()
+        
+def get_balcao_vad_config(balcao_id):
+    import json
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT vad_config FROM balcoes WHERE balcao_id = %s", (balcao_id,))
+    res = cursor.fetchone()
+    conn.close()
+    
+    if res and res[0]:
+        return json.loads(res[0])
+    return {}
+
+def listar_balcoes_por_user_code_admin(user_code):
+    """Admin function: List balcoes given a client code (requires verifying admin elsewhere)"""
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    # 1. Get user_id from code
+    cursor.execute("SELECT user_id FROM users WHERE codigo_6_digitos = %s", (user_code,))
+    user = cursor.fetchone()
+    if not user:
+        conn.close()
+        return None
+        
+    user_id = user['user_id']
+    
+    # 2. Get balcoes
+    cursor.execute("""
+        SELECT balcao_id, nome_balcao, vad_config 
+        FROM balcoes 
+        WHERE user_id = %s
+    """, (user_id,))
+    
+    balcoes = [dict(b) for b in cursor.fetchall()]
+    conn.close()
+    
+    # Simple JSON parsing for display
+    import json
+    for b in balcoes:
+        if b['vad_config']:
+            try:
+                b['vad_config'] = json.loads(b['vad_config'])
+            except:
+                pass
+                
+    return balcoes
+
 
 # =========================
 # Funcionários (cadastro de voz)

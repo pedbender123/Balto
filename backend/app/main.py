@@ -61,6 +61,10 @@ def main():
     app.router.add_get('/api/data/interacoes', endpoints.api_data_interacoes)
     app.router.add_get('/api/data/balcao/{balcao_id}/metricas', endpoints.api_interacoes_balcao_metricas)
 
+    # Admin VAD Management
+    app.router.add_get('/api/admin/client/{user_codigo}/balcoes', endpoints.api_admin_listar_balcoes)
+    app.router.add_put('/api/admin/balcao/{balcao_id}/vad', endpoints.api_admin_update_balcao_vad)
+
     print("---------------------------------------")
     print(f"Balto Server 3.0 (Modular) Running on port {config.PORT}")
     print(f"MOCK_MODE: {config.MOCK_MODE}")

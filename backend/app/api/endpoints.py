@@ -307,3 +307,43 @@ async def api_interacoes_balcao_metricas(request):
         return web.json_response({"balcao_id": balcao_id, "interacoes": rows})
     except Exception as e:
         return web.json_response({"error": str(e)}, status=500)
+
+async def api_admin_listar_balcoes(request):
+    """
+    GET /api/admin/client/{user_codigo}/balcoes
+    Headers: Cookie: admin_token=auth_ok
+    """
+    if request.cookies.get("admin_token") != "auth_ok":
+        return web.Response(status=403, text="Forbidden")
+        
+    user_codigo = request.match_info.get('user_codigo')
+    
+    try:
+        balcoes = db.listar_balcoes_por_user_code_admin(user_codigo)
+        if balcoes is None: # User not found
+            return web.json_response({"error": "Cliente não encontrado"}, status=404)
+            
+        return web.json_response({"cliente": user_codigo, "balcoes": balcoes})
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)
+
+async def api_admin_update_balcao_vad(request):
+    """
+    PUT /api/admin/balcao/{balcao_id}/vad
+    Body: JSON with VAD config (threshold_multiplier, min_energy_threshold, etc)
+    Headers: Cookie: admin_token=auth_ok
+    """
+    if request.cookies.get("admin_token") != "auth_ok":
+        return web.Response(status=403, text="Forbidden")
+
+    balcao_id = request.match_info.get('balcao_id')
+    
+    try:
+        data = await request.json()
+        if not data:
+            return web.json_response({"error": "Body JSON required"}, status=400)
+            
+        db.update_balcao_vad_config(balcao_id, data)
+        return web.json_response({"status": "updated", "balcao_id": balcao_id, "vad_config": data})
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)

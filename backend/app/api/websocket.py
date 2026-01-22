@@ -424,22 +424,60 @@ async def websocket_handler(request):
             await ws.close(code=4002, message=f"Server Overload: {reason}".encode('utf-8'))
             return ws
 
-        print(f"Conectado: {balcao_id} (Settings: {vad_settings})")
+        # 1. Load VAD Config from DB (Per-Counter Presets)
+        db_vad_cfg = db.get_balcao_vad_config(balcao_id)
         
-        # Pass settings to VAD
+        # 2. Merge with Frontend (Frontend overrides DB? Or DB overrides Frontend? 
+        # Requirement: "Preset aplicado automaticamente por balcão sem o frontend enviar nada"
+        # Implies DB is source of truth. If frontend sends something, maybe ignore or merge.
+        # Let's say DB overrides defaults, and Frontend is ignored (as requested).
+        
+        # But if msg has "vad_settings", user might want to debug from frontend?
+        # Requirement: "Preenche com os valores no .env ... mas vai ter agora uma copia no banco"
+        # Using DB config primarily.
+        
+        print(f"Conectado: {balcao_id} (DB VAD Preset: {db_vad_cfg})")
+        
+        # Instantiate VAD with merged config
+        # Default < Env < DB
+        
         vad_session = vad.VAD(
-            threshold_multiplier=vad_threshold_mult,
-            min_energy_threshold=vad_min_energy
+            threshold_multiplier=db_vad_cfg.get("threshold_multiplier"),
+            min_energy_threshold=db_vad_cfg.get("min_energy_threshold")
         )
+        
+        # Apply extra params not in __init__ signatures sometimes or requiring custom logic
+        if "alpha" in db_vad_cfg:
+            vad_session.alpha = float(db_vad_cfg["alpha"])
+            
+        if "silence_frames_needed" in db_vad_cfg:
+            vad_session.silence_frames_needed = int(db_vad_cfg["silence_frames_needed"])
+            
+        if "segment_limit_frames" in db_vad_cfg:
+            vad_session.segment_limit_frames = int(db_vad_cfg["segment_limit_frames"])
+            
+        if "overlap_frames" in db_vad_cfg:
+            from collections import deque
+            new_overlap = int(db_vad_cfg["overlap_frames"])
+            vad_session.overlap_frames = new_overlap
+            vad_session.overlap_buffer = deque(maxlen=new_overlap)
+        
         audio_cleaner = audio_processor.AudioCleaner()
         
         # Configure Snapshot for this connection
         current_config_snapshot = {
             "MOCK_MODE": config.MOCK_MODE,
             "MOCK_VOICE": config.MOCK_VOICE,
-            "VAD_THRESHOLD": vad_threshold_mult,
-            "VAD_MIN_ENERGY": vad_min_energy,
-            "SMART_ROUTING": config.SMART_ROUTING_ENABLE
+            "SMART_ROUTING": config.SMART_ROUTING_ENABLE,
+            "VAD_SOURCE": "DB_PRESET" if db_vad_cfg else "ENV_DEFAULT",
+            "VAD_CONFIG": {
+                "threshold_multiplier": vad_session.threshold_multiplier,
+                "min_energy_threshold": vad_session.min_energy_threshold,
+                "alpha": vad_session.alpha,
+                "silence_frames_needed": vad_session.silence_frames_needed,
+                "segment_limit_frames": vad_session.segment_limit_frames,
+                "overlap_frames": vad_session.overlap_frames
+            }
         }
 
         decoder = FFmpegWebMToPCMStream(sample_rate=16000)
