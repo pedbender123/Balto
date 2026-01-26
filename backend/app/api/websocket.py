@@ -4,7 +4,7 @@ from datetime import datetime
 from aiohttp import web, WSMsgType
 from app import db, vad, transcription, speaker_id, audio_processor
 from app import db, vad, transcription, speaker_id, audio_processor
-from app.core import config, audio_utils, ai_client, buffer, audio_analysis, capacity_guard
+from app.core import config, audio_utils, ai_client, buffer, audio_analysis, capacity_guard, audio_archiver
 import imageio_ffmpeg
 try:
     import psutil
@@ -110,6 +110,34 @@ async def process_speech_pipeline(
     from app.core import system_monitor
     cpu_usage = system_monitor.SYSTEM_METRICS["cpu"]
     ram_usage = system_monitor.SYSTEM_METRICS["ram"]
+
+    # --- SileroVAD (IA Filter) ---
+    # Double check if this is really speech before expensive transcription
+    svad = websocket.app.get('silero_vad')
+    if svad:
+        try:
+            # SileroVAD.process_full_audio returns a list of timestamps
+            timestamps = await asyncio.to_thread(svad.process_full_audio, speech_segment)
+            if not timestamps:
+                # print(f"[{balcao_id}] SileroVAD: No speech detected (IA Filter). Discarding.")
+                # Log as discarded by IA
+                await asyncio.to_thread(
+                    db.registrar_interacao,
+                    balcao_id=balcao_id,
+                    transcricao="",
+                    recomendacao="Recusado (IA Mask)",
+                    resultado="discarded",
+                    funcionario_id=funcionario_id,
+                    modelo_stt="silero_filter",
+                    custo=0.0,
+                    snr=0.0,
+                    ts_audio=ts_audio_received,
+                    interaction_type="discarded_ia"
+                )
+                return
+        except Exception as e:
+            print(f"[{balcao_id}] SileroVAD Error: {e}")
+            # Keep going as fallback
 
     # Audio Analysis (Feature Extraction)
     try:
@@ -510,7 +538,13 @@ async def websocket_handler(request):
                 new_pcm = bytes(pcm_acc[:1920])
                 del pcm_acc[:1920]
 
+                # 1. Archive RAW chunk
+                audio_archiver.archiver.archive_chunk(balcao_id, new_pcm, is_processed=False)
+
                 cleaned_pcm = audio_cleaner.process(new_pcm)
+
+                # 2. Archive PROCESSED chunk
+                audio_archiver.archiver.archive_chunk(balcao_id, cleaned_pcm, is_processed=True)
 
                 vad_out = vad_session.process(cleaned_pcm)
                 if not vad_out:

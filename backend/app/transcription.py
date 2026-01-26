@@ -4,6 +4,8 @@ import time
 import numpy as np
 import requests
 import wave
+import re
+import json
 from app.core import config
 from elevenlabs.client import ElevenLabs
 
@@ -71,6 +73,51 @@ GLADIA_API_KEY = os.environ.get("GLADIA_API_KEY")
 SMART_ROUTING_ENABLE = os.environ.get("SMART_ROUTING_ENABLE", "1") == "1"
 SMART_ROUTING_SNR_THRESHOLD = float(os.environ.get("SMART_ROUTING_SNR_THRESHOLD", "15.0"))
 SMART_ROUTING_MIN_DURATION = float(os.environ.get("SMART_ROUTING_MIN_DURATION", "5.0"))
+
+EXCLUSIONS_PATH = os.path.join(os.path.dirname(__file__), "dados", "exclusions.json")
+
+def carregar_exclusoes():
+    """Carrega a blacklist e padrões regex do arquivo JSON."""
+    if not os.path.exists(EXCLUSIONS_PATH):
+        return {"exact_match_exclusions": [], "regex_patterns": []}
+    try:
+        with open(EXCLUSIONS_PATH, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Erro ao carregar exclusões: {e}")
+        return {"exact_match_exclusions": [], "regex_patterns": []}
+
+def limpar_texto_transcricao(texto: str) -> str:
+    """
+    Sanitiza a transcrição:
+    1. Remove conteúdo entre parênteses (ex: som de fundo).
+    2. Aplica blacklist de termos exatos.
+    """
+    if not texto:
+        return ""
+    
+    exclusoes = carregar_exclusoes()
+    
+    # 1. Remover conteúdo entre parênteses (ex: anotações do ElevenLabs)
+    texto_limpo = re.sub(r'\(.*?\)', '', texto)
+    
+    # 2. Aplicar outros padrões Regex do JSON
+    for pattern in exclusoes.get("regex_patterns", []):
+        if pattern != r'\(.*?\)':  # Já limpamos acima
+            try:
+                texto_limpo = re.sub(pattern, '', texto_limpo)
+            except Exception as e:
+                print(f"Erro no padrão regex {pattern}: {e}")
+    
+    # Normalizar espaços
+    texto_limpo = " ".join(texto_limpo.split()).strip()
+    
+    # 3. Check Exact Match Blacklist (case insensitive opcional, aqui exato)
+    # Se sobrar apenas um termo da blacklist, limpamos tudo.
+    if texto_limpo in exclusoes.get("exact_match_exclusions", []):
+        return ""
+    
+    return texto_limpo
 
 def transcrever_deepgram(audio_bytes: bytes) -> str:
     """Modelo Rápido (Deepgram)."""
@@ -347,8 +394,13 @@ def transcrever_inteligente(audio_bytes: bytes) -> dict:
         modelo = "elevenlabs"
         custo = 0.05 # Estimativa ElevenLabs
         
+    # Aplicar limpeza de texto antes de retornar
+    texto_final = limpar_texto_transcricao(texto)
+    if texto and not texto_final:
+        print(f"[Transcription] Texto original '{texto}' foi totalmente limpo/descartado.")
+
     return {
-        "texto": texto,
+        "texto": texto_final,
         "modelo": modelo,
         "custo": custo,
         "snr": snr

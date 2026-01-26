@@ -1,10 +1,10 @@
 
 import os
 from aiohttp import web
-from app import db, diagnostics, transcription, speaker_id
+from app import db, diagnostics, transcription, speaker_id, silero_vad
 from app.core import config, audio_analysis
 from app.api import websocket, endpoints
-from app.core import system_monitor
+from app.core import system_monitor, audio_archiver
 
 @web.middleware
 async def cors_middleware(request, handler):
@@ -34,7 +34,19 @@ def main():
         # Init Models (Prevent Latency on First Request)
         print("--- Pre-loading Models ---")
         await asyncio.to_thread(speaker_id.initialize_model)
+        
+        # Init SileroVAD (IA layer)
+        try:
+            from app import silero_vad
+            app['silero_vad'] = await asyncio.to_thread(silero_vad.SileroVAD)
+            print("--- SileroVAD Loaded ---")
+        except Exception as e:
+            print(f"[WARN] Failed to load SileroVAD: {e}")
+            app['silero_vad'] = None
+
         await asyncio.to_thread(audio_analysis.warmup)
+        # Start Parallel Audio Archiver
+        audio_archiver.archiver.start()
         print("--- Models Ready ---")
         
     app.on_startup.append(on_startup)
