@@ -7,6 +7,8 @@ RUN apt-get update && apt-get install -y \
     g++ \
     make \
     gosu \
+    swig \
+    libwebrtc-audio-processing-dev \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /backend

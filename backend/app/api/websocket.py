@@ -3,8 +3,14 @@ import json
 from datetime import datetime
 from aiohttp import web, WSMsgType
 from app import db, vad, transcription, speaker_id, audio_processor
-from app.core import config, audio_utils, ai_client, buffer
+from app import db, vad, transcription, speaker_id, audio_processor
+from app.core import config, audio_utils, ai_client, buffer, audio_analysis, capacity_guard, audio_archiver
 import imageio_ffmpeg
+try:
+    import psutil
+except ImportError:
+    psutil = None
+import random
 
 class FFmpegWebMToPCMStream:
     """
@@ -86,21 +92,149 @@ async def process_speech_pipeline(
     funcionario_id: int | None,
     nome_funcionario: str,
     speaker_data_list: list | None = None,
-    vad_meta: dict | None = None
+    vad_meta: dict | None = None,
+    config_snapshot: dict | None = None
 ):
 
     ts_audio_received = datetime.now()
     # print(f"[{balcao_id}] Processando segmento de fala ({len(speech_segment)} bytes)...")
 
-    if config.SAVE_AUDIO or config.MOCK_MODE:
-        await asyncio.to_thread(audio_utils.dump_audio_to_disk, speech_segment, balcao_id)
+    # Resource Snapshot
+    # Resource Snapshot (From Global Cache to avoid Too Many Open Files)
+    # if psutil:
+    #     cpu_usage = psutil.cpu_percent()
+    #     ram_usage = psutil.Process().memory_info().rss / (1024 * 1024) # MB
+    # else:
+    
+    # [FIX] Read from background update
+    from app.core import system_monitor
+    cpu_usage = system_monitor.SYSTEM_METRICS["cpu"]
+    ram_usage = system_monitor.SYSTEM_METRICS["ram"]
 
+    # --- SileroVAD (IA Filter) ---
+    # Double check if this is really speech before expensive transcription
+    svad = websocket.app.get('silero_vad')
+    if svad:
+        try:
+            # SileroVAD.process_full_audio returns a list of timestamps
+            timestamps = await asyncio.to_thread(svad.process_full_audio, speech_segment)
+            if not timestamps:
+                # print(f"[{balcao_id}] SileroVAD: No speech detected (IA Filter). Discarding.")
+                # Log as discarded by IA
+                await asyncio.to_thread(
+                    db.registrar_interacao,
+                    balcao_id=balcao_id,
+                    transcricao="",
+                    recomendacao="Recusado (IA Mask)",
+                    resultado="discarded",
+                    funcionario_id=funcionario_id,
+                    modelo_stt="silero_filter",
+                    custo=0.0,
+                    snr=0.0,
+                    ts_audio=ts_audio_received,
+                    interaction_type="discarded_ia"
+                )
+                return
+        except Exception as e:
+            print(f"[{balcao_id}] SileroVAD Error: {e}")
+            # Keep going as fallback
+
+    # Audio Analysis (Feature Extraction)
+    try:
+        # [MODIFIED] Use Advanced Features
+        features = await asyncio.to_thread(audio_analysis.extract_advanced_features, speech_segment)
+    except Exception as e:
+        print(f"[{balcao_id}] Audio Analysis Failed: {e}")
+        features = {}
+
+
+
+    # Initialize audio_metrics with all features from analysis
+    # This ensures ZCR, BandEnergy, Peak, etc are stored even in mock mode
+    audio_metrics = dict(features)  # Copy all metrics
+    
+    # Also store vad_meta if available
+    if vad_meta:
+        audio_metrics.update(vad_meta)
+
+    audio_pitch_mean = features.get("pitch_mean", 0.0)
+    audio_pitch_std = features.get("pitch_std", 0.0)
+    spectral_centroid_mean = features.get("spectral_centroid_mean", 0.0)
+
+
+    # MOCK VOICE MODE (The "Polite" Mock)
+    if config.MOCK_VOICE:
+        latency = random.uniform(config.MOCK_LATENCY_MIN, config.MOCK_LATENCY_MAX)
+        print(f"[{balcao_id}] MOCK VOICE: Sleeping for {latency:.2f}s...")
+        await asyncio.sleep(latency)
+        
+        mock_resp = {
+            "comando": "recomendar",
+            "produto": "Produto MOCK Voice",
+            "explicacao": f"Resposta simulada (Latency: {latency:.2f}s)",
+            "transcricao_base": "Audio Simulado (Feature Extraction Active)"
+        }
+        
+        rec_log = mock_resp["explicacao"]
+        
+        # [FIX] Check if we should suppress recommendations
+        if config.MOCK_RECOMMENDATION:
+             rec_log = "🚫 MOCK REC: Desativado (Simulação Bloqueada)"
+             print(f"[{balcao_id}] Recomendação MOCK VOICE bloqueada por configuração.")
+        else:
+            try:
+                if not websocket.closed:
+                    await websocket.send_json(mock_resp)
+            except Exception as e:
+                print(f"[{balcao_id}] Warning: Connection closed during Mock Latency. Response skipped.")
+
+        # Log Interaction even in Mock Mode
+        await asyncio.to_thread(
+            db.registrar_interacao,
+            balcao_id=balcao_id,
+            transcricao="[MOCK VOICE] Audio Processed",
+            recomendacao=rec_log,
+            resultado="mock_voice",
+            funcionario_id=funcionario_id,
+            modelo_stt="mock",
+            custo=0.0,
+            snr=0.0,
+            grok_raw=None,
+            ts_audio=ts_audio_received,
+            ts_client=datetime.now(),
+            speaker_data=json.dumps(speaker_data_list) if speaker_data_list else None,
+            audio_metrics=audio_metrics,
+            # Enhanced Metrics
+            config_snapshot=json.dumps(config_snapshot) if config_snapshot else None,
+            mock_status=json.dumps({"mode": "mock_voice", "latency": latency}),
+            cpu_usage=cpu_usage,
+            ram_usage=ram_usage,
+            audio_pitch_mean=audio_pitch_mean,
+            audio_pitch_std=audio_pitch_std,
+            spectral_centroid_mean=spectral_centroid_mean,
+            interaction_type="mock_voice"
+        )
+        return
+
+    # Check Legacy Mock Mode (LLM only mock, usually immediate)
     if config.MOCK_MODE:
+        await asyncio.to_thread(audio_utils.dump_audio_to_disk, speech_segment, balcao_id)
         await asyncio.sleep(1)
+        
+        if config.MOCK_RECOMMENDATION:
+             print(f"[{balcao_id}] Recomendação MOCK MODE bloqueada por configuração.")
+             # No log needed for legacy mock in this specific flow as it doesn't call registrar_interacao usually? 
+             # Wait, the legacy flow returns immediately. The logic below handles real processing.
+             # If MOCK_MODE is true, it returns here. 
+             # We should probably log if we want visibility, but the legacy mock code block 
+             # didn't have a DB call originally (lines 176-185 in original).
+             # It just returned. 
+             return
+
         await websocket.send_json({
             "comando": "recomendar",
-            "produto": "Produto MOCK",
-            "explicacao": "Modo de Teste Ativo",
+            "produto": "Produto MOCK LLM",
+            "explicacao": "Modo de Teste LLM Ativo",
             "transcricao_base": "Teste de áudio simulado"
         })
         return
@@ -135,12 +269,52 @@ async def process_speech_pipeline(
         # bytes por segundo = 16000 samples/s * 2 bytes
         segment_duration_ms = int((segment_bytes / (16000 * 2)) * 1000)
 
-        audio_metrics = dict(vad_meta)  # copia
+        # Add segment info to existing audio_metrics (already has features + vad_meta)
         audio_metrics["segment_bytes"] = int(segment_bytes)
         audio_metrics["segment_duration_ms"] = int(segment_duration_ms)
 
+        interaction_type = "valid"
+
         if not texto:
+            print(f"[{balcao_id}] Transcrição vazia (Noise/Silence). Salvando como 'discarded_empty'.")
+            interaction_type = "discarded_empty"
+            # We CONTINUE to log interaction, but skip AI/Buffer stuff
+            
+            await asyncio.to_thread(
+                db.registrar_interacao,
+                balcao_id=balcao_id,
+                transcricao="",
+                recomendacao="Recusado (Vazio)",
+                resultado="discarded",
+                funcionario_id=funcionario_id,
+                modelo_stt=modelo_usado,
+                custo=custo_estimado,
+                snr=snr_calculado,
+                grok_raw=None,
+                ts_audio=ts_audio_received,
+                ts_trans_sent=ts_transcription_sent,
+                ts_trans_ready=ts_transcription_ready,
+                ts_ai_req=None,
+                ts_ai_res=None,
+                ts_client=None,
+                speaker_data=json.dumps(speaker_data_list) if speaker_data_list else None,
+                audio_metrics=audio_metrics,
+                # Enhanced Metrics
+                config_snapshot=json.dumps(config_snapshot) if config_snapshot else None,
+                mock_status=None,
+                cpu_usage=cpu_usage,
+                ram_usage=ram_usage,
+                audio_pitch_mean=audio_pitch_mean,
+                audio_pitch_std=audio_pitch_std,
+                spectral_centroid_mean=spectral_centroid_mean,
+                interaction_type=interaction_type
+            )
             return
+
+
+        ts_transcription_end = datetime.now()
+        processing_time_so_far = (ts_transcription_end - ts_transcription_sent).total_seconds()
+        capacity_guard.CapacityGuard.report_processing_metrics(segment_duration_ms / 1000.0, processing_time_so_far)
 
         print(f"[{balcao_id}] Transcrição ({modelo_usado}): {texto}")
         
@@ -149,10 +323,17 @@ async def process_speech_pipeline(
 
         # Check if we should process via AI
         if transcript_buffer.should_process():
-            # Pega o buffer atual (que triggerou a ação)
-            buffer_content = transcript_buffer.get_context_and_clear()
+            # [FIX] Check suppression FIRST
+            if config.MOCK_RECOMMENDATION:
+                print(f"[{balcao_id}] Recomendação AI bloqueada por configuração (MOCK_RECOMMENDATION=True).")
+                recomendacao_log = "🚫 MOCK REC: Desativado"
+                # Skip the rest of the AI block
+            
+            else:
+                # Pega o buffer atual (que triggerou a ação)
+                buffer_content = transcript_buffer.get_context_and_clear()
 
-            print(f"[{balcao_id}] Enviando para AI: {buffer_content[-200:]}...")
+                print(f"[{balcao_id}] Enviando para AI: {buffer_content[-200:]}...")
 
             ts_ai_request = datetime.now()
 
@@ -224,10 +405,16 @@ async def process_speech_pipeline(
             ts_ai_res=ts_ai_response,
             ts_client=ts_client_sent,
             speaker_data=json.dumps(speaker_data_list) if speaker_data_list else None,
-            audio_metrics=audio_metrics
-
-
-
+            audio_metrics=audio_metrics,
+            # Enhanced Metrics
+            config_snapshot=json.dumps(config_snapshot) if config_snapshot else None,
+            mock_status=None, # Real processing
+            cpu_usage=cpu_usage,
+            ram_usage=ram_usage,
+            audio_pitch_mean=audio_pitch_mean,
+            audio_pitch_std=audio_pitch_std,
+            spectral_centroid_mean=spectral_centroid_mean,
+            interaction_type="valid"
         )
 
     except Exception as e:
@@ -258,14 +445,68 @@ async def websocket_handler(request):
             await ws.close(code=4001, message=b"API Key Invalida")
             return ws
             
-        print(f"Conectado: {balcao_id} (Settings: {vad_settings})")
+        # Capacity Check
+        is_available, reason = capacity_guard.CapacityGuard.check_availability()
+        if not is_available:
+            print(f"[REJECT] Connection Rejected ({balcao_id}): {reason}")
+            await ws.close(code=4002, message=f"Server Overload: {reason}".encode('utf-8'))
+            return ws
+
+        # 1. Load VAD Config from DB (Per-Counter Presets)
+        db_vad_cfg = db.get_balcao_vad_config(balcao_id)
         
-        # Pass settings to VAD
+        # 2. Merge with Frontend (Frontend overrides DB? Or DB overrides Frontend? 
+        # Requirement: "Preset aplicado automaticamente por balcão sem o frontend enviar nada"
+        # Implies DB is source of truth. If frontend sends something, maybe ignore or merge.
+        # Let's say DB overrides defaults, and Frontend is ignored (as requested).
+        
+        # But if msg has "vad_settings", user might want to debug from frontend?
+        # Requirement: "Preenche com os valores no .env ... mas vai ter agora uma copia no banco"
+        # Using DB config primarily.
+        
+        print(f"Conectado: {balcao_id} (DB VAD Preset: {db_vad_cfg})")
+        
+        # Instantiate VAD with merged config
+        # Default < Env < DB
+        
         vad_session = vad.VAD(
-            threshold_multiplier=vad_threshold_mult,
-            min_energy_threshold=vad_min_energy
+            threshold_multiplier=db_vad_cfg.get("threshold_multiplier"),
+            min_energy_threshold=db_vad_cfg.get("min_energy_threshold")
         )
+        
+        # Apply extra params not in __init__ signatures sometimes or requiring custom logic
+        if "alpha" in db_vad_cfg:
+            vad_session.alpha = float(db_vad_cfg["alpha"])
+            
+        if "silence_frames_needed" in db_vad_cfg:
+            vad_session.silence_frames_needed = int(db_vad_cfg["silence_frames_needed"])
+            
+        if "segment_limit_frames" in db_vad_cfg:
+            vad_session.segment_limit_frames = int(db_vad_cfg["segment_limit_frames"])
+            
+        if "overlap_frames" in db_vad_cfg:
+            from collections import deque
+            new_overlap = int(db_vad_cfg["overlap_frames"])
+            vad_session.overlap_frames = new_overlap
+            vad_session.overlap_buffer = deque(maxlen=new_overlap)
+        
         audio_cleaner = audio_processor.AudioCleaner()
+        
+        # Configure Snapshot for this connection
+        current_config_snapshot = {
+            "MOCK_MODE": config.MOCK_MODE,
+            "MOCK_VOICE": config.MOCK_VOICE,
+            "SMART_ROUTING": config.SMART_ROUTING_ENABLE,
+            "VAD_SOURCE": "DB_PRESET" if db_vad_cfg else "ENV_DEFAULT",
+            "VAD_CONFIG": {
+                "threshold_multiplier": vad_session.threshold_multiplier,
+                "min_energy_threshold": vad_session.min_energy_threshold,
+                "alpha": vad_session.alpha,
+                "silence_frames_needed": vad_session.silence_frames_needed,
+                "segment_limit_frames": vad_session.segment_limit_frames,
+                "overlap_frames": vad_session.overlap_frames
+            }
+        }
 
         decoder = FFmpegWebMToPCMStream(sample_rate=16000)
         await decoder.start()
@@ -297,7 +538,13 @@ async def websocket_handler(request):
                 new_pcm = bytes(pcm_acc[:1920])
                 del pcm_acc[:1920]
 
+                # 1. Archive RAW chunk
+                audio_archiver.archiver.archive_chunk(balcao_id, new_pcm, is_processed=False)
+
                 cleaned_pcm = audio_cleaner.process(new_pcm)
+
+                # 2. Archive PROCESSED chunk
+                audio_archiver.archiver.archive_chunk(balcao_id, cleaned_pcm, is_processed=True)
 
                 vad_out = vad_session.process(cleaned_pcm)
                 if not vad_out:
@@ -326,7 +573,8 @@ async def websocket_handler(request):
                     process_speech_pipeline(
                         ws, speech, balcao_id, transcript_buffer,
                         funcionario_id_atual, nome_funcionario_atual, speaker_data_list,
-                        vad_meta=vad_meta
+                        vad_meta=vad_meta,
+                        config_snapshot=current_config_snapshot
                     )
                 )
 

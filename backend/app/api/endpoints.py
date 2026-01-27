@@ -288,4 +288,62 @@ async def api_cadastro_voz(request):
 
     except Exception as e:
         print(f"[CADASTRO_VOZ] Erro: {e}")
-        return web.json_response({"success": False, "error": str(e)}, status=500)
+
+async def api_interacoes_balcao_metricas(request):
+    """
+    Retorna métricas de performance das interações de um balcão.
+    GET /api/data/balcao/{balcao_id}/metricas
+    """
+    balcao_id = request.match_info.get('balcao_id')
+    try:
+        rows = db.listar_metricas_por_balcao(balcao_id, limit=2000)
+        
+        # Convert datetime objects to string for JSON serialization
+        for r in rows:
+            for k, v in r.items():
+                if isinstance(v, datetime):
+                     r[k] = v.isoformat()
+                     
+        return web.json_response({"balcao_id": balcao_id, "interacoes": rows})
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)
+
+async def api_admin_listar_balcoes(request):
+    """
+    GET /api/admin/client/{user_codigo}/balcoes
+    Headers: Cookie: admin_token=auth_ok
+    """
+    if request.cookies.get("admin_token") != "auth_ok":
+        return web.Response(status=403, text="Forbidden")
+        
+    user_codigo = request.match_info.get('user_codigo')
+    
+    try:
+        balcoes = db.listar_balcoes_por_user_code_admin(user_codigo)
+        if balcoes is None: # User not found
+            return web.json_response({"error": "Cliente não encontrado"}, status=404)
+            
+        return web.json_response({"cliente": user_codigo, "balcoes": balcoes})
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)
+
+async def api_admin_update_balcao_vad(request):
+    """
+    PUT /api/admin/balcao/{balcao_id}/vad
+    Body: JSON with VAD config (threshold_multiplier, min_energy_threshold, etc)
+    Headers: Cookie: admin_token=auth_ok
+    """
+    if request.cookies.get("admin_token") != "auth_ok":
+        return web.Response(status=403, text="Forbidden")
+
+    balcao_id = request.match_info.get('balcao_id')
+    
+    try:
+        data = await request.json()
+        if not data:
+            return web.json_response({"error": "Body JSON required"}, status=400)
+            
+        db.update_balcao_vad_config(balcao_id, data)
+        return web.json_response({"status": "updated", "balcao_id": balcao_id, "vad_config": data})
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)

@@ -21,3 +21,5 @@ librosa
 ffmpeg
 aiohttp
 docker
+psutil
+webrtc-audio-processing

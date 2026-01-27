@@ -22,8 +22,31 @@ services:
     environment:
       - RUN_STARTUP_TEST=1
     restart: unless-stopped
+
     depends_on:
       - db
+
+  stress-orchestrator:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.stress
+    user: "0:0"
+    container_name: balto-stress-orchestrator
+    command: python -u stress_test/orchestrator.py
+    volumes:
+      - ./backend:/backend
+      - ./8_20250702093051.webm:/backend/test_audio.webm
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - ./backend/.env
+    environment:
+      - STRESS_AUDIO_FILE=/backend/test_audio.webm
+      - SERVER_HOST=server
+      - APP_UID=0
+      - APP_GID=0
+    profiles: [stress]
+    depends_on:
+      - server
 
   db:
     image: postgres:15-alpine

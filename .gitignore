@@ -31,11 +31,29 @@ venv_local/
 # 4. Pasta de arquivos de áudio quando MOCK_MODE=1 (usado para teste local)
 .audio_dumps
 
-# 5. Cadastro de voz dos balconistas
-.cadastros_voz/*
+# 5. Arquivos de Mídia e Relatórios
+*.webm
+!test_audio.webm
+*.wav
+*.mp3
+backend/stress_test_*.txt
+testes/artifacts/
+testes/3_transcricoes/
+testes/2_cortados/
+testes/2_cortados/
+testes/1_input/
+stress_identity.json
 
-# 6. Vozes de testes para simulação de atendimentos/conversas
-.testes_voiceid/*
+# 6. Dependências e Ambientes Virtuais
+stress_venv/
+venv/
+env/
+backend/vendor/silero-vad/examples/
+backend/vendor/silero-vad/tests/
 
-# Manual Test Scripts
-testes/*.py
+# 7. Logs
+*.log
+# 8. Dados de Voz Tiago
+Cadastro de voz balconistas loja Tiago/
+Cadastro de voz balconistas loja Tiago
+Extra&Tools/

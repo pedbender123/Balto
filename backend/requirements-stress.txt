@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+psutil
+requests
+python-dotenv
+psycopg2-binary
+numpy
+aiohttp
+openai
+docker

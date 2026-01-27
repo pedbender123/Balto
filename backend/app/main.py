@@ -1,9 +1,10 @@
 
 import os
 from aiohttp import web
-from app import db, diagnostics, transcription
-from app.core import config
+from app import db, diagnostics, transcription, speaker_id, silero_vad
+from app.core import config, audio_analysis
 from app.api import websocket, endpoints
+from app.core import system_monitor, audio_archiver
 
 @web.middleware
 async def cors_middleware(request, handler):
@@ -25,6 +26,31 @@ def main():
     
     app = web.Application(middlewares=[cors_middleware])
     
+    # Startup Events
+    async def on_startup(app):
+        print("--- Starting System Monitor ---")
+        asyncio.create_task(system_monitor.start_monitor_task(app))
+        
+        # Init Models (Prevent Latency on First Request)
+        print("--- Pre-loading Models ---")
+        await asyncio.to_thread(speaker_id.initialize_model)
+        
+        # Init SileroVAD (IA layer)
+        try:
+            from app import silero_vad
+            app['silero_vad'] = await asyncio.to_thread(silero_vad.SileroVAD)
+            print("--- SileroVAD Loaded ---")
+        except Exception as e:
+            print(f"[WARN] Failed to load SileroVAD: {e}")
+            app['silero_vad'] = None
+
+        await asyncio.to_thread(audio_analysis.warmup)
+        # Start Parallel Audio Archiver
+        audio_archiver.archiver.start()
+        print("--- Models Ready ---")
+        
+    app.on_startup.append(on_startup)
+    
     # WebSocket
     app.router.add_get('/ws', websocket.websocket_handler)
     
@@ -45,6 +71,11 @@ def main():
     # Export Routes
     app.router.add_get('/api/export/xlsx', endpoints.api_export_xlsx)
     app.router.add_get('/api/data/interacoes', endpoints.api_data_interacoes)
+    app.router.add_get('/api/data/balcao/{balcao_id}/metricas', endpoints.api_interacoes_balcao_metricas)
+
+    # Admin VAD Management
+    app.router.add_get('/api/admin/client/{user_codigo}/balcoes', endpoints.api_admin_listar_balcoes)
+    app.router.add_put('/api/admin/balcao/{balcao_id}/vad', endpoints.api_admin_update_balcao_vad)
 
     print("---------------------------------------")
     print(f"Balto Server 3.0 (Modular) Running on port {config.PORT}")

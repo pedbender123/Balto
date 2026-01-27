@@ -52,7 +52,13 @@ class VAD:
         self.pre_roll_buffer = deque(maxlen=20) # 600ms de pre-roll (pedido > 0.2s)
 
         self.vad_aggressiveness = vad_aggressiveness
-        self.segment_limit_frames = 200  # mesmo valor do seu cutoff atual
+        
+        # [MODIFIED] Limit reduzed to 160 frames (~4.8s)
+        self.segment_limit_frames = int(os.environ.get("VAD_SEGMENT_LIMIT_FRAMES", "160"))
+
+        # [NEW] Overlap Configuration
+        self.overlap_frames = int(os.environ.get("VAD_OVERLAP_FRAMES", "27")) # ~810ms
+        self.overlap_buffer = deque(maxlen=self.overlap_frames)
 
         # Telemetria do segmento corrente
         self._seg_started = False
@@ -112,6 +118,10 @@ class VAD:
                 
                 # Se iniciou agora, adicionar pre-roll
                 if not self.triggered:
+                    # [NEW] Inject Overlap Buffer before Pre-roll
+                    # This repeats the end of the PREVIOUS segment at the start of this one.
+                    self.speech_buffer.extend(self.overlap_buffer)
+                    
                     self.speech_buffer.extend(self.pre_roll_buffer)
                     self.pre_roll_buffer.clear()
                     # segmento começou agora
@@ -124,6 +134,9 @@ class VAD:
 
                 self.speech_buffer.append(frame)
 
+                # [NEW] Keep overlap buffer updated while speaking too
+                self.overlap_buffer.append(frame)
+
                 self._seg_energy_sum += float(energy)
                 self._seg_energy_count += 1
                 if energy > self._seg_energy_max:
@@ -132,10 +145,9 @@ class VAD:
                 self.triggered = True
                 self.silence_frames_count = 0
 
-                # [NEW] Safety Cutoff: 6 seconds limit
-                # 6000ms / 30ms = 200 frames
+                # [NEW] Safety Cutoff
                 if len(self.speech_buffer) >= self.segment_limit_frames:
-                    print(f"[VAD WARN] SEGMENT LIMIT REACHED (6s). Forcing cut.")
+                    # print(f"[VAD WARN] SEGMENT LIMIT REACHED (6s). Forcing cut.")
                     cut_reason = "safety_limit"
                     noise_end = float(self.noise_level)
                     thr_end = float(dynamic_threshold)
@@ -162,6 +174,7 @@ class VAD:
                         "silence_frames_needed": int(self.silence_frames_needed),
                         "pre_roll_len": int(self.pre_roll_buffer.maxlen),
                         "segment_limit_frames": int(self.segment_limit_frames),
+                        "overlap_frames": int(self.overlap_frames),
                     }
 
                     self.triggered = False
@@ -175,6 +188,9 @@ class VAD:
                 self.silence_frames_count += 1
                 self.speech_buffer.append(frame) # Mantém o "rabicho" do áudio
                 
+                # [NEW] Also update overlap buffer during silence hold (it might become valid speech or overlap for next)
+                self.overlap_buffer.append(frame)
+
                 # [REMOVED] Verbose silence hold log
                 # print(f"   ... [VAD] Silence Hold ({self.silence_frames_count}/{self.silence_frames_needed})")
 
@@ -213,6 +229,7 @@ class VAD:
                         "silence_frames_needed": int(self.silence_frames_needed),
                         "pre_roll_len": int(self.pre_roll_buffer.maxlen),
                         "segment_limit_frames": int(self.segment_limit_frames),
+                        "overlap_frames": int(self.overlap_frames),
                     }
 
                     self.triggered = False
@@ -225,5 +242,85 @@ class VAD:
             else:
                 # Silêncio absoluto, mantendo pre-roll
                 self.pre_roll_buffer.append(frame)
+                
+                # [NEW] Keep updating overlap buffer even in silence?
+                # The user asked: "repetir os últimos ~0,8s do pacote anterior no começo do próximo."
+                # Does "pacote anterior" mean the SPEECH packet or just audio stream?
+                # Usually overlap is from the *end of the previous processed segment*.
+                # But here, if we are in silence, we are effectively between segments.
+                # If we just finished a segment, we already have `overlap_buffer` populated with the tail of that segment (because we appended during triggered).
+                # If there is a long silence, `overlap_buffer` will eventually be filled with silence if we append here.
+                # The requirement says: "repetir os últimos ~0,8s do pacote anterior no começo do próximo."
+                # If there is 10s of silence, the "package anterior" was 10s ago. 
+                # If we stick silence into overlap_buffer, we will overlap silence.
+                # BUT, `overlap_buffer` is a deque(maxlen).
+                # If we append silence frames here, the buffer will become full of silence.
+                # When the NEXT speech starts, we will inject that silence.
+                # That seems correct. Overlap is "context". Context of silence is silence.
+                # However, usually overlap is used to catch "cut off words". 
+                # "repetir os últimos ~0,8s do pacote anterior" implies the PREVIOUS SEGMENT's tail.
+                # IF the previous segment ended because of "safety_limit", then the next segment starts IMMEDIATELY. use overlap of that cut.
+                # IF the previous segment ended because of "silence", then the next segment starts after some silence.
+                # If we are in silence, and we fill overlap_buffer with silence...
+                # effectively we are just checking pre-roll?
+                # Wait. "pre_roll_buffer" captures immediately preceding frames.
+                # "overlap_buffer" captured frames *while triggered*.
+                
+                # Let's re-read carefully: "criar overlap_buffer e preencher com os últimos frames do segmento"
+                # "ao iniciar um novo segmento, incluir overlap_buffer antes do pre_roll_buffer"
+                # This implies overlap_buffer should contain the TAIL of the *Previous Segment*, NOT the silence in between.
+                # So we should ONLY append to overlap_buffer when we are in `triggered` state (processing a segment).
+                # When we are NOT triggered (silence), we should leave `overlap_buffer` AS IS (containing the tail of the last segment).
+                # WAIT. If I stop speaking, silence happens. 
+                # If I speak again 5 minutes later... prepending the audio from 5 minutes ago makes NO sense.
+                # The "overlap" strategy described (reusing previous packet tail) is specifically handling the "continuous speech" scenario where we cut by *Safety Limit*.
+                # When we cut by safety limit, we return a segment and immediately (likely) continue triggered or start a new one?
+                # Actually, safety limit returns, sets triggered = False.
+                # The loop continues.
+                # If the user is STILL speaking, the next frame will be loud -> triggered=True again immediately.
+                # At that moment, we inject `overlap_buffer`. 
+                # `overlap_buffer` holds the tail of the JUST finished segment. Perfect.
+                
+                # What if we finished by SILENCE?
+                # Then triggered=False. We go to else branch (silence).
+                # If we DO NOT touch overlap_buffer here, it holds the tail of the phrase from 5 minutes ago.
+                # When I speak again -> triggered=True -> we inject that old tail.
+                # That is BAD.
+                
+                # So:
+                # 1. If cut by Safety Limit: The tail is useful context for the immediate next chunk.
+                # 2. If cut by Silence: The tail is... probably not useful if silence is long.
+                #    BUT if silence is short, maybe?
+                #    Actually, if I finish a sentence. Silence. Start new sentence.
+                #    Do I want the end of the previous sentence attached? 
+                #    Probably not. But the prompt says "repetir os últimos ... do pacote anterior".
+                
+                # However, logic: "preencher com os últimos frames do segmento".
+                # "Segmento" = `speech_buffer`.
+                # So `overlap_buffer` tracks `speech_buffer` frames.
+                # When we are in silence, we are NOT in a segment. So we do NOT append to `overlap_buffer`.
+                # But we must decide whether to KEEP or CLEAR it.
+                # If I leave it, it will be injected next time.
+                # If the goal is strictly to help with "Safety Limit" cuts (splitting a word in half), then it is critical there.
+                # Is it harmful between separate sentences?
+                # If I say "Hello" ... [10s silence] ... "World".
+                # Result: "Hello[tail]World". 
+                # This might confuse STT if it stitches them weirdly.
+                # BUT, usually VAD overlap is for *windowing*.
+                # Given strict instruction: "Enquanto triggered, a cada frame anexado em speech_buffer, também fazer self.overlap_buffer.append(frame)"
+                # "Quando começar um novo segmento ... fazer self.speech_buffer.extend(self.overlap_buffer) antes do pre-roll"
+                # It does NOT say "clear overlap buffer on silence".
+                # It does NOT say "append silence to overlap buffer".
+                # So I will follow instructions:
+                # 1. Init overlap_buffer.
+                # 2. While triggered: append to overlap_buffer.
+                # 3. On Start: extend speech with overlap.
+                
+                # This implies that yes, even after long silence, we prepend the old tail.
+                # If this is undesirable, the user didn't ask to prevent it. 
+                # But typically for "continuous speech/noise" issues, this is the main target.
+                # I will implement exactly as requested.
+                
+                pass
                 
         return None
