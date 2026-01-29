@@ -75,20 +75,15 @@ Para um guia passo-a-passo detalhado de como rodar tudo localmente, veja o arqui
     pip install imageio-ffmpeg
     ```
 
-2.  **Configure `.env`** em `backend/`:
-    ```env
-    ELEVENLABS_API_KEY=...
-    ASSEMBLYAI_API_KEY=...
-    ADMIN_SECRET=admin123
-    ```
+2.  **Configure o Ambiente**:
+    - Copie o arquivo de exemplo: `cp backend/.env.example backend/.env`
+    - Edite `backend/.env` com suas chaves de API reais (OpenAI, xAI, ElevenLabs, etc).
 
 3.  **Inicie o Servidor**:
     ```bash
     cd backend
-    PYTHONPATH=. PORT=8766 ../venv_local/bin/python3 app/server.py
+    PYTHONPATH=. PORT=8765 ../stress_venv/bin/python3 app/server.py
     ```
-
-
 
 ---
 
@@ -108,30 +103,28 @@ Imediatamente após conectar, o cliente **DEVE** enviar um frame JSON contendo a
   "api_key": "seu_token_de_acesso",
   "vad_settings": {
     "threshold_multiplier": 1.5,
-    "min_energy": 50.0
+    "min_energy": 120.0
   }
 }
 ```
 > **vad_settings** (Opcional): Permite ajustar a sensibilidade do VAD por balcão.
 > *   `threshold_multiplier`: Quão mais alta que o ruído a voz deve ser (Ex: 1.5x).
-> *   `min_energy`: Energia mínima absoluta para considerar voz (0-1000+).
+> *   `min_energy`: Energia mínima absoluta para considerar voz (Ex: 120.0).
 
-ws://localhost:8765/ws
+---
 
-Para testes e desenvolvimento.
+## 🚀 Instalação e Execução Detalhada
 
-Nota: Ao usar a VPS (https), certifique-se de que seu cliente WebSocket utilize wss:// (Secure WebSocket) para evitar erros de conteúdo misto.
+### 1. Configuração de Variáveis (.env)
 
-🚀 Instalação e Execução
+O arquivo `.env` controla todo o comportamento do servidor. Utilize o [backend/.env.example](file:///home/pedro/%C3%81rea%20de%20trabalho/PBPM/Projetos/Externos/Balto/server/backend/.env.example) como base.
 
-1. Configuração de Variáveis (.env)
-
-Crie um arquivo .env na pasta backend/ baseando-se no modelo abaixo:
-
-XAI_API_KEY="sua-chave-grok-aqui"
-ELEVENLABS_API_KEY="sua-chave-elevenlabs-aqui"
-DB_FILE="/backend/app/dados/registro.db"
-VAD_ENERGY_THRESHOLD=300
+**Principais variáveis:**
+- `XAI_API_KEY`: Chave para o modelo Grok (xAI).
+- `OPENAI_API_KEY`: Chave para o GPT-4o.
+- `ELEVENLABS_API_KEY`: Chave para o serviço de transcrição ultrarrápida (Scribe).
+- `POSTGRES_*`: Configurações de conexão com o banco de dados.
+- `VAD_THRESHOLD_MULTIPLIER`: Sensibilidade da detecção de voz.
 
 ### Métricas (Timestamps)
 Cada interação salva no banco inclui:
