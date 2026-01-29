@@ -1,0 +1,1658 @@
+{
+  "fallback_macro_default": {
+    "DOR_FEBRE_INFLAMACAO": [
+      {
+        "sugestao": "Analgésico/antitérmico (classe diferente do âncora)",
+        "explicacao": "Dor/febre pode continuar mesmo com o âncora. Alternativa para reforçar o alívio sem repetir igual."
+      },
+      {
+        "sugestao": "Gel anti-inflamatório tópico (gel/creme)",
+        "explicacao": "Dor localizada responde bem a ação no local. Ajuda sem aumentar remédio por boca."
+      },
+      {
+        "sugestao": "Antiácido de ação rápida (suporte gástrico)",
+        "explicacao": "Anti-inflamatório pode irritar o estômago. Antiácido reduz queimação e desconforto."
+      },
+      {
+        "sugestao": "Magnésio (suplemento)",
+        "explicacao": "Tensão/cãibra podem piorar a dor muscular. Magnésio dá suporte ao relaxamento muscular."
+      }
+    ],
+    "RESPIRATORIO_GRIPE": [
+      {
+        "sugestao": "Pastilha para garganta (alívio local)",
+        "explicacao": "Gripe/resfriado irrita a garganta. Pastilha alivia dor e arranhado no local."
+      },
+      {
+        "sugestao": "Spray para garganta (alívio local)",
+        "explicacao": "Irritação na garganta precisa de alívio direto. Spray age no local e dá conforto rápido."
+      },
+      {
+        "sugestao": "Solução nasal (spray salino/soro em spray)",
+        "explicacao": "Nariz entupido é mucosa irritada e seca. Soro limpa e hidrata, melhorando a respiração."
+      },
+      {
+        "sugestao": "Vitamina C + Zinco (suplemento)",
+        "explicacao": "Em fase de gripe/resfriado, muitos buscam suporte extra. Ajuda como complemento de imunidade."
+      }
+    ],
+    "ALERGIAS": [
+      {
+        "sugestao": "Anti-histamínico (se o âncora não for isso)",
+        "explicacao": "Alergia dá coriza, espirro e coceira. Anti-histamínico reduz esses sintomas."
+      },
+      {
+        "sugestao": "Solução nasal (spray salino/soro em spray)",
+        "explicacao": "Rinite irrita por poeira/pólen no nariz. Soro ajuda a lavar e acalmar a mucosa."
+      },
+      {
+        "sugestao": "Hidratante reparador/barreira (sem perfume)",
+        "explicacao": "Alergia pode dar pele ressecada e irritada. Hidratante reforça barreira e reduz coceira."
+      },
+      {
+        "sugestao": "Vitamina C (suplemento)",
+        "explicacao": "Em períodos alérgicos, alguns pedem “reforço”. Opção de complemento simples."
+      }
+    ],
+    "GASTROINTESTINAL": [
+      {
+        "sugestao": "Antiácido de ação rápida (se azia/queimação estiver presente ou provável)",
+        "explicacao": "Azia/queimação vem do ácido no estômago. Antiácido alivia rápido o desconforto."
+      },
+      {
+        "sugestao": "Simeticona (se gases/distensão estiver presente ou provável)",
+        "explicacao": "Gases causam estufamento e dor. Simeticona reduz bolhas de gás e dá alívio."
+      },
+      {
+        "sugestao": "Probiótico (suplemento)",
+        "explicacao": "Intestino desregulado piora diarreia e desconforto. Probiótico ajuda a equilibrar a flora."
+      },
+      {
+        "sugestao": "Fibra (psyllium) (suplemento)",
+        "explicacao": "Constipação e intestino preso melhoram com fibra. Psyllium ajuda a regular o trânsito intestinal."
+      }
+    ],
+    "PELE_DERMATO": [
+      {
+        "sugestao": "Hidratante reparador/barreira (sem perfume)",
+        "explicacao": "Pele irritada e ressecada coça e racha. Hidratante recupera barreira e dá conforto."
+      },
+      {
+        "sugestao": "Sabonete suave/syndet",
+        "explicacao": "Sabonete comum pode ressecar e piorar irritação. Syndet limpa sem agredir a pele."
+      },
+      {
+        "sugestao": "Protetor solar para pele sensível",
+        "explicacao": "Pele inflamada mancha e piora no sol. Protetor evita piora e protege o tratamento."
+      },
+      {
+        "sugestao": "Ômega-3 (suplemento)",
+        "explicacao": "Inflamação de pele pode persistir. Ômega-3 é suporte anti-inflamatório como complemento."
+      }
+    ],
+    "FERIDAS_CURATIVOS": [
+      {
+        "sugestao": "Antisséptico (clorexidina etc.)",
+        "explicacao": "Ferida aberta pode contaminar e inflamar. Antisséptico ajuda a limpar e prevenir infecção."
+      },
+      {
+        "sugestao": "Pomada cicatrizante",
+        "explicacao": "Depois de limpar, a pele precisa se recuperar. Cicatrizante acelera reparo e reduz irritação."
+      },
+      {
+        "sugestao": "Curativo adesivo",
+        "explicacao": "Atrito e sujeira pioram a ferida. Curativo protege e evita contaminação."
+      },
+      {
+        "sugestao": "Vitamina C (suplemento)",
+        "explicacao": "Cicatrização depende de formação de tecido. Vitamina C é suporte comum para recuperação."
+      }
+    ],
+    "OLHOS_OUVIDOS_NARIZ": [
+      {
+        "sugestao": "Colírio lubrificante (conforto)",
+        "explicacao": "Olho seco arde e irrita. Colírio lubrifica e melhora o conforto."
+      },
+      {
+        "sugestao": "Solução nasal (spray salino/soro em spray)",
+        "explicacao": "Nariz irritado piora coriza e entupimento. Soro limpa e hidrata a mucosa."
+      },
+      {
+        "sugestao": "Vitamina C (suplemento)",
+        "explicacao": "Em períodos de irritação/infecção leve, muitos pedem suporte. Complemento simples."
+      },
+      {
+        "sugestao": "Ômega-3 (suplemento)",
+        "explicacao": "Olho seco pode ter componente inflamatório. Ômega-3 é suporte para qualidade da lágrima."
+      }
+    ],
+    "BOCA_GARGANTA_ODONTO": [
+      {
+        "sugestao": "Enxaguante sem álcool",
+        "explicacao": "Boca sensível irrita com álcool. Enxaguante sem álcool ajuda na higiene sem arder."
+      },
+      {
+        "sugestao": "Gel para afta / barreira protetora (se lesão oral estiver presente)",
+        "explicacao": "Afta dói ao comer e falar. Gel cria barreira e reduz a dor no local."
+      },
+      {
+        "sugestao": "Pastilha ou spray para garganta (alívio local)",
+        "explicacao": "Garganta irritada precisa de alívio direto. Pastilha/spray reduz dor e arranhado."
+      },
+      {
+        "sugestao": "Zinco (suplemento)",
+        "explicacao": "Feridas na boca e imunidade são queixas comuns. Zinco é um suporte frequentemente procurado."
+      }
+    ],
+    "SAUDE_INTIMA_URINARIO": [
+      {
+        "sugestao": "Sabonete íntimo suave",
+        "explicacao": "Região íntima irritada piora com sabonete forte. Sabonete suave reduz ardor e ressecamento."
+      },
+      {
+        "sugestao": "Protetor diário/absorvente",
+        "explicacao": "Corrimento/uso de creme pode incomodar. Protetor ajuda no conforto e na rotina."
+      },
+      {
+        "sugestao": "Probiótico (suplemento)",
+        "explicacao": "Candidíase e irritação podem voltar com flora desequilibrada. Probiótico ajuda a equilibrar."
+      },
+      {
+        "sugestao": "Vitamina C (suplemento)",
+        "explicacao": "Cliente às vezes pede “reforço” junto do tratamento. Opção de complemento simples."
+      }
+    ],
+    "SAUDE_FEMININA_MENSTRUACAO": [
+      {
+        "sugestao": "Creme barreira (assadura por atrito)",
+        "explicacao": "Absorvente + umidade causam atrito e assadura. Creme barreira protege a pele."
+      },
+      {
+        "sugestao": "Analgésico/antitérmico (se dor estiver presente)",
+        "explicacao": "Cólica e dor no período são comuns. Analgésico dá alívio direto da dor."
+      },
+      {
+        "sugestao": "Anti-inflamatório (AINE) (se cólica forte estiver presente)",
+        "explicacao": "Cólica forte tem componente inflamatório. AINE reduz a dor na causa."
+      },
+      {
+        "sugestao": "Magnésio (suplemento)",
+        "explicacao": "Tensão e espasmo muscular pioram a cólica. Magnésio ajuda no relaxamento."
+      }
+    ],
+    "PEDIATRIA": [
+      {
+        "sugestao": "Sais de reidratação oral",
+        "explicacao": "Criança desidrata rápido com febre/diarreia. Reidratação repõe líquidos e sais."
+      },
+      {
+        "sugestao": "Solução nasal (spray salino/soro em spray) (se resfriado/congestão estiver presente)",
+        "explicacao": "Nariz entupido atrapalha respirar e dormir. Soro ajuda a limpar e aliviar."
+      },
+      {
+        "sugestao": "Vitamina C (suplemento)",
+        "explicacao": "Pais costumam pedir suporte em resfriados. Complemento comum para imunidade."
+      },
+      {
+        "sugestao": "Zinco (suplemento)",
+        "explicacao": "Em fases de gripe/resfriado, alguns buscam reforço. Zinco é um suporte frequente."
+      }
+    ],
+    "CARDIO_PRESSAO": [
+      {
+        "sugestao": "Ômega-3 (suplemento, opcional)",
+        "explicacao": "Pressão alta aumenta risco no coração. Ômega-3 apoia saúde cardiovascular."
+      },
+      {
+        "sugestao": "Fibra (psyllium) (suplemento, opcional)",
+        "explicacao": "Psyllium ajuda colesterol e intestino. Bom suporte para quem cuida da saúde do coração."
+      },
+      {
+        "sugestao": "CoQ10 (suplemento, opcional)",
+        "explicacao": "Alguns clientes usam como suporte de energia e coração. Complemento opcional."
+      },
+      {
+        "sugestao": "Vitamina D (suplemento, opcional)",
+        "explicacao": "Suporte geral. Útil quando o cliente pede um complemento junto do tratamento."
+      }
+    ],
+    "ENDOCRINO_METABOLICO": [
+      {
+        "sugestao": "Creme/hidratante para pés (HPPC)",
+        "explicacao": "Diabetes resseca e pode rachar os pés. Hidratante ajuda a evitar fissuras e feridas."
+      },
+      {
+        "sugestao": "Solução para higiene/curativo de pequenas lesões",
+        "explicacao": "Pequenas feridas em diabéticos merecem cuidado extra. Higiene/curativo ajuda a prevenir complicação."
+      },
+      {
+        "sugestao": "Fibra (psyllium) (suplemento, opcional)",
+        "explicacao": "Ajuda saciedade e intestino, o que facilita rotina alimentar. Suporte opcional para cuidado metabólico."
+      },
+      {
+        "sugestao": "Vitamina D (suplemento, opcional)",
+        "explicacao": "Suporte geral para saúde e bem-estar. Complemento opcional conforme perfil do cliente."
+      }
+    ],
+    "SUPLEMENTOS": [
+      {
+        "sugestao": "Vitamina D (suplemento)",
+        "explicacao": "Cliente busca suporte geral. Vitamina D é uma das mais procuradas para rotina."
+      },
+      {
+        "sugestao": "Magnésio (suplemento)",
+        "explicacao": "Queixas comuns: cãibra e tensão. Magnésio ajuda no relaxamento muscular."
+      },
+      {
+        "sugestao": "Fibra (psyllium) (suplemento)",
+        "explicacao": "Intestino preso é muito comum. Psyllium ajuda a regular e melhorar o trânsito."
+      },
+      {
+        "sugestao": "Probiótico (suplemento, opcional)",
+        "explicacao": "Intestino desregulado traz gases e desconforto. Probiótico ajuda a equilibrar a flora."
+      }
+    ],
+    "NEURO_PSIQUIATRIA_SONO": [
+      {
+        "sugestao": "Magnésio (suplemento)",
+        "explicacao": "Ansiedade e tensão atrapalham relaxar. Magnésio ajuda no relaxamento do corpo."
+      },
+      {
+        "sugestao": "L-teanina (suplemento)",
+        "explicacao": "Estresse e agitação mental atrapalham o dia. L-teanina dá suporte de calma sem “derrubar”."
+      },
+      {
+        "sugestao": "Melatonina (suplemento, se permitido)",
+        "explicacao": "Dificuldade para pegar no sono é comum. Melatonina ajuda a regular o início do sono."
+      },
+      {
+        "sugestao": "Complexo B (suplemento, opcional)",
+        "explicacao": "Cansaço e estresse são queixas frequentes. Complexo B dá suporte ao metabolismo e energia."
+      }
+    ],
+    "HIGIENE_CUIDADOS_PESSOAIS_HPPC": [
+      {
+        "sugestao": "Pós-sol/calmante",
+        "explicacao": "Sol resseca e irrita a pele. Pós-sol reduz ardor e dá conforto."
+      },
+      {
+        "sugestao": "Hidratante reparador",
+        "explicacao": "Pele seca descasca e coça. Hidratante recupera barreira e melhora o toque."
+      },
+      {
+        "sugestao": "Protetor labial com FPS",
+        "explicacao": "Lábio queima e racha fácil no sol. FPS protege e evita fissuras."
+      },
+      {
+        "sugestao": "Vitamina C (suplemento, opcional)",
+        "explicacao": "Cliente às vezes pede complemento junto do cuidado diário. Opção simples e comum."
+      }
+    ]
+  },
+  "cestas_por_macro_micro": {
+    "DOR_FEBRE_INFLAMACAO": {
+      "ANALGESICOS_ANTITERMICOS": [
+        {
+          "sugestao": "Anti-inflamatório tópico (gel/creme)",
+          "explicacao": "Dor no corpo costuma ser localizada. Gel ajuda no ponto da dor sem sobrecarregar por via oral."
+        },
+        {
+          "sugestao": "Relaxante muscular tópico (spray/gel)",
+          "explicacao": "Se a dor vem com tensão/contratura, tópico ajuda a soltar a musculatura e aliviar."
+        },
+        {
+          "sugestao": "Magnésio (suplemento)",
+          "explicacao": "Cãibra e tensão muscular pioram dores. Magnésio dá suporte ao relaxamento."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente às vezes pede um “reforço” junto. Opção de complemento simples."
+        }
+      ],
+      "ANTIINFLAMATORIOS_AINE": [
+        {
+          "sugestao": "Antiácido de ação rápida (suporte gástrico)",
+          "explicacao": "AINE pode dar queimação e enjoo. Antiácido reduz desconforto no estômago."
+        },
+        {
+          "sugestao": "Protetor gástrico OTC (se disponível)",
+          "explicacao": "Se o cliente tem estômago sensível, ajuda a proteger durante uso do anti-inflamatório."
+        },
+        {
+          "sugestao": "Analgésico/antitérmico (classe diferente)",
+          "explicacao": "Se a dor persistir, analgésico pode complementar sem repetir o mesmo tipo de remédio."
+        },
+        {
+          "sugestao": "Gel anti-inflamatório tópico",
+          "explicacao": "Quando a dor é em um ponto, gel ajuda no local e reduz necessidade de mais remédio oral."
+        }
+      ],
+      "RELAXANTES_MUSCULARES": [
+        {
+          "sugestao": "Anti-inflamatório oral (AINE) (se o âncora for só relaxante)",
+          "explicacao": "Se houver inflamação além de contratura, AINE ajuda na causa da dor e melhora o alívio."
+        },
+        {
+          "sugestao": "Gel/spray tópico para dor muscular",
+          "explicacao": "Topical ajuda na área dolorida. Bom para complementar o relaxante sem aumentar dose oral."
+        },
+        {
+          "sugestao": "Analgésico/antitérmico",
+          "explicacao": "Ajuda no alívio direto da dor, principalmente quando a dor é forte no início."
+        },
+        {
+          "sugestao": "Magnésio (suplemento)",
+          "explicacao": "Tensão e cãibra mantêm a dor muscular. Magnésio dá suporte ao relaxamento."
+        }
+      ],
+      "ENXAQUECA": [
+        {
+          "sugestao": "Analgésico/antitérmico (se o âncora for triptano)",
+          "explicacao": "Triptano age na crise, mas pode ficar dor residual. Analgésico ajuda a completar o alívio."
+        },
+        {
+          "sugestao": "Anti-inflamatório (AINE) (se não redundante)",
+          "explicacao": "Se houver inflamação e dor forte, AINE pode reforçar o controle da dor na crise."
+        },
+        {
+          "sugestao": "Antiemético (somente se náusea/vômito literal)",
+          "explicacao": "Enxaqueca pode dar náusea e vômito. Antiemético melhora conforto e ajuda a manter o remédio."
+        },
+        {
+          "sugestao": "Magnésio (suplemento)",
+          "explicacao": "Quem tem enxaqueca costuma buscar prevenção. Magnésio é suporte frequente na rotina."
+        }
+      ],
+      "DOR_ARTICULAR_LOMBAR": [
+        {
+          "sugestao": "Gel anti-inflamatório tópico",
+          "explicacao": "Dor em joelho/lombar é localizada. Gel ajuda no local e melhora movimento."
+        },
+        {
+          "sugestao": "Analgésico/antitérmico",
+          "explicacao": "Ajuda a reduzir dor e permitir voltar às atividades. Alívio direto e simples."
+        },
+        {
+          "sugestao": "Anti-inflamatório oral (AINE) (se não redundante)",
+          "explicacao": "Se a dor está inflamada e forte, AINE ajuda na causa e melhora o controle da dor."
+        },
+        {
+          "sugestao": "Colágeno tipo II (suplemento)",
+          "explicacao": "Dor articular pode ser recorrente. Colágeno é suporte de longo prazo para articulação."
+        }
+      ],
+      "COLICAS_ANTIESPASMODICOS": [
+        {
+          "sugestao": "Analgésico/antitérmico",
+          "explicacao": "Antiespasmódico reduz contração, mas a dor pode continuar. Analgésico complementa o alívio."
+        },
+        {
+          "sugestao": "Anti-inflamatório (se cólica menstrual literal)",
+          "explicacao": "Cólica menstrual tem inflamação. AINE reduz a dor na causa e costuma funcionar bem."
+        },
+        {
+          "sugestao": "Magnésio (suplemento)",
+          "explicacao": "Espasmo muscular piora a cólica. Magnésio ajuda no relaxamento e conforto."
+        },
+        {
+          "sugestao": "Simeticona (se gases/distensão literal)",
+          "explicacao": "Se tiver estufamento junto, gases pioram a dor. Simeticona alivia a distensão."
+        }
+      ]
+    },
+    "RESPIRATORIO_GRIPE": {
+      "TOSSE_SECA": [
+        {
+          "sugestao": "Pastilha para garganta (alívio local)",
+          "explicacao": "Tosse seca irrita a garganta. Pastilha reduz arranhado e melhora o conforto."
+        },
+        {
+          "sugestao": "Spray para garganta (alívio local)",
+          "explicacao": "Irritação local mantém a tosse. Spray alivia no ponto e ajuda a reduzir desconforto."
+        },
+        {
+          "sugestao": "Anti-histamínico (se alergia/escorrendo literal)",
+          "explicacao": "Gotejamento do nariz irrita a garganta e dá tosse. Anti-histamínico reduz coriza e melhora."
+        },
+        {
+          "sugestao": "Vitamina C + Zinco (suplemento)",
+          "explicacao": "Em resfriado/gripe, cliente busca suporte extra. Complemento comum para imunidade."
+        }
+      ],
+      "TOSSE_COM_CATARRO": [
+        {
+          "sugestao": "Expectorante/mucolítico (se o âncora não for isso)",
+          "explicacao": "Catarro preso mantém a tosse. Expectorante ajuda a soltar e eliminar o muco."
+        },
+        {
+          "sugestao": "Spray/gotas nasais (se congestão literal)",
+          "explicacao": "Nariz entupido piora secreção e tosse. Alívio nasal reduz escorrimento e irritação."
+        },
+        {
+          "sugestao": "Pastilha ou spray para garganta",
+          "explicacao": "Tosse frequente inflama a garganta. Alívio local reduz dor e irritação."
+        },
+        {
+          "sugestao": "Vitamina C + Zinco (suplemento)",
+          "explicacao": "Quadro respiratório costuma vir com cansaço. Suporte extra como complemento de rotina."
+        }
+      ],
+      "CONGESTAO_NASAL": [
+        {
+          "sugestao": "Solução nasal (spray salino/soro em spray)",
+          "explicacao": "Congestão é mucosa inflamada e seca. Soro limpa, hidrata e melhora respirar."
+        },
+        {
+          "sugestao": "Anti-histamínico (se rinite/alergia literal)",
+          "explicacao": "Se for alergia, o nariz produz muita secreção. Anti-histamínico reduz coriza e entupimento."
+        },
+        {
+          "sugestao": "Pastilha/spray para garganta (se irritação literal)",
+          "explicacao": "Respirar pela boca resseca e irrita a garganta. Pastilha/spray alivia no local."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Em resfriado, muitos pedem um reforço. Complemento simples e comum."
+        }
+      ],
+      "GARGANTA_PASTILHAS_SPRAY": [
+        {
+          "sugestao": "Analgésico/antitérmico",
+          "explicacao": "Dor de garganta pode vir com dor no corpo. Analgésico ajuda no alívio geral."
+        },
+        {
+          "sugestao": "Anti-inflamatório (AINE) (se dor forte literal)",
+          "explicacao": "Quando inflama muito, a dor é mais intensa. AINE reduz inflamação e melhora a dor."
+        },
+        {
+          "sugestao": "Antisséptico bucal/gargarejo (se disponível)",
+          "explicacao": "Irritação e inflamação local pedem higiene. Gargarejo ajuda a aliviar e limpar a região."
+        },
+        {
+          "sugestao": "Vitamina C + Zinco (suplemento)",
+          "explicacao": "Se está gripado, cliente busca suporte extra. Complemento frequente para imunidade."
+        }
+      ],
+      "ANTIGRIPAIS_COMBO": [
+        {
+          "sugestao": "Pastilha/spray para garganta",
+          "explicacao": "Antigripal melhora sintomas gerais, mas garganta pode seguir doendo. Alívio local ajuda."
+        },
+        {
+          "sugestao": "Solução nasal (spray salino/soro em spray)",
+          "explicacao": "Congestão e ressecamento são comuns. Soro ajuda a limpar e hidratar o nariz."
+        },
+        {
+          "sugestao": "Expectorante/mucolítico (se catarro literal)",
+          "explicacao": "Se tem catarro, precisa soltar secreção. Expectorante ajuda a eliminar e respirar melhor."
+        },
+        {
+          "sugestao": "Vitamina C + Zinco (suplemento)",
+          "explicacao": "Muita gente pede “reforço” durante gripe. Complemento comum para imunidade."
+        }
+      ],
+      "ASMA_BRONCO_INALADORES": [
+        {
+          "sugestao": "Solução nasal (spray salino/soro em spray) (se congestão/irritação literal)",
+          "explicacao": "Nariz irritado pode piorar tosse e crise. Soro alivia irritação e ajuda a respirar."
+        },
+        {
+          "sugestao": "Pastilha/spray para garganta (se tosse/garganta literal)",
+          "explicacao": "Tosse irrita garganta e dói. Alívio local melhora conforto enquanto trata a crise."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir suporte geral em fase ruim. Complemento simples e opcional."
+        },
+        {
+          "sugestao": "Zinco (suplemento)",
+          "explicacao": "Em fase de resfriado associado, alguns pedem reforço. Zinco é suporte frequente."
+        }
+      ]
+    },
+    "ALERGIAS": {
+      "RINITE_ANTIHISTAMINICO": [
+        {
+          "sugestao": "Anti-histamínico (se o âncora não for isso)",
+          "explicacao": "Rinite dá espirro e coriza. Anti-histamínico reduz reação alérgica e alivia."
+        },
+        {
+          "sugestao": "Solução nasal (spray salino/soro em spray)",
+          "explicacao": "Poeira/pólen ficam no nariz e irritam. Soro ajuda a lavar e acalmar a mucosa."
+        },
+        {
+          "sugestao": "Colírio lubrificante (se olho irritado literal)",
+          "explicacao": "Alergia resseca e arde os olhos. Colírio lubrifica e dá conforto."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir “reforço” em fase alérgica. Complemento simples e comum."
+        }
+      ],
+      "ALERGIA_OCULAR": [
+        {
+          "sugestao": "Colírio lubrificante",
+          "explicacao": "Olho coçando e ardendo melhora com lubrificação. Dá alívio e reduz irritação."
+        },
+        {
+          "sugestao": "Anti-histamínico oral (se não redundante)",
+          "explicacao": "Se alergia é geral, não só no olho, anti-histamínico ajuda a reduzir a reação."
+        },
+        {
+          "sugestao": "Solução nasal (spray salino/soro em spray) (se rinite literal)",
+          "explicacao": "Rinite pode “puxar” irritação no olho. Lavar o nariz reduz gatilho e melhora."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Em períodos de alergia, cliente pede suporte extra. Complemento simples."
+        }
+      ],
+      "URTICARIA_COCEIRA": [
+        {
+          "sugestao": "Creme/loção calmante (calamina etc.)",
+          "explicacao": "Coceira intensa incomoda e faz ferir ao coçar. Calmante reduz coceira no local."
+        },
+        {
+          "sugestao": "Hidratante reparador/barreira (sem perfume)",
+          "explicacao": "Pele ressecada coça mais e irrita. Hidratante reforça barreira e reduz desconforto."
+        },
+        {
+          "sugestao": "Sabonete suave",
+          "explicacao": "Sabonete forte piora irritação e coceira. Suave limpa sem agredir."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir um complemento junto. Opção simples e comum."
+        }
+      ],
+      "DERMATITE_ALERGICA_TOPICOS": [
+        {
+          "sugestao": "Hidratante de barreira",
+          "explicacao": "Dermatite deixa a pele “aberta” e ressecada. Barreira ajuda a recuperar e reduzir coceira."
+        },
+        {
+          "sugestao": "Sabonete syndet/sem perfume",
+          "explicacao": "Perfume e espuma pioram dermatite. Syndet limpa sem ressecar e irritar."
+        },
+        {
+          "sugestao": "Protetor solar para pele sensível",
+          "explicacao": "Pele inflamada mancha no sol. Protetor evita piora e ajuda na recuperação."
+        },
+        {
+          "sugestao": "Ômega-3 (suplemento)",
+          "explicacao": "Inflamação de pele pode persistir. Ômega-3 é suporte anti-inflamatório como complemento."
+        }
+      ],
+      "PICADAS_INSETO_ALIVIO_LOCAL": [
+        {
+          "sugestao": "Creme/gel pós-picada (calmante)",
+          "explicacao": "Picada dá coceira e inchaço no local. Pós-picada alivia e reduz irritação."
+        },
+        {
+          "sugestao": "Anti-histamínico oral (se coceira literal)",
+          "explicacao": "Coceira forte é reação alérgica. Anti-histamínico reduz a reação e melhora o incômodo."
+        },
+        {
+          "sugestao": "Antisséptico (se ferida/arranhão literal)",
+          "explicacao": "Coçar pode abrir a pele e infeccionar. Antisséptico ajuda a limpar e prevenir infecção."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir um complemento junto. Opção simples e comum."
+        }
+      ]
+    },
+    "GASTROINTESTINAL": {
+      "AZIA_REFLUXO_ANTIACIDO_IBP": [
+        {
+          "sugestao": "Antiácido ação rápida (se âncora for IBP) ou IBP (se âncora for antiácido)",
+          "explicacao": "Azia pede alívio imediato e controle. Antiácido alivia rápido; IBP controla por mais tempo."
+        },
+        {
+          "sugestao": "Simeticona (se gases literal)",
+          "explicacao": "Azia pode vir com estufamento. Simeticona reduz gases e melhora o desconforto."
+        },
+        {
+          "sugestao": "Probiótico (suplemento)",
+          "explicacao": "Desconforto pode piorar com flora desregulada. Probiótico ajuda a equilibrar o intestino."
+        },
+        {
+          "sugestao": "Enzimas digestivas (suplemento)",
+          "explicacao": "Após comida pesada, digestão lenta dá mal-estar. Enzimas ajudam a digerir e reduzir peso no estômago."
+        }
+      ],
+      "NAUSEA_VOMITO_ANTIEMETICO": [
+        {
+          "sugestao": "Sais de reidratação oral",
+          "explicacao": "Vômito desidrata rápido. Reidratação repõe líquidos e sais minerais."
+        },
+        {
+          "sugestao": "Antiácido (se queimação literal)",
+          "explicacao": "Náusea pode vir com queimação. Antiácido reduz acidez e melhora o estômago."
+        },
+        {
+          "sugestao": "Probiótico (suplemento)",
+          "explicacao": "Após crise, intestino fica sensível. Probiótico ajuda a recuperar a flora."
+        },
+        {
+          "sugestao": "Vitamina B6 (suplemento)",
+          "explicacao": "Algumas náuseas melhoram com suporte. B6 é opção de complemento em certos casos."
+        }
+      ],
+      "DIARREIA_REIDRATACAO": [
+        {
+          "sugestao": "Sais de reidratação oral",
+          "explicacao": "Diarreia desidrata. Repõe água e sais minerais rapidamente."
+        },
+        {
+          "sugestao": "Probiótico (suplemento)",
+          "explicacao": "Diarreia desregula a flora intestinal. Probiótico ajuda a reequilibrar."
+        },
+        {
+          "sugestao": "Creme barreira/assadura (se irritação anal literal)",
+          "explicacao": "Evacuação frequente irrita a pele. Creme protege e reduz ardor."
+        },
+        {
+          "sugestao": "Simeticona (se cólica/gases literal)",
+          "explicacao": "Gases e cólica pioram o desconforto. Simeticona reduz estufamento e melhora a dor."
+        }
+      ],
+      "PRISAO_DE_VENTRE_LAXANTES": [
+        {
+          "sugestao": "Fibra (psyllium) (suplemento)",
+          "explicacao": "Intestino preso melhora com fibra. Psyllium aumenta volume e ajuda a evacuar."
+        },
+        {
+          "sugestao": "Laxante osmótico/suave (se disponível)",
+          "explicacao": "Quando fibra não resolve, laxante suave ajuda a soltar sem irritar tanto."
+        },
+        {
+          "sugestao": "Probiótico (suplemento)",
+          "explicacao": "Flora intestinal desregulada piora constipação. Probiótico ajuda a equilibrar e regular."
+        },
+        {
+          "sugestao": "Creme barreira/hemorroida (se dor/hemorroida literal)",
+          "explicacao": "Esforço para evacuar piora dor e irritação. Creme alivia e protege a região."
+        }
+      ],
+      "GASES_SIMETICONA": [
+        {
+          "sugestao": "Simeticona (se não for o âncora)",
+          "explicacao": "Gases causam estufamento e dor. Simeticona reduz bolhas e alivia rápido."
+        },
+        {
+          "sugestao": "Enzimas digestivas (suplemento)",
+          "explicacao": "Má digestão aumenta gases. Enzimas ajudam a digerir melhor e reduzir estufamento."
+        },
+        {
+          "sugestao": "Probiótico (suplemento)",
+          "explicacao": "Gases podem vir de flora desregulada. Probiótico ajuda a equilibrar o intestino."
+        },
+        {
+          "sugestao": "Antiácido (se azia literal)",
+          "explicacao": "Se tiver queimação junto, o ácido piora o mal-estar. Antiácido alivia rapidamente."
+        }
+      ],
+      "DOR_ABDOMINAL_ANTIESPASMODICO": [
+        {
+          "sugestao": "Simeticona (se gases literal)",
+          "explicacao": "Dor abdominal pode ser por gases presos. Simeticona reduz distensão e melhora a dor."
+        },
+        {
+          "sugestao": "Antiácido (se azia literal)",
+          "explicacao": "Se a dor vem com queimação, o ácido pode ser a causa. Antiácido alivia rápido."
+        },
+        {
+          "sugestao": "Sais de reidratação oral (se diarreia/vômito literal)",
+          "explicacao": "Se há perda de líquido, pode dar fraqueza e piora. Reidratação repõe água e sais."
+        },
+        {
+          "sugestao": "Probiótico (suplemento)",
+          "explicacao": "Após crise intestinal, a flora fica desregulada. Probiótico ajuda a recuperar."
+        }
+      ],
+      "HEMORROIDA_FISSURA_ANAL": [
+        {
+          "sugestao": "Pomada/gel hemorroidário (se não for o âncora)",
+          "explicacao": "Hemorroida dói, coça e inflama. Pomada alivia no local e reduz desconforto."
+        },
+        {
+          "sugestao": "Creme barreira (óxido de zinco)",
+          "explicacao": "Atrito e umidade pioram a região. Barreira protege a pele e reduz irritação."
+        },
+        {
+          "sugestao": "Fibra (psyllium) (suplemento) (se constipação literal)",
+          "explicacao": "Fezes duras e esforço pioram hemorroida. Fibra amolece e facilita evacuar."
+        },
+        {
+          "sugestao": "Probiótico (suplemento)",
+          "explicacao": "Intestino regulado reduz esforço e irritação. Probiótico é suporte para regularidade."
+        }
+      ]
+    },
+    "PELE_DERMATO": {
+      "ACNE_PELE_OLEOSA": [
+        {
+          "sugestao": "Sabonete/gel de limpeza antiacne",
+          "explicacao": "Oleosidade entope poros e inflama. Limpeza antiacne ajuda a reduzir cravos e espinhas."
+        },
+        {
+          "sugestao": "Hidratante oil-free",
+          "explicacao": "Tratamentos ressecam e irritam. Oil-free hidrata sem pesar e evita rebote de oleosidade."
+        },
+        {
+          "sugestao": "Protetor solar facial oil-free",
+          "explicacao": "Acne e ácidos mancham fácil no sol. Protetor evita manchas e piora da irritação."
+        },
+        {
+          "sugestao": "Zinco (suplemento)",
+          "explicacao": "Inflamação e oleosidade são queixas comuns. Zinco é suporte procurado para pele."
+        }
+      ],
+      "MICOSE_ANTIFUNGICO_TOPICO": [
+        {
+          "sugestao": "Antifúngico tópico (se o âncora não for isso)",
+          "explicacao": "Micose é fungo na pele. Antifúngico trata a causa e reduz coceira e vermelhidão."
+        },
+        {
+          "sugestao": "Spray secante/antisséptico para pés",
+          "explicacao": "Umidade e suor alimentam fungo. Secante ajuda a manter o pé seco e evitar volta."
+        },
+        {
+          "sugestao": "Sabonete antisséptico suave",
+          "explicacao": "Higiene ajuda a reduzir contaminação e reinfecção. Suave limpa sem irritar a pele."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente às vezes pede complemento junto. Opção simples e comum."
+        }
+      ],
+      "HERPES_LABIAL_ANTIVIRAL_TOPICO": [
+        {
+          "sugestao": "Protetor labial com FPS",
+          "explicacao": "Sol pode piorar e disparar herpes. FPS protege e reduz irritação no lábio."
+        },
+        {
+          "sugestao": "Creme/barreira labial reparadora",
+          "explicacao": "Herpes resseca e racha o lábio. Barreira reduz dor e melhora cicatrização."
+        },
+        {
+          "sugestao": "Antisséptico bucal/gargarejo (se irritação oral literal)",
+          "explicacao": "Se houver irritação na boca, higiene ajuda. Gargarejo reduz desconforto e melhora limpeza."
+        },
+        {
+          "sugestao": "Lisina (suplemento)",
+          "explicacao": "Quem tem herpes recorrente busca prevenção. Lisina é suporte frequentemente procurado."
+        }
+      ],
+      "ASSADURA_BARREIRA": [
+        {
+          "sugestao": "Creme barreira (óxido de zinco)",
+          "explicacao": "Assadura vem de atrito e umidade. Barreira protege a pele e reduz ardor."
+        },
+        {
+          "sugestao": "Pomada reparadora (dexpantenol etc.)",
+          "explicacao": "Pele irritada precisa recuperar. Reparadora acelera melhora e reduz ressecamento."
+        },
+        {
+          "sugestao": "Sabonete suave",
+          "explicacao": "Sabonete forte piora ardor e resseca. Suave limpa sem agravar a assadura."
+        },
+        {
+          "sugestao": "Zinco (suplemento)",
+          "explicacao": "Cliente pode pedir complemento junto. Opção simples e comum."
+        }
+      ],
+      "RESSECAMENTO_ATOPIA_HIDRATACAO": [
+        {
+          "sugestao": "Hidratante reparador (ceramidas)",
+          "explicacao": "Atopia deixa a pele frágil e coçando. Ceramidas reconstroem barreira e reduzem crises."
+        },
+        {
+          "sugestao": "Sabonete syndet",
+          "explicacao": "Espuma e perfume pioram atopia. Syndet limpa sem ressecar e ajuda no tratamento."
+        },
+        {
+          "sugestao": "Protetor solar para pele sensível",
+          "explicacao": "Pele inflamada mancha e irrita no sol. Protetor evita piora e protege."
+        },
+        {
+          "sugestao": "Ômega-3 (suplemento)",
+          "explicacao": "Inflamação de pele pode persistir. Ômega-3 é suporte anti-inflamatório como complemento."
+        }
+      ],
+      "QUEIMADURA_LEVE_POS_SOL": [
+        {
+          "sugestao": "Pós-sol/calmante",
+          "explicacao": "Sol queima e inflama a pele. Pós-sol reduz ardor e melhora conforto."
+        },
+        {
+          "sugestao": "Hidratante reparador",
+          "explicacao": "Queimadura resseca e descasca. Hidratante ajuda a recuperar a barreira da pele."
+        },
+        {
+          "sugestao": "Protetor solar",
+          "explicacao": "Nova exposição piora a queimadura. Protetor evita piora e protege a área."
+        },
+        {
+          "sugestao": "Vitamina E (suplemento)",
+          "explicacao": "Cliente pode pedir suporte antioxidante. Vitamina E é complemento comum em cuidado de pele."
+        }
+      ]
+    },
+    "FERIDAS_CURATIVOS": {
+      "ANTISSEPTICOS": [
+        {
+          "sugestao": "Pomada cicatrizante",
+          "explicacao": "Depois de limpar, a pele precisa reparar. Cicatrizante ajuda a recuperar e reduzir irritação."
+        },
+        {
+          "sugestao": "Curativo adesivo",
+          "explicacao": "Atrito e sujeira pioram a lesão. Curativo protege e evita contaminação."
+        },
+        {
+          "sugestao": "Gaze + fita (produto)",
+          "explicacao": "Para feridas maiores, curativo simples não cobre bem. Gaze e fita protegem e fixam."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cicatrização depende de formação de tecido. Vitamina C é suporte comum para recuperação."
+        }
+      ],
+      "CURATIVOS_MATERIAIS": [
+        {
+          "sugestao": "Antisséptico",
+          "explicacao": "Antes de cobrir, precisa limpar a área. Antisséptico reduz risco de infecção."
+        },
+        {
+          "sugestao": "Pomada cicatrizante",
+          "explicacao": "Curativo protege, mas a pele precisa cicatrizar. Pomada ajuda na recuperação."
+        },
+        {
+          "sugestao": "Creme barreira (se atrito/assadura literal)",
+          "explicacao": "Se a lesão é por atrito, precisa proteger a pele. Barreira reduz fricção e ardor."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir suporte de cicatrização. Vitamina C é complemento comum."
+        }
+      ],
+      "CICATRIZANTES": [
+        {
+          "sugestao": "Antisséptico",
+          "explicacao": "Cicatrização piora se infeccionar. Antisséptico ajuda a manter a área limpa."
+        },
+        {
+          "sugestao": "Curativo (hidrocoloide etc.)",
+          "explicacao": "Alguns curativos mantêm ambiente úmido e protegem. Ajuda a cicatrizar com menos atrito."
+        },
+        {
+          "sugestao": "Protetor solar (se área exposta)",
+          "explicacao": "Sol mancha cicatriz recente. Protetor evita escurecer e ajuda na recuperação."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir suporte extra. Vitamina C é complemento comum para cicatrização."
+        }
+      ],
+      "HEMATOMAS_CONTUSOES_ALIVIO_LOCAL": [
+        {
+          "sugestao": "Gel/creme tópico (arnica/diclofenaco)",
+          "explicacao": "Batida inflama e dói no local. Gel reduz dor e inchaço na região."
+        },
+        {
+          "sugestao": "Anti-inflamatório oral (AINE) (se não redundante)",
+          "explicacao": "Se dor e inflamação estão fortes, AINE ajuda a reduzir inflamação e melhora a dor."
+        },
+        {
+          "sugestao": "Analgésico/antitérmico",
+          "explicacao": "Para dor simples, analgésico ajuda rápido. Opção prática para aliviar o incômodo."
+        },
+        {
+          "sugestao": "Magnésio (suplemento)",
+          "explicacao": "Se houver tensão muscular junto, magnésio pode ajudar no relaxamento. Complemento opcional."
+        }
+      ],
+      "CALOS_BOLHAS_PES": [
+        {
+          "sugestao": "Creme para pés (ureia)",
+          "explicacao": "Calos e fissuras vêm de pele grossa e seca. Ureia amolece e melhora o conforto."
+        },
+        {
+          "sugestao": "Curativo hidrocoloide (produto)",
+          "explicacao": "Bolha dói por atrito ao andar. Hidrocoloide protege e reduz dor."
+        },
+        {
+          "sugestao": "Antisséptico (se ferida literal)",
+          "explicacao": "Se a bolha abriu, pode infeccionar. Antisséptico ajuda a limpar e prevenir infecção."
+        },
+        {
+          "sugestao": "Colágeno (suplemento)",
+          "explicacao": "Cliente pode pedir suporte para pele e recuperação. Complemento opcional."
+        }
+      ],
+      "PRIMEIROS_SOCORROS_BASICOS": [
+        {
+          "sugestao": "Antisséptico",
+          "explicacao": "Primeiro passo é limpar para não infeccionar. Antisséptico ajuda a higienizar."
+        },
+        {
+          "sugestao": "Pomada cicatrizante",
+          "explicacao": "Após limpar, ajuda a pele a recuperar. Cicatrizante reduz irritação e acelera melhora."
+        },
+        {
+          "sugestao": "Creme barreira (assaduras/atrito)",
+          "explicacao": "Atrito e umidade causam assadura. Barreira protege e evita piora."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir suporte de cicatrização. Complemento comum para recuperação."
+        }
+      ]
+    },
+    "OLHOS_OUVIDOS_NARIZ": {
+      "OLHO_SECO_COLIRIO_LUBRIFICANTE": [
+        {
+          "sugestao": "Colírio lubrificante (outra viscosidade)",
+          "explicacao": "Olho seco varia de leve a forte. Trocar viscosidade ajusta conforto e duração."
+        },
+        {
+          "sugestao": "Gel oftálmico lubrificante (se disponível)",
+          "explicacao": "Quando seca muito, gel dura mais. Ajuda a manter lubrificação por mais tempo."
+        },
+        {
+          "sugestao": "Limpeza palpebral (produto específico)",
+          "explicacao": "Pálpebra inflamada piora olho seco. Limpeza reduz irritação e melhora conforto."
+        },
+        {
+          "sugestao": "Ômega-3 (suplemento)",
+          "explicacao": "Olho seco pode ter inflamação. Ômega-3 apoia qualidade da lágrima como complemento."
+        }
+      ],
+      "IRRITACAO_COCEIRA_OCULAR": [
+        {
+          "sugestao": "Colírio lubrificante",
+          "explicacao": "Coceira e ardor pioram com ressecamento. Lubrificante protege e melhora conforto."
+        },
+        {
+          "sugestao": "Anti-histamínico oral (se não redundante)",
+          "explicacao": "Se for alergia geral, não só no olho, anti-histamínico reduz reação e melhora sintomas."
+        },
+        {
+          "sugestao": "Solução nasal (spray salino/soro em spray) (se rinite literal)",
+          "explicacao": "Rinite pode piorar olho por alergia. Lavar o nariz reduz gatilho e melhora."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir suporte extra em fase alérgica. Complemento simples."
+        }
+      ],
+      "COLIRIO_TRATAMENTO_PRESCRICAO": [
+        {
+          "sugestao": "Colírio lubrificante (conforto)",
+          "explicacao": "Colírio de prescrição pode arder/ressecar. Lubrificante melhora conforto sem interferir."
+        },
+        {
+          "sugestao": "Limpeza palpebral (produto específico)",
+          "explicacao": "Higiene da pálpebra ajuda a reduzir irritação e secreção. Complemento útil no dia a dia."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir um complemento junto. Opção simples e comum."
+        },
+        {
+          "sugestao": "Ômega-3 (suplemento)",
+          "explicacao": "Olho seco/inflamado pode persistir. Ômega-3 é suporte para conforto ocular."
+        }
+      ],
+      "OUVIDO_GOTAS_TRATAMENTO": [
+        {
+          "sugestao": "Analgésico/antitérmico (se dor literal)",
+          "explicacao": "Otite/inflamação dói bastante. Analgésico ajuda a controlar a dor enquanto trata."
+        },
+        {
+          "sugestao": "Anti-inflamatório (AINE) (se não redundante e dor literal)",
+          "explicacao": "Se há inflamação e dor forte, AINE reduz inflamação e melhora o incômodo."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir suporte extra em fase de infecção leve. Complemento simples."
+        },
+        {
+          "sugestao": "Zinco (suplemento)",
+          "explicacao": "Em períodos de infecção/resfriado, alguns pedem reforço. Zinco é suporte comum."
+        }
+      ],
+      "HIGIENE_NASAL_SORO_IRRIGACAO": [
+        {
+          "sugestao": "Solução nasal (spray salino/soro em spray)",
+          "explicacao": "Nariz ressecado irrita e sangra fácil. Soro hidrata e limpa, melhorando conforto."
+        },
+        {
+          "sugestao": "Pomada/hidratante nasal (se disponível)",
+          "explicacao": "Fissura no nariz dói e sangra. Pomada hidrata e ajuda a cicatrizar."
+        },
+        {
+          "sugestao": "Pastilha/spray para garganta (se irritação literal)",
+          "explicacao": "Respirar pela boca resseca a garganta. Alívio local melhora conforto."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir suporte extra junto. Complemento simples e comum."
+        }
+      ],
+      "SPRAY_NASAL_MEDICAMENTOSO": [
+        {
+          "sugestao": "Solução nasal (spray salino/soro em spray)",
+          "explicacao": "Uso frequente de descongestionante irrita o nariz. Soro ajuda a reduzir ressecamento e dependência."
+        },
+        {
+          "sugestao": "Anti-histamínico (se alergia literal)",
+          "explicacao": "Se a causa é alergia, precisa controlar a reação. Anti-histamínico reduz coriza e melhora."
+        },
+        {
+          "sugestao": "Pastilha/spray para garganta (se garganta literal)",
+          "explicacao": "Escorrimento nasal irrita garganta. Alívio local reduz dor e arranhado."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir suporte extra em fase de resfriado. Complemento simples."
+        }
+      ]
+    },
+    "BOCA_GARGANTA_ODONTO": {
+      "AFTAS_LESOES_ORAIS": [
+        {
+          "sugestao": "Gel para afta / barreira protetora",
+          "explicacao": "Afta dói ao comer e falar. Gel cria barreira e reduz dor no local."
+        },
+        {
+          "sugestao": "Enxaguante sem álcool",
+          "explicacao": "Boca inflamada arde com álcool. Sem álcool ajuda a higienizar sem piorar."
+        },
+        {
+          "sugestao": "Spray/pastilha para garganta (se dor local literal)",
+          "explicacao": "Se há dor na garganta junto, precisa alívio local. Pastilha/spray melhora conforto."
+        },
+        {
+          "sugestao": "Zinco (suplemento)",
+          "explicacao": "Feridas na boca e imunidade são queixas comuns. Zinco é suporte frequentemente procurado."
+        }
+      ],
+      "DOR_DE_DENTE_INFECCAO_SUSPEITA": [
+        {
+          "sugestao": "Analgésico/antitérmico",
+          "explicacao": "Dor de dente dói forte e atrapalha tudo. Analgésico ajuda até conseguir avaliação."
+        },
+        {
+          "sugestao": "Anti-inflamatório (AINE) (se não redundante)",
+          "explicacao": "Quando há inflamação, a dor aumenta. AINE reduz inflamação e melhora a dor."
+        },
+        {
+          "sugestao": "Enxaguante antisséptico",
+          "explicacao": "Se há suspeita de inflamação, higiene ajuda. Antisséptico reduz carga bacteriana na boca."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir complemento junto. Opção simples e comum."
+        }
+      ],
+      "ANTISSEPTICO_BUCAL_ENXAGUANTE": [
+        {
+          "sugestao": "Creme dental gengiva/sensibilidade (conforme contexto literal)",
+          "explicacao": "Enxaguante ajuda, mas cuidado diário é o principal. Creme dental direcionado melhora o problema na rotina."
+        },
+        {
+          "sugestao": "Gel gengival (se sangramento/dor gengiva literal)",
+          "explicacao": "Gengiva inflamada dói e sangra. Gel ajuda a aliviar e reduzir irritação no local."
+        },
+        {
+          "sugestao": "Spray/pastilha para garganta (se garganta literal)",
+          "explicacao": "Se a queixa inclui garganta, alívio local ajuda. Pastilha/spray reduz dor e irritação."
+        },
+        {
+          "sugestao": "Zinco (suplemento)",
+          "explicacao": "Cliente pode pedir suporte para imunidade e recuperação. Zinco é complemento comum."
+        }
+      ],
+      "CREME_DENTAL_SENSIBILIDADE": [
+        {
+          "sugestao": "Enxaguante para sensibilidade",
+          "explicacao": "Sensibilidade melhora com cuidado diário completo. Enxaguante reforça a proteção do dente."
+        },
+        {
+          "sugestao": "Gel dessensibilizante (se disponível)",
+          "explicacao": "Se dor é forte, gel dá alívio mais direto. Ajuda a reduzir choque ao comer/beber."
+        },
+        {
+          "sugestao": "Creme dental gengiva (se gengiva literal)",
+          "explicacao": "Gengiva inflamada piora sensibilidade. Creme gengival ajuda a reduzir irritação e desconforto."
+        },
+        {
+          "sugestao": "Cálcio + Vitamina D (suplemento)",
+          "explicacao": "Cliente pode buscar suporte para dentes/ossos. Complemento comum para rotina."
+        }
+      ],
+      "FIO_DENTAL_ESCOVAS": [
+        {
+          "sugestao": "Enxaguante bucal",
+          "explicacao": "Escova e fio limpam, mas enxaguante completa higiene. Ajuda a reduzir mau hálito e placa."
+        },
+        {
+          "sugestao": "Creme dental",
+          "explicacao": "O creme certo melhora o objetivo (gengiva/sensibilidade). Complemento básico da rotina."
+        },
+        {
+          "sugestao": "Gel gengival (se gengiva literal)",
+          "explicacao": "Se gengiva está dolorida, gel ajuda no conforto. Reduz irritação no local."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir um complemento junto. Opção simples e comum."
+        }
+      ],
+      "HALITO_CUIDADOS_ORAIS": [
+        {
+          "sugestao": "Enxaguante bucal",
+          "explicacao": "Mau hálito melhora com higiene e controle de bactérias. Enxaguante ajuda a reduzir odor."
+        },
+        {
+          "sugestao": "Creme dental",
+          "explicacao": "Cuidado diário é a base do hálito. Creme adequado reduz placa e melhora odor."
+        },
+        {
+          "sugestao": "Probiótico oral (suplemento, se disponível)",
+          "explicacao": "Alguns casos envolvem flora oral desequilibrada. Probiótico oral é suporte opcional."
+        },
+        {
+          "sugestao": "Zinco (suplemento)",
+          "explicacao": "Alguns produtos com zinco ajudam no controle do odor. Complemento opcional conforme perfil."
+        }
+      ]
+    },
+    "SAUDE_INTIMA_URINARIO": {
+      "CANDIDIASE_TRATAMENTO": [
+        {
+          "sugestao": "Sabonete íntimo suave",
+          "explicacao": "Candidíase irrita e arde. Sabonete suave limpa sem piorar e dá conforto."
+        },
+        {
+          "sugestao": "Protetor diário/absorvente",
+          "explicacao": "Pomada/óvulo pode sujar e incomodar. Protetor ajuda no conforto e na rotina."
+        },
+        {
+          "sugestao": "Creme barreira (se irritação por atrito literal)",
+          "explicacao": "Atrito piora ardor e lesão. Barreira protege a pele e reduz desconforto."
+        },
+        {
+          "sugestao": "Probiótico (suplemento)",
+          "explicacao": "Flora desequilibrada favorece recorrência. Probiótico ajuda a equilibrar como complemento."
+        }
+      ],
+      "HIGIENE_INTIMA_IRRITACAO": [
+        {
+          "sugestao": "Sabonete íntimo suave",
+          "explicacao": "Irritação piora com produtos fortes. Sabonete suave reduz ardor e ressecamento."
+        },
+        {
+          "sugestao": "Creme barreira",
+          "explicacao": "Umidade e atrito irritam a pele. Barreira protege e melhora conforto."
+        },
+        {
+          "sugestao": "Protetor diário",
+          "explicacao": "Se há secreção/umidade, protetor ajuda no conforto e evita atrito na roupa."
+        },
+        {
+          "sugestao": "Probiótico (suplemento)",
+          "explicacao": "Se a queixa é recorrente, pode ser flora desregulada. Probiótico é suporte opcional."
+        }
+      ],
+      "SINTOMAS_URINARIOS_ARDOR": [
+        {
+          "sugestao": "Analgésico/antitérmico (se dor literal)",
+          "explicacao": "Ardor e dor incomodam muito. Analgésico ajuda a aliviar sintomas enquanto avalia causa."
+        },
+        {
+          "sugestao": "Probiótico (suplemento)",
+          "explicacao": "Se há recorrência por flora alterada, probiótico pode ajudar como suporte. Opcional."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir complemento junto. Opção simples e comum."
+        },
+        {
+          "sugestao": "Zinco (suplemento)",
+          "explicacao": "Cliente pode pedir suporte geral em fase ruim. Complemento opcional."
+        }
+      ],
+      "INCONTINENCIA_ABSORVENTE_GERIATRICO": [
+        {
+          "sugestao": "Creme barreira",
+          "explicacao": "Urina na pele causa dermatite e assadura. Barreira protege e evita feridas."
+        },
+        {
+          "sugestao": "Sabonete suave",
+          "explicacao": "Higiene frequente resseca e irrita. Sabonete suave limpa sem agredir."
+        },
+        {
+          "sugestao": "Antisséptico (se irritação/ferida literal)",
+          "explicacao": "Se há pele ferida, pode infeccionar. Antisséptico ajuda a limpar e prevenir infecção."
+        },
+        {
+          "sugestao": "Zinco (suplemento)",
+          "explicacao": "Cliente pode pedir complemento junto. Opção simples e comum."
+        }
+      ],
+      "PRESERVATIVOS_LUBRIFICANTES": [
+        {
+          "sugestao": "Lubrificante (se âncora for preservativo) / Preservativo (se âncora for lubrificante)",
+          "explicacao": "Para relação segura e confortável, os dois ajudam. Evita falta de um item essencial."
+        },
+        {
+          "sugestao": "Sabonete íntimo suave",
+          "explicacao": "Higiene íntima com produto suave evita irritação. Bom para rotina sem ardor."
+        },
+        {
+          "sugestao": "Probiótico (suplemento)",
+          "explicacao": "Se há queixas recorrentes, flora pode estar desregulada. Probiótico é suporte opcional."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente pode pedir um complemento junto. Opção simples e comum."
+        }
+      ],
+      "TESTE_GRAVIDEZ": [
+        {
+          "sugestao": "Ácido fólico (suplemento)",
+          "explicacao": "Se houver chance de gestação, ácido fólico é base do início. Complemento importante no planejamento."
+        },
+        {
+          "sugestao": "Preservativos",
+          "explicacao": "Ajuda a prevenir nova gravidez e IST. Opção prática após o teste."
+        },
+        {
+          "sugestao": "Lubrificante íntimo",
+          "explicacao": "Reduz atrito e desconforto. Complemento simples para relação mais confortável."
+        },
+        {
+          "sugestao": "Vitamina D (suplemento)",
+          "explicacao": "Cliente pode pedir suporte geral. Complemento opcional conforme perfil."
+        }
+      ]
+    },
+    "SAUDE_FEMININA_MENSTRUACAO": {
+      "MENSTRUACAO_ABSORVENTES": [
+        {
+          "sugestao": "Protetor diário",
+          "explicacao": "Fluxo leve e escapes acontecem. Protetor ajuda a manter conforto e segurança no dia."
+        },
+        {
+          "sugestao": "Creme barreira (assadura por atrito)",
+          "explicacao": "Absorvente + umidade causam atrito. Barreira protege e evita assadura."
+        },
+        {
+          "sugestao": "Magnésio (suplemento) (se cólica literal)",
+          "explicacao": "Cólica envolve espasmo e tensão. Magnésio ajuda no relaxamento muscular."
+        },
+        {
+          "sugestao": "Vitamina B6 (suplemento) (se TPM literal)",
+          "explicacao": "TPM pode trazer irritação e cansaço. B6 é suporte comum buscado para bem-estar."
+        }
+      ],
+      "COLICA_MENSTRUAL": [
+        {
+          "sugestao": "Anti-inflamatório (AINE)",
+          "explicacao": "Cólica tem componente inflamatório. AINE reduz inflamação e melhora a dor."
+        },
+        {
+          "sugestao": "Analgésico/antitérmico",
+          "explicacao": "Se a cliente quer alívio simples da dor, analgésico ajuda rápido e é prático."
+        },
+        {
+          "sugestao": "Antiespasmódico",
+          "explicacao": "Cólica é contração do útero. Antiespasmódico reduz espasmo e melhora a dor."
+        },
+        {
+          "sugestao": "Magnésio (suplemento)",
+          "explicacao": "Espasmo e tensão muscular pioram a cólica. Magnésio ajuda no relaxamento."
+        }
+      ],
+      "TPM_SINTOMAS": [
+        {
+          "sugestao": "Magnésio (suplemento)",
+          "explicacao": "TPM pode dar tensão e irritação. Magnésio ajuda a relaxar e reduzir desconforto."
+        },
+        {
+          "sugestao": "Vitamina B6 (suplemento)",
+          "explicacao": "Cansaço e irritação são comuns na TPM. B6 é suporte frequente para bem-estar."
+        },
+        {
+          "sugestao": "Analgésico/antitérmico (se dor literal)",
+          "explicacao": "Se há dor de cabeça/corpo na TPM, analgésico ajuda a aliviar o sintoma."
+        },
+        {
+          "sugestao": "Anti-inflamatório (AINE) (se dor/cólica literal)",
+          "explicacao": "Quando a dor vem com inflamação, AINE reduz inflamação e melhora o alívio."
+        }
+      ],
+      "MENOPAUSA_RESSECAMENTO": [
+        {
+          "sugestao": "Lubrificante íntimo",
+          "explicacao": "Ressecamento causa dor e atrito. Lubrificante reduz desconforto na hora."
+        },
+        {
+          "sugestao": "Hidratante íntimo (se disponível)",
+          "explicacao": "Para ressecamento constante, hidratante trata no dia a dia. Melhora conforto contínuo."
+        },
+        {
+          "sugestao": "Sabonete íntimo suave",
+          "explicacao": "Produtos fortes pioram ressecamento. Sabonete suave evita ardor e irritação."
+        },
+        {
+          "sugestao": "Ômega-3 (suplemento)",
+          "explicacao": "Cliente pode pedir suporte geral para pele/mucosas. Complemento opcional."
+        }
+      ],
+      "ANTICONCEPCIONAL_USO_CONTINUO": [
+        {
+          "sugestao": "Preservativos",
+          "explicacao": "Anticoncepcional evita gravidez, mas não protege IST. Preservativo complementa proteção."
+        },
+        {
+          "sugestao": "Lubrificante íntimo",
+          "explicacao": "Pode haver ressecamento e atrito. Lubrificante melhora conforto e reduz dor."
+        },
+        {
+          "sugestao": "Vitamina D (suplemento)",
+          "explicacao": "Cliente pode pedir suporte geral. Complemento opcional conforme perfil."
+        },
+        {
+          "sugestao": "Ácido fólico (suplemento, opcional)",
+          "explicacao": "Se houver planejamento futuro de gestação, ácido fólico é base. Opcional conforme contexto."
+        }
+      ]
+    },
+    "PEDIATRIA": {
+      "FEBRE_INFANTIL": [
+        {
+          "sugestao": "Sais de reidratação oral",
+          "explicacao": "Febre desidrata e reduz apetite. Reidratação repõe líquidos e sais."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Pais costumam pedir suporte em resfriados. Complemento comum para imunidade."
+        },
+        {
+          "sugestao": "Zinco (suplemento)",
+          "explicacao": "Em fase de gripe/resfriado, muitos buscam reforço. Zinco é suporte frequente."
+        },
+        {
+          "sugestao": "Solução nasal (spray salino/soro em spray) (se resfriado literal)",
+          "explicacao": "Nariz entupido atrapalha dormir e mamar. Soro ajuda a limpar e aliviar."
+        }
+      ],
+      "RESFRIADO_TOSSE_INFANTIL": [
+        {
+          "sugestao": "Solução nasal (spray salino/soro em spray)",
+          "explicacao": "Congestão piora tosse e desconforto. Soro ajuda a limpar e respirar melhor."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Pais pedem suporte extra em resfriado. Complemento comum para imunidade."
+        },
+        {
+          "sugestao": "Zinco (suplemento)",
+          "explicacao": "Em resfriado, alguns buscam reforço nutricional. Zinco é suporte frequente."
+        },
+        {
+          "sugestao": "Probiótico infantil (suplemento, opcional)",
+          "explicacao": "Se a criança tem intestino sensível, probiótico ajuda a equilibrar a flora. Opcional."
+        }
+      ],
+      "COLICAS_GASES_BEBE": [
+        {
+          "sugestao": "Simeticona infantil (se disponível)",
+          "explicacao": "Gases em bebê dão choro e desconforto. Simeticona ajuda a reduzir bolhas de gás."
+        },
+        {
+          "sugestao": "Probiótico infantil (suplemento)",
+          "explicacao": "Gases podem vir de flora imatura. Probiótico ajuda a equilibrar e melhorar cólica."
+        },
+        {
+          "sugestao": "Vitamina D infantil (suplemento, se pedido literal)",
+          "explicacao": "Vitamina D é suplementação comum em bebês. Só sugerir quando houver pedido explícito."
+        },
+        {
+          "sugestao": "Creme barreira (se assadura literal)",
+          "explicacao": "Assadura dói e piora rápido. Barreira protege a pele e reduz ardor."
+        }
+      ],
+      "DERMATITE_FRALDA": [
+        {
+          "sugestao": "Creme barreira (óxido de zinco)",
+          "explicacao": "Fralda mantém umidade e atrito. Barreira protege e reduz irritação."
+        },
+        {
+          "sugestao": "Pomada reparadora (dexpantenol etc.)",
+          "explicacao": "Pele já irritada precisa recuperar. Reparadora ajuda a cicatrizar e aliviar."
+        },
+        {
+          "sugestao": "Sabonete suave",
+          "explicacao": "Higiene frequente pode piorar assadura. Sabonete suave limpa sem agredir."
+        },
+        {
+          "sugestao": "Zinco (suplemento, opcional)",
+          "explicacao": "Cliente pode pedir complemento junto. Opcional conforme perfil."
+        }
+      ],
+      "VITAMINAS_INFANTIS": [
+        {
+          "sugestao": "Vitamina D infantil",
+          "explicacao": "Vitamina D é uma das mais comuns na infância. Complemento conforme demanda."
+        },
+        {
+          "sugestao": "Vitamina C infantil",
+          "explicacao": "Pais procuram suporte em resfriados. Complemento comum para imunidade."
+        },
+        {
+          "sugestao": "Zinco infantil",
+          "explicacao": "Em fases de gripe, pais pedem reforço. Zinco é suporte frequente."
+        },
+        {
+          "sugestao": "Probiótico infantil (suplemento, opcional)",
+          "explicacao": "Se intestino está desregulado, probiótico ajuda a equilibrar. Opcional."
+        }
+      ]
+    },
+    "CARDIO_PRESSAO": {
+      "HIPERTENSAO_MEDICAMENTOS": [
+        {
+          "sugestao": "Ômega-3 (suplemento, opcional)",
+          "explicacao": "Pressão alta aumenta risco no coração. Ômega-3 apoia saúde cardiovascular."
+        },
+        {
+          "sugestao": "Magnésio (suplemento, opcional)",
+          "explicacao": "Tensão e cãibra são comuns. Magnésio ajuda no relaxamento e bem-estar."
+        },
+        {
+          "sugestao": "CoQ10 (suplemento, opcional)",
+          "explicacao": "Alguns clientes usam como suporte de energia e coração. Complemento opcional."
+        },
+        {
+          "sugestao": "Vitamina D (suplemento, opcional)",
+          "explicacao": "Suporte geral de rotina. Complemento opcional quando o cliente pede “algo a mais”."
+        }
+      ],
+      "COLESTEROL_ESTATINAS": [
+        {
+          "sugestao": "Fibra (psyllium) (suplemento)",
+          "explicacao": "Colesterol alto melhora com fibra na rotina. Psyllium ajuda intestino e pode apoiar controle."
+        },
+        {
+          "sugestao": "Ômega-3 (suplemento)",
+          "explicacao": "Colesterol e risco cardiovascular andam juntos. Ômega-3 é suporte para saúde do coração."
+        },
+        {
+          "sugestao": "CoQ10 (suplemento)",
+          "explicacao": "Alguns usam CoQ10 junto de estatina por energia/desconforto. Complemento opcional."
+        },
+        {
+          "sugestao": "Vitamina D (suplemento, opcional)",
+          "explicacao": "Suporte geral. Melhor sugerir se o cliente pedir complemento ou já usa."
+        }
+      ]
+    },
+    "ENDOCRINO_METABOLICO": {
+      "DIABETES_MEDICAMENTOS": [
+        {
+          "sugestao": "Creme/hidratante para pés (HPPC)",
+          "explicacao": "Diabetes resseca e racha os pés. Hidratante ajuda a evitar fissuras e feridas."
+        },
+        {
+          "sugestao": "Probiótico (suplemento, opcional)",
+          "explicacao": "Intestino desregulado atrapalha bem-estar e rotina alimentar. Probiótico é suporte opcional."
+        },
+        {
+          "sugestao": "Vitamina D (suplemento, opcional)",
+          "explicacao": "Suporte geral para saúde e energia. Complemento opcional conforme perfil do cliente."
+        },
+        {
+          "sugestao": "Ômega-3 (suplemento, opcional)",
+          "explicacao": "Diabetes aumenta risco no coração. Ômega-3 pode ser suporte cardiovascular opcional."
+        }
+      ]
+    },
+    "SUPLEMENTOS": {
+      "OSSO_CALCIO_VITAMINA_D": [
+        {
+          "sugestao": "Cálcio (se âncora for Vitamina D) / Vitamina D (se âncora for cálcio)",
+          "explicacao": "Para osso, os dois trabalham juntos. Sugere o que faltou para completar o suporte."
+        },
+        {
+          "sugestao": "Magnésio (suplemento)",
+          "explicacao": "Magnésio ajuda músculos e também participa do equilíbrio mineral. Complemento comum."
+        },
+        {
+          "sugestao": "Vitamina K2 (suplemento)",
+          "explicacao": "Alguns clientes usam K2 junto para “direcionar” cálcio. Complemento opcional."
+        },
+        {
+          "sugestao": "Colágeno (suplemento, opcional)",
+          "explicacao": "Quem busca osso/articulação costuma pedir colágeno. Suporte estrutural opcional."
+        }
+      ],
+      "ANEMIA_FERRO_B12": [
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Ferro pode absorver melhor com vitamina C. Complemento simples para rotina de anemia."
+        },
+        {
+          "sugestao": "Ácido fólico (suplemento)",
+          "explicacao": "Alguns tipos de anemia precisam de folato. Complemento comum quando faz sentido."
+        },
+        {
+          "sugestao": "B12 (se âncora for ferro) / Ferro (se âncora for B12)",
+          "explicacao": "Anemia pode ser por falta de ferro ou B12. Sugere o nutriente que não foi levado."
+        },
+        {
+          "sugestao": "Probiótico (suplemento, opcional)",
+          "explicacao": "Ferro pode dar desconforto intestinal. Probiótico ajuda tolerância e equilíbrio da flora."
+        }
+      ],
+      "VITAMINAS_GERAIS_IMUNIDADE": [
+        {
+          "sugestao": "Vitamina C (suplemento)",
+          "explicacao": "Cliente busca reforço para imunidade. Vitamina C é a mais pedida para rotina."
+        },
+        {
+          "sugestao": "Zinco (suplemento)",
+          "explicacao": "Em gripe/resfriado, zinco é muito procurado. Suporte comum para imunidade."
+        },
+        {
+          "sugestao": "Vitamina D (suplemento)",
+          "explicacao": "Muita gente usa como suporte geral. Complemento frequente para rotina."
+        },
+        {
+          "sugestao": "Probiótico (suplemento, opcional)",
+          "explicacao": "Imunidade também passa pelo intestino. Probiótico é suporte opcional para flora."
+        }
+      ],
+      "GESTAO_DE_PESO": [
+        {
+          "sugestao": "Fibra (psyllium) (suplemento)",
+          "explicacao": "Fibra aumenta saciedade e regula intestino. Ajuda na rotina de controle de peso."
+        },
+        {
+          "sugestao": "Probiótico (suplemento)",
+          "explicacao": "Inchaço e intestino desregulado atrapalham dieta. Probiótico ajuda a equilibrar a flora."
+        },
+        {
+          "sugestao": "Cromo (suplemento, opcional)",
+          "explicacao": "Alguns buscam cromo para vontade de doce. Suporte opcional conforme perfil."
+        },
+        {
+          "sugestao": "Magnésio (suplemento, opcional)",
+          "explicacao": "Cãibra, tensão e sono ruim atrapalham rotina. Magnésio é suporte opcional."
+        }
+      ]
+    },
+    "NEURO_PSIQUIATRIA_SONO": {
+      "ANSIEDADE_CALMANTE": [
+        {
+          "sugestao": "Magnésio (suplemento)",
+          "explicacao": "Ansiedade dá tensão no corpo. Magnésio ajuda relaxamento e bem-estar."
+        },
+        {
+          "sugestao": "L-teanina (suplemento)",
+          "explicacao": "Agitação mental atrapalha foco e calma. L-teanina dá suporte de tranquilidade."
+        },
+        {
+          "sugestao": "Melatonina (suplemento, se permitido)",
+          "explicacao": "Se o problema é pegar no sono, melatonina ajuda a regular o início do sono."
+        },
+        {
+          "sugestao": "Complexo B (suplemento, opcional)",
+          "explicacao": "Cansaço e estresse são comuns. Complexo B dá suporte a energia e metabolismo."
+        }
+      ],
+      "INSONIA_SONO": [
+        {
+          "sugestao": "Melatonina (suplemento, se permitido)",
+          "explicacao": "Dificuldade para iniciar o sono é comum. Melatonina ajuda a regular o horário de dormir."
+        },
+        {
+          "sugestao": "Magnésio (suplemento)",
+          "explicacao": "Tensão corporal atrapalha dormir. Magnésio ajuda relaxamento e melhora conforto."
+        },
+        {
+          "sugestao": "L-teanina (suplemento)",
+          "explicacao": "Mente acelerada impede relaxar. L-teanina ajuda a acalmar sem sedar forte."
+        },
+        {
+          "sugestao": "Triptofano ou 5-HTP (suplemento, opcional)",
+          "explicacao": "Alguns usam para suporte de humor/sono. Opção opcional conforme portfólio e perfil."
+        }
+      ]
+    },
+    "HIGIENE_CUIDADOS_PESSOAIS_HPPC": {
+      "PROTETOR_SOLAR_FOTOPROTECAO": [
+        {
+          "sugestao": "Pós-sol/calmante",
+          "explicacao": "Mesmo com protetor, pele pode irritar no sol. Pós-sol reduz ardor e ressecamento."
+        },
+        {
+          "sugestao": "Hidratante reparador",
+          "explicacao": "Sol resseca e descama. Hidratante recupera barreira e melhora conforto."
+        },
+        {
+          "sugestao": "Protetor labial com FPS",
+          "explicacao": "Lábios queimam e racham fácil. FPS protege e evita fissuras."
+        },
+        {
+          "sugestao": "Vitamina C (suplemento, opcional)",
+          "explicacao": "Cliente pode pedir complemento de rotina. Opção simples e comum."
+        }
+      ]
+    }
+  }
+}

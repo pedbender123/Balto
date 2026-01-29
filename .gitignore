@@ -1,13 +1,32 @@
 # 1. ARQUIVO DE SEGREDOS - NUNCA SUBIR
 .env
-
+docs/CHEATSHEET_COMMANDS.md
 # 2. Banco de dados (não deve ir pro git)
 *.db
 dados/
 
 # 3. Cache do Python
+# Test Artifacts (Organized in server/testes)
+testes/1_input/*
+!testes/1_input/.gitkeep
+testes/2_cortados/*
+!testes/2_cortados/.gitkeep
+testes/planilhas/*
+!testes/planilhas/.gitkeep
+
+# Server Artifacts
+audio_dumps/*
+!audio_dumps/.gitkeep
+backend/app/dados/*
+!backend/app/dados/.gitkeep
+*.log
+*.sqlite
+*.db
 __pycache__/
 *.pyc
+venv/
+venv_local/
+.env
 
 # 4. Pasta de arquivos de áudio quando MOCK_MODE=1 (usado para teste local)
 .audio_dumps

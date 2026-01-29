@@ -1,4 +1,3 @@
-
 import os
 import time
 import wave
@@ -7,6 +6,7 @@ import logging
 from datetime import datetime
 from collections import defaultdict
 from app.core import config
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +16,11 @@ class AudioArchiver:
     Organiza por data e balcão, separando RAW de PROCESSED.
     Agrupa em arquivos de 60 segundos.
     """
-    def __init__(self, base_path="/home/pedro/balto_audio_data"):
-        self.base_path = os.environ.get("AUDIO_ARCHIVE_PATH", base_path)
+    def __init__(self, base_path=None):
+        app_audio_root = os.environ.get("APP_AUDIO_ROOT", "/backend/app/audio_dumps")
+        default_base = os.path.join(app_audio_root, "archiver")
+
+        self.base_path = os.environ.get("AUDIO_ARCHIVE_PATH") or base_path or default_base
         self.queue = asyncio.Queue()
         self.running = True
         self._buffers = defaultdict(lambda: {"raw": bytearray(), "processed": bytearray(), "start_time": time.time()})

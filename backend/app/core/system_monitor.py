@@ -9,7 +9,8 @@ except ImportError:
     print("[MONITOR] Warning: psutil not installed. Monitoring disabled.")
 
 # Path to persistent storage
-CSV_PATH = "/backend/app/dados/monitoramento_server.csv"
+APP_AUDIO_ROOT = os.environ.get("APP_AUDIO_ROOT", "/backend/app/audio_dumps")
+CSV_PATH = os.path.join(APP_AUDIO_ROOT, "monitoramento_server.csv")
 
 # Global Cache for high-frequency access (read by websocket.py)
 SYSTEM_METRICS = {

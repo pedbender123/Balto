@@ -1,16 +1,147 @@
 import asyncio
 import json
+import re
+import unicodedata
+import imageio_ffmpeg
+import difflib
+
 from datetime import datetime
 from aiohttp import web, WSMsgType
 from app import db, vad, transcription, speaker_id, audio_processor
-from app import db, vad, transcription, speaker_id, audio_processor
 from app.core import config, audio_utils, ai_client, buffer, audio_analysis, capacity_guard, audio_archiver
-import imageio_ffmpeg
+from app.core.cestas import resolve_basket_from_classification
+
 try:
     import psutil
 except ImportError:
     psutil = None
 import random
+
+def _norm_text(s: str) -> str:
+    s = (s or "").strip().lower()
+    # remove acentos
+    s = "".join(
+        ch for ch in unicodedata.normalize("NFKD", s)
+        if not unicodedata.combining(ch)
+    )
+    # normaliza espaços
+    s = re.sub(r"\s+", " ", s)
+    return s
+
+def _is_excluded_suggestion(sugestao: str, anchors: list[str]) -> bool:
+    """
+    Remove a sugestão se ela "for" a âncora ou contiver a âncora (match bem tolerante).
+    Ex: sugestao="Losartana 50mg" e anchors=["losartana"] -> True
+    """
+    sug_n = _norm_text(sugestao)
+    if not sug_n:
+        return True
+
+    for a in anchors or []:
+        a_n = _norm_text(a)
+        if not a_n:
+            continue
+        # match por substring (simples e eficaz pro teu caso)
+        if a_n in sug_n:
+            return True
+    return False
+
+def build_recommendation_payload_from_classification(classification: dict, *, max_items: int = 3) -> dict | None:
+    """
+    classification: {"macros_top2":[...], "micro_categoria":..., "ancoras_para_excluir":[...]}
+    Retorna payload no formato do renderer ou None se não houver itens válidos.
+    """
+    # resolve cesta (já vem com sugestao/explicacao/tag)
+    items = resolve_basket_from_classification(classification, max_items=max_items)
+
+    anchors = classification.get("ancoras_para_excluir") or []
+    filtered = []
+    for it in items:
+        sugestao = (it.get("sugestao") or "").strip()
+        if not sugestao:
+            continue
+        if _is_excluded_suggestion(sugestao, anchors):
+            continue
+        filtered.append({
+            "sugestao": sugestao,
+            "explicacao": (it.get("explicacao") or "").strip(),
+            # opcional: manda tag também
+            "tag": it.get("tag"),
+        })
+
+    if not filtered:
+        return None
+
+    return {
+        "comando": "recomendar",
+        "itens": filtered
+    }
+
+def _tok(s: str) -> list[str]:
+    s = _norm_text(s)
+    # mantém só letras/números e espaço
+    s = re.sub(r"[^a-z0-9\s]", " ", s)
+    s = re.sub(r"\s+", " ", s).strip()
+    return s.split() if s else []
+
+def dedupe_overlap_words(prev_text: str, cur_text: str,
+                        max_window: int = 18,
+                        min_overlap: int = 4,
+                        min_ratio: float = 0.82) -> str:
+    """
+    Remove do começo do cur_text um overlap que parece repetição do final do prev_text,
+    mesmo quando não é idêntico (ex.: token extra, pequenas variações).
+    """
+    if not prev_text or not cur_text:
+        return cur_text
+
+    prev_t = _tok(prev_text)
+    cur_t  = _tok(cur_text)
+    if not prev_t or not cur_t:
+        return cur_text
+
+    # só olha uma janela do final/início (pra não gastar muito e não apagar coisa demais)
+    prev_tail = prev_t[-max_window:]
+    cur_head  = cur_t[:max_window]
+
+    best_k = 0
+
+    # tenta do maior pro menor overlap
+    for k in range(min(len(prev_tail), len(cur_head)), min_overlap - 1, -1):
+        a = prev_tail[-k:]
+        b = cur_head[:k]
+
+        # comparação fuzzy: tokens -> string
+        ra = " ".join(a)
+        rb = " ".join(b)
+
+        ratio = difflib.SequenceMatcher(a=ra, b=rb).ratio()
+
+        # permite 1 token “extra” no começo do cur (“aqui”, “né”, etc.)
+        if ratio < min_ratio and k >= (min_overlap + 1):
+            b2 = cur_head[1:k+1]  # pula 1 token do começo
+            rb2 = " ".join(b2)
+            ratio2 = difflib.SequenceMatcher(a=ra, b=rb2).ratio()
+            if ratio2 >= min_ratio:
+                best_k = k  # mas vamos remover k+1 tokens do original (o extra + overlap)
+                remove_tokens = k + 1
+                break
+        else:
+            if ratio >= min_ratio:
+                best_k = k
+                remove_tokens = k
+                break
+
+    if best_k <= 0:
+        return cur_text
+
+    # Agora remove do cur_text ORIGINAL (não-normalizado) aproximadamente os primeiros N tokens
+    # Estratégia: tokeniza “cur_text” bruto por espaços e remove N palavras iniciais.
+    raw_tokens = cur_text.strip().split()
+    if len(raw_tokens) <= remove_tokens:
+        return ""  # virou só repetição
+    return " ".join(raw_tokens[remove_tokens:]).lstrip()
+
 
 class FFmpegWebMToPCMStream:
     """
@@ -113,7 +244,7 @@ async def process_speech_pipeline(
 
     # --- SileroVAD (IA Filter) ---
     # Double check if this is really speech before expensive transcription
-    svad = websocket.app.get('silero_vad')
+    svad = getattr(websocket, "_silero_vad", None)
     if svad:
         try:
             # SileroVAD.process_full_audio returns a list of timestamps
@@ -241,11 +372,20 @@ async def process_speech_pipeline(
 
     try:
         buffer_content = None
+        normalizacao_out = None
+        classificacao_out = None
         analise_json = None
         ts_ai_request = None
         ts_ai_response = None
         ts_client_sent = None
         recomendacao_log = None
+        envelope = None
+        cesta_key = None
+        cesta_origem = None
+        cesta_itens_raw = None
+        cesta_itens_pos = None
+        classif_obj = None
+
 
         ts_transcription_sent = datetime.now()
         transcricao_resultado = await asyncio.to_thread(
@@ -318,86 +458,161 @@ async def process_speech_pipeline(
 
         print(f"[{balcao_id}] Transcrição ({modelo_usado}): {texto}")
         
+
+        # --- DEDUPE por overlap (fuzzy) ---
+        prev_last = getattr(transcript_buffer, "_last_text", "")
+        texto = dedupe_overlap_words(prev_last, texto)
+        setattr(transcript_buffer, "_last_text", texto)
+        # ----------------------------------
+
         # Add to buffer
         transcript_buffer.add_text(texto)
 
         # Check if we should process via AI
         if transcript_buffer.should_process():
-            # [FIX] Check suppression FIRST
+
+            # Se estiver suprimindo recomendações (modo de teste), não chama LLM
             if config.MOCK_RECOMMENDATION:
-                print(f"[{balcao_id}] Recomendação AI bloqueada por configuração (MOCK_RECOMMENDATION=True).")
-                recomendacao_log = "🚫 MOCK REC: Desativado"
-                # Skip the rest of the AI block
-            
+                print(f"[{balcao_id}] Normalização bloqueada (MOCK_RECOMMENDATION=True).")
+                recomendacao_log = "🚫 NORMALIZE: bloqueado (MOCK_RECOMMENDATION=True)"
+                
+                buffer_content = transcript_buffer.get_context_and_clear()
+                
+                normalizacao_out = None
+                classificacao_out = None
+                
+                ts_ai_request = None
+                ts_ai_response = None
+
             else:
-                # Pega o buffer atual (que triggerou a ação)
+                # 1) pega o buffer consolidado UMA VEZ
                 buffer_content = transcript_buffer.get_context_and_clear()
 
-                print(f"[{balcao_id}] Enviando para AI: {buffer_content[-200:]}...")
+                if not buffer_content or not buffer_content.strip():
+                    recomendacao_log = "NORM: vazio"
+                    normalizacao_out = "NADA_RELEVANTE | OUTRO"
+                    classificacao_out = None
+                    ts_ai_request = None
+                    ts_ai_response = None
 
-            ts_ai_request = datetime.now()
+                else:
+                    print(f"[{balcao_id}] Enviando para NORMALIZE: {buffer_content[-200:]}...")
 
-            analise_json = await asyncio.to_thread(
-                ai_client.ai_client.analisar_texto, buffer_content
-            )
+                    # -------------------------
+                    # LLM #1: NORMALIZAR
+                    # -------------------------
+                    ts_ai_request = datetime.now()
+                    norm_out = await asyncio.to_thread(
+                        ai_client.ai_client.normalizar_texto,
+                        buffer_content
+                    )
 
-            if analise_json:
-                ts_ai_response = datetime.now()
-                try:
-                    dados = json.loads(analise_json)
+                    normalizacao_out = (norm_out or "").strip()
+                    if not normalizacao_out:
+                        normalizacao_out = "NADA_RELEVANTE | OUTRO"
 
-                    # Define items_to_send UMA vez, sem loop
-                    if "itens" in dados and isinstance(dados["itens"], list):
-                        items_to_send = dados["itens"]
-                    elif "sugestao" in dados:
-                        items_to_send = [dados]
+                    # -------------------------
+                    # LLM #2: CLASSIFICAR
+                    # (entrada é o normalizado: "MED:... | HINT")
+                    # -------------------------
+                    classif = await asyncio.to_thread(
+                        ai_client.ai_client.classificar_cesta,
+                        normalizacao_out
+                    )
+                    ts_ai_response = datetime.now()
+
+                    if isinstance(classif, dict):
+                        classif_obj = classif
                     else:
-                        items_to_send = []
-                    
-                    # Collect ALL valid suggestions for logging/DB
-                    all_suggestions_list = []
-                    for item in items_to_send:
-                         sug = item.get("sugestao")
-                         expl = item.get("explicacao")
-                         if sug and sug.lower() not in ["null", "nenhuma", "none"]:
-                             all_suggestions_list.append({"sugestao": sug, "explicacao": expl})
-                    
-                    # Prepare log string with ALL suggestions
-                    sugestoes_log_str = [f"{s['sugestao']} ({s['explicacao']})" for s in all_suggestions_list]
-                    recomendacao_log = " | ".join(sugestoes_log_str) if all_suggestions_list else "Nenhuma"
+                        # se vier string JSON por algum motivo
+                        try:
+                            classif_obj = json.loads(classif)
+                        except Exception:
+                            classif_obj = {"_raw": str(classif), "_parse_error": True}
 
-                    # Prepare Payload for Frontend (Max 3)
-                    frontend_items = all_suggestions_list[:3]
-                    
-                    if frontend_items:
-                        payload = {
-                            "comando": "recomendar",
-                            "itens": frontend_items,
-                            "transcricao_base": buffer_content,
-                            "atendente": nome_funcionario
+                    # 2) salvar classificacao_out como string JSON (para sua coluna transcricao_classificacao)
+                    try:
+                        classificacao_out = json.dumps(classif_obj, ensure_ascii=False)
+                    except Exception:
+                        classificacao_out = None
+
+                    # 3) montar cesta_key (macro::micro ou macro::fallback)
+                    macro = None
+                    micro = None
+
+                    if isinstance(classif_obj, dict):
+                        macros_top2 = classif_obj.get("macros_top2") or []
+                        macro = macros_top2[0] if len(macros_top2) > 0 else None
+                        micro = classif_obj.get("micro_categoria")
+
+                    if macro and micro:
+                        cesta_key = f"{macro}::{micro}"
+                        cesta_origem = "macro_micro"
+                    elif macro:
+                        cesta_key = f"{macro}::fallback"
+                        cesta_origem = "fallback_macro_default"
+                    else:
+                        cesta_key = "OUTRO::fallback"
+                        cesta_origem = "fallback_macro_default"
+
+                    # 4) envelope JSON completo para debug (vai para grok_raw)
+                    envelope = {
+                        "buffer_content": buffer_content,
+                        "normalizacao_out": normalizacao_out,
+                        "classificacao_out": classif_obj,
+                        "cesta_key": cesta_key,
+                        "cesta_origem": cesta_origem,
+                        "meta": {
+                            "balcao_id": balcao_id,
+                            "funcionario_id": funcionario_id,
+                            "nome_funcionario": nome_funcionario,
+                        },
+                        "timestamps": {
+                            "ts_audio_received": ts_audio_received.isoformat(),
+                            "ts_trans_sent": ts_transcription_sent.isoformat() if ts_transcription_sent else None,
+                            "ts_trans_ready": ts_transcription_ready.isoformat() if ts_transcription_ready else None,
+                            "ts_ai_req": ts_ai_request.isoformat() if ts_ai_request else None,
+                            "ts_ai_res": ts_ai_response.isoformat() if ts_ai_response else None,
                         }
-                        await websocket.send_json(payload)
-                        ts_client_sent = datetime.now() # Capture time sent to client (batch)
-                    
-                except Exception as e:
-                    print(f"[{balcao_id}] Erro Parse JSON AI: {e}")
-                    recomendacao_log = "Erro Parse"
-            else:
-                 # AI retornou None/Vazio (erro no request ou timeout interno)
-                 recomendacao_log = "Nenhuma"
+                    }
 
-        # Log interaction
+                    # 5) recomendacao_log vira a cesta_key (como você pediu)
+                    recomendacao_log = cesta_key
+
+        # ================================
+        # [ADD] Envio para o frontend ANTES de gravar no BD
+        # ================================
+        payload_out = None
+
+        # Só tenta montar/enviar payload se houver classificação válida (dict)
+        if isinstance(classif_obj, dict) and classif_obj:
+            payload_out = build_recommendation_payload_from_classification(classif_obj, max_items=3)
+
+            if payload_out and (not websocket.closed):
+                try:
+                    ts_client_sent = datetime.now()
+                    await websocket.send_json(payload_out)
+                except Exception as e:
+                    print(f"[{balcao_id}] ❌ Falha ao enviar recomendação: {e}")
+                    ts_client_sent = None
+
+
+        if recomendacao_log is None:
+            recomendacao_log = ""
+
         await asyncio.to_thread(
             db.registrar_interacao,
             balcao_id=balcao_id,
             transcricao=buffer_content or texto,
-            recomendacao=recomendacao_log,
+            transcricao_normalizada=normalizacao_out,
+            transcricao_classificacao=classificacao_out,
+            recomendacao=cesta_key or recomendacao_log,
             resultado="processado",
             funcionario_id=funcionario_id,
             modelo_stt=modelo_usado,
             custo=custo_estimado,
             snr=snr_calculado,
-            grok_raw=analise_json,
+            grok_raw=(json.dumps(envelope, ensure_ascii=False, separators=(",", ":")) if envelope else None),
             ts_audio=ts_audio_received,
             ts_trans_sent=ts_transcription_sent,
             ts_trans_ready=ts_transcription_ready,
@@ -406,9 +621,8 @@ async def process_speech_pipeline(
             ts_client=ts_client_sent,
             speaker_data=json.dumps(speaker_data_list) if speaker_data_list else None,
             audio_metrics=audio_metrics,
-            # Enhanced Metrics
             config_snapshot=json.dumps(config_snapshot) if config_snapshot else None,
-            mock_status=None, # Real processing
+            mock_status=None,
             cpu_usage=cpu_usage,
             ram_usage=ram_usage,
             audio_pitch_mean=audio_pitch_mean,
@@ -416,6 +630,7 @@ async def process_speech_pipeline(
             spectral_centroid_mean=spectral_centroid_mean,
             interaction_type="valid"
         )
+
 
     except Exception as e:
         print(f"[{balcao_id}] Erro no Pipeline: {e}")

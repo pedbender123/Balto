@@ -1,0 +1,24 @@
+# Docker ignore
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.git
+.github
+.vscode
+.idea
+venv
+stress_venv
+local_stress/venv
+audio_dumps/*
+!audio_dumps/.gitkeep
+backend/audio_dumps/*
+!backend/audio_dumps/.gitkeep
+backend/stress_venv
+backend/vendor/silero-vad/examples
+backend/vendor/silero-vad/tests
+*.log
+local_server.log
+server_log.txt
+node_modules
+.DS_Store

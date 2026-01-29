@@ -96,6 +96,8 @@ def inicializar_db():
         balcao_id TEXT,
         timestamp TIMESTAMP,
         transcricao_completa TEXT,
+        transcricao_normalizada TEXT,
+        transcricao_classificacao TEXT,
         recomendacao_gerada TEXT,
         resultado_feedback TEXT,
         funcionario_id INTEGER,
@@ -169,6 +171,9 @@ def inicializar_db():
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS audio_pitch_mean REAL")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS audio_pitch_std REAL")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS spectral_centroid_mean REAL")
+
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS transcricao_normalizada TEXT")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS transcricao_classificacao TEXT")
         
         conn.commit()
     except Exception as e:
@@ -448,6 +453,8 @@ def registrar_interacao(
     transcricao,
     recomendacao,
     resultado,
+    transcricao_normalizada=None,
+    transcricao_classificacao=None,
     funcionario_id=None,
     modelo_stt=None,
     custo=0.0,
@@ -478,7 +485,8 @@ def registrar_interacao(
         cursor = conn.cursor()
         cursor.execute("""
         INSERT INTO interacoes (
-            balcao_id, timestamp, transcricao_completa, recomendacao_gerada, resultado_feedback,
+            balcao_id, timestamp, transcricao_completa, transcricao_normalizada, transcricao_classificacao, 
+            recomendacao_gerada, resultado_feedback,
             funcionario_id, modelo_stt, custo_estimado, snr, grok_raw_response,
             ts_audio_received, ts_transcription_sent, ts_transcription_ready,
             ts_ai_request, ts_ai_response, ts_client_sent, speaker_data,
@@ -497,6 +505,7 @@ def registrar_interacao(
         )
         VALUES (
             %s, %s, %s, %s, %s,
+            %s, %s,
             %s, %s, %s, %s, %s,
             %s, %s, %s,
             %s, %s, %s, %s,
@@ -514,7 +523,8 @@ def registrar_interacao(
             %s, %s, %s
         )
         """, (
-            balcao_id, datetime.now(), transcricao, recomendacao, resultado,
+            balcao_id, datetime.now(), transcricao, transcricao_normalizada, transcricao_classificacao, 
+            recomendacao, resultado,
             funcionario_id, modelo_stt, float(custo), float(snr), grok_raw,
             ts_audio, ts_trans_sent, ts_trans_ready,
             ts_ai_req, ts_ai_res, ts_client, speaker_data,
@@ -577,6 +587,8 @@ def listar_interacoes(limit=50):
         i.timestamp,
         b.nome_balcao,
         i.transcricao_completa,
+        i.transcricao_normalizada,
+        i.transcricao_classificacao,
         i.recomendacao_gerada,
         i.modelo_stt,
         i.ts_audio_received,

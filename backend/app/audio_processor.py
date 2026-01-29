@@ -3,7 +3,11 @@ try:
 except ImportError:
     webrtc = None
 
+import numpy as np
+import noisereduce as nr
+
 # Configuração básica de logging local
+import logging
 logger = logging.getLogger(__name__)
 
 class WebRTCCleaner:
@@ -18,12 +22,7 @@ class WebRTCCleaner:
         
         self.sample_rate = sample_rate
         # O WebRTC APM trabalha internamente com chunks de 10ms (160 samples @ 16kHz)
-        self.apm = webrtc.AudioProcessingModule(
-            enable_aec=False,
-            enable_agc=True,
-            enable_ns=True,
-            enable_vad=False # Já temos nosso próprio VAD
-        )
+        self.apm = webrtc.AudioProcessingModule()
         
         # Configurar AGC
         # modo: 0 (Adaptive Analog), 1 (Adaptive Digital), 2 (Fixed Digital)

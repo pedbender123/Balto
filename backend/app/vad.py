@@ -27,7 +27,7 @@ class VAD:
         self.triggered = False
         
         # Configurações de Silêncio para "corte" da frase
-        self.silence_frames_needed = 30 # Aprox 900ms de silêncio (era 20/600ms)
+        self.silence_frames_needed = 10 # Aprox 300ms de silêncio (era 30)
         self.silence_frames_count = 0
         
         # --- Lógica Adaptativa (EMA) ---
@@ -67,6 +67,7 @@ class VAD:
         self._seg_energy_sum = 0.0
         self._seg_energy_max = 0.0
         self._seg_energy_count = 0
+        self._debug_frame_count = 0
 
 
     def _calculate_energy(self, frame):
@@ -100,7 +101,9 @@ class VAD:
             is_loud_enough = energy > dynamic_threshold
 
             # [REMOVED] Verbose Frame-by-frame log
-            # print(f"[VAD LOG] ...")
+            self._debug_frame_count += 1
+            if self._debug_frame_count % 30 == 0:
+                print(f"[VAD DEBUG] E: {energy:.1f} | Thr: {dynamic_threshold:.1f} | Noise: {self.noise_level:.1f} | Triggered: {self.triggered}")
             
             is_speech = False
             
@@ -108,6 +111,9 @@ class VAD:
                 try:
                     # Só chama o WebRTC se passou pelo gate de energia
                     is_speech = self.vad.is_speech(frame, self.sample_rate)
+                    # [MOD] Se a energia for MUITO alta, considera fala mesmo se o WebRTC estiver na dúvida
+                    if not is_speech and energy > (dynamic_threshold * 1.5):
+                         is_speech = True
                 except Exception:
                     is_speech = False
             
