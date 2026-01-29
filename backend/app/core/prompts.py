@@ -168,3 +168,47 @@ RESPONSE_SCHEMA = {
         }
     }
 }
+
+
+
+NORMALIZE_INSTRUCTIONS = """
+Extraia APENAS entidades úteis: MED, SINT, DOENCA. Ignore preço/quantidade/conversa.
+
+NORMALIZAR só quando for claramente o MESMO item por fonética/grafia (ex: propanol->propranolol; luzartana->losartana; mosaic->imosec). Se não tiver certeza, mantenha RAW (minúsculo, sem acento, sem pontuação).
+
+SINT: só se for um sintoma óbvio (dor, febre, tosse, coriza, coceira, azia, nausea, vomito, diarreia, congestao, ardor, garganta). Caso contrário, NÃO extraia SINT.
+
+FORMATO (1 linha, NUNCA vazio): itens separados por ';' e cada item deve repetir prefixo (MED:xxx; MED:yyy; SINT:zzz...). NÃO use vírgulas. NÃO escreva campos vazios nem 'NADA_RELEVANTE' dentro de SINT/DOENCA.
+
+HINT: escolha 1: DOR, RESP, ALERGIA, GASTRO, DERMATO, FERIDAS, ORL, BOCA, INTIMO, FEMININA, PEDIATRIA, CARDIO, SUPLEMENTOS, NEURO, HIGIENE, OUTRO.
+
+Finalize sempre com ' | HINT'. Se nada relevante: NADA_RELEVANTE | OUTRO.
+""".strip()
+
+
+
+CLASSIFY_INSTRUCTIONS = """
+Você recebe a SAÍDA da etapa 1 no formato: 'MED:...; SINT:...; DOENCA:... | HINT'.
+
+OBJETIVO
+1) Retornar TOP_2 macros mais prováveis (ordem importa) dentre as macros permitidas.
+2) Retornar micro_categoria apenas se tiver alta confiança; senão null.
+3) Retornar 'ancoras_para_excluir' com os itens MED detectados (em minúsculas, sem acento/pontuação extra), para que o sistema remova da cesta antes de sugerir complementares.
+
+REGRAS DURAS
+- NÃO invente itens que não existam no texto de entrada.
+- Use HINT como forte sinal para macro.
+- Se houver conflito (ex.: MED claramente cardio mas HINT=OUTRO), priorize o MED.
+- Se só houver SINT e nenhum MED, as âncoras para excluir devem ser [].
+- Se entrada for 'NADA_RELEVANTE | OUTRO': macros_top2=["OUTRO", "OUTRO"], micro=null, ancoras_para_excluir=[].
+
+MACROS PERMITIDAS (use exatamente estes rótulos)
+DOR_FEBRE_INFLAMACAO, RESPIRATORIO_GRIPE, ALERGIAS, GASTROINTESTINAL, PELE_DERMATO, FERIDAS_CURATIVOS, OLHOS_OUVIDOS_NARIZ, BOCA_GARGANTA_ODONTO, SAUDE_INTIMA_URINARIO, SAUDE_FEMININA_MENSTRUACAO, PEDIATRIA, CRONICOS_CARDIOMETABOLICOS, ENDOCRINO_METABOLICO_SUPLEMENTOS, NEURO_PSIQUIATRIA_SONO, HIGIENE_CUIDADOS_PESSOAIS_HPPC, OUTRO.
+
+MICROS (opcional) — só se tiver muita certeza; caso contrário null.
+
+SAÍDA
+Responda APENAS com JSON válido em uma linha, sem texto extra.
+Formato:
+{"macros_top2":["...","..."],"micro_categoria":null,"ancoras_para_excluir":["..."]}
+""".strip()

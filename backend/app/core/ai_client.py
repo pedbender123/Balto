@@ -1,4 +1,3 @@
-
 import json
 from openai import OpenAI
 from app.core import config, prompts
@@ -33,6 +32,71 @@ class AIClient:
         except Exception as e:
             print(f"[AI] Error: {e}")
             return None
+
+
+    def normalizar_texto(self, texto: str) -> str | None:
+        if not self.client:
+            return None
+        if not texto or not texto.strip():
+            return "NADA_RELEVANTE | OUTRO"
+
+        try:
+            resp = self.client.responses.create(
+                model="gpt-4.1",
+                temperature=0,
+                instructions=prompts.NORMALIZE_INSTRUCTIONS,
+                input=texto
+            )
+            # helper do Responses SDK para pegar texto final
+            out = getattr(resp, "output_text", None)
+            if out:
+                return out.strip()
+
+            # fallback (caso seu SDK não exponha output_text)
+            # (mantém robustez sem quebrar)
+            try:
+                return resp.output[0].content[0].text.strip()
+            except Exception:
+                return None
+
+        except Exception as e:
+            print(f"[AI][normalize] Error: {e}")
+            return None
+
+    def classificar_cesta(self, normalizado: str) -> dict:
+        """
+        Entrada: string tipo "MED:imosec | GASTRO"
+        Saída: dict com macros_top2, micro_categoria, ancoras_para_excluir
+        """
+        if not self.client:
+            return {"macros_top2": ["OUTRO", "OUTRO"], "micro_categoria": None, "ancoras_para_excluir": []}
+
+        normalizado = (normalizado or "").strip()
+        if not normalizado:
+            normalizado = "NADA_RELEVANTE | OUTRO"
+
+        try:
+            resp = self.client.responses.create(
+                model="gpt-4.1-mini",
+                temperature=0,
+                instructions=prompts.CLASSIFY_INSTRUCTIONS,
+                input=normalizado
+            )
+
+            out = getattr(resp, "output_text", None)
+            if not out:
+                # fallback caso seu SDK não exponha output_text
+                out = resp.output[0].content[0].text
+
+            out = (out or "").strip()
+            if not out:
+                raise ValueError("Empty classify output")
+
+            return json.loads(out)
+
+        except Exception as e:
+            print(f"[AI][classify] Error: {e}")
+            return {"macros_top2": ["OUTRO", "OUTRO"], "micro_categoria": None, "ancoras_para_excluir": []}
 
 # Singleton instance
 ai_client = AIClient()
