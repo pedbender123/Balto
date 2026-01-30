@@ -41,23 +41,18 @@ class AIClient:
             return "NADA_RELEVANTE | OUTRO"
 
         try:
-            resp = self.client.responses.create(
-                model="gpt-4.1",
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",
                 temperature=0,
-                instructions=prompts.NORMALIZE_INSTRUCTIONS,
-                input=texto
+                messages=[
+                    {"role": "system", "content": prompts.NORMALIZE_INSTRUCTIONS},
+                    {"role": "user", "content": texto}
+                ]
             )
-            # helper do Responses SDK para pegar texto final
-            out = getattr(resp, "output_text", None)
+            out = response.choices[0].message.content
             if out:
                 return out.strip()
-
-            # fallback (caso seu SDK não exponha output_text)
-            # (mantém robustez sem quebrar)
-            try:
-                return resp.output[0].content[0].text.strip()
-            except Exception:
-                return None
+            return None
 
         except Exception as e:
             print(f"[AI][normalize] Error: {e}")
@@ -76,18 +71,17 @@ class AIClient:
             normalizado = "NADA_RELEVANTE | OUTRO"
 
         try:
-            resp = self.client.responses.create(
-                model="gpt-4.1-mini",
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",
                 temperature=0,
-                instructions=prompts.CLASSIFY_INSTRUCTIONS,
-                input=normalizado
+                messages=[
+                    {"role": "system", "content": prompts.CLASSIFY_INSTRUCTIONS},
+                    {"role": "user", "content": normalizado}
+                ],
+                response_format={"type": "json_object"}
             )
 
-            out = getattr(resp, "output_text", None)
-            if not out:
-                # fallback caso seu SDK não exponha output_text
-                out = resp.output[0].content[0].text
-
+            out = response.choices[0].message.content
             out = (out or "").strip()
             if not out:
                 raise ValueError("Empty classify output")

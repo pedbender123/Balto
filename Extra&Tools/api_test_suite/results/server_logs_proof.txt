@@ -1,0 +1,187 @@
+balto-server-prod  | [ENTRYPOINT] APP_AUDIO_ROOT=/backend/app/audio_dumps
+balto-server-prod  | [ENTRYPOINT] CADASTRO_DIR=/backend/app/audio_dumps/cadastros_voz
+balto-server-prod  | [ENTRYPOINT] LEGACY_ROOT=/backend/_audio_volume_legacy
+balto-server-prod  | [ENTRYPOINT] APP_UID=1000 APP_GID=1000
+balto-server-prod  | [ENTRYPOINT] Legacy vazio ou não montado.
+balto-server-prod  | [ElevenLabs] Carregadas 1 chaves.
+balto-server-prod  | ---------------------------------------
+balto-server-prod  | Balto Server 3.0 (Modular) Running on port 8765
+balto-server-prod  | MOCK_MODE: False
+balto-server-prod  | SAVE_AUDIO_DUMPS: False
+balto-server-prod  | SMART_ROUTING_ENABLE: False
+balto-server-prod  | OPENAI_ENABLED: True
+balto-server-prod  | VAD_MIN_ENERGY: 30.0
+balto-server-prod  | ---------------------------------------
+balto-server-prod  | 
+balto-server-prod  | --- 🩺 Diagnóstico de Inicialização ---
+balto-server-prod  | OpenAI (GPT-4o): ✅ OK (OpenAI Online)
+balto-server-prod  | ElevenLabs:      ⚠️ Aviso (Chave configurada, mas sem permissão de leitura de User/Models)
+balto-server-prod  | AssemblyAI:      ✅ OK
+balto-server-prod  | Mock Mode (LLM): False
+balto-server-prod  | Mock Voice:      False (Latency: 0.5-2.0s)
+balto-server-prod  | Mock Rec:        False
+balto-server-prod  | ---------------------------------------
+balto-server-prod  | 
+balto-server-prod  | --- Starting System Monitor ---
+balto-server-prod  | --- Pre-loading Models ---
+balto-server-prod  | [SpeakerID] Pre-loading Voice Encoder model...
+balto-server-prod  | [MONITOR] Iniciando monitoramento de sistema. Log: /backend/app/audio_dumps/monitoramento_server.csv
+balto-server-prod  | Loaded the voice encoder model on cpu in 0.01 seconds.
+balto-server-prod  | [SpeakerID] Voice Encoder loaded!
+balto-server-prod  | [SileroVAD] Carregando modelo...
+balto-server-prod  | Carregando Silero VAD localmente de: /backend/vendor/silero-vad
+balto-server-prod  | [SileroVAD] Modelo carregado.
+balto-server-prod  | --- SileroVAD Loaded ---
+balto-server-prod  | [AudioAnalysis] Warming up librosa/numba...
+balto-server-prod  | /usr/local/lib/python3.10/site-packages/librosa/core/spectrum.py:266: UserWarning: n_fft=2048 is too large for input signal of length=1024
+balto-server-prod  |   warnings.warn(
+balto-server-prod  | --- Models Ready ---
+balto-server-prod  | ======== Running on http://0.0.0.0:8765 ========
+balto-server-prod  | (Press CTRL+C to quit)
+balto-server-prod  | Conectado: c5fc0a12-78e9-467f-a26d-abfc2489df68 (DB VAD Preset: {})
+balto-server-prod  | Falha ao carregar WebRTCCleaner: agc. Usando fallback noisereduce.
+balto-server-prod  | Conectado: 6c737533-c042-486c-92d5-c1b3fe69bd3e (DB VAD Preset: {})
+balto-server-prod  | Falha ao carregar WebRTCCleaner: agc. Usando fallback noisereduce.
+balto-server-prod  | /usr/local/lib/python3.10/site-packages/scipy/signal/_spectral_py.py:1430: UserWarning: nperseg = 1024 is greater than input length  = 960, using nperseg = 960
+balto-server-prod  |   freqs, time, Zxx = _spectral_helper(x, x, fs, window, nperseg, noverlap,
+balto-server-prod  | [VAD DEBUG] E: 36.0 | Thr: 42.6 | Noise: 35.5 | Triggered: False
+balto-server-prod  | [VAD DEBUG] E: 47.0 | Thr: 44.7 | Noise: 37.2 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (45 frames)
+balto-server-prod  | [VAD DEBUG] E: 24.0 | Thr: 30.0 | Noise: 24.2 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (56 frames)
+balto-server-prod  | [VAD DEBUG] E: 12.0 | Thr: 30.0 | Noise: 20.3 | Triggered: False
+balto-server-prod  | [VAD DEBUG] E: 54.0 | Thr: 30.0 | Noise: 15.4 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (84 frames)
+balto-server-prod  | [VAD DEBUG] E: 63.0 | Thr: 30.0 | Noise: 18.3 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (56 frames)
+balto-server-prod  | [VAD DEBUG] E: 73.0 | Thr: 30.0 | Noise: 19.8 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (49 frames)
+balto-server-prod  | [VAD DEBUG] E: 33.0 | Thr: 30.0 | Noise: 18.8 | Triggered: False
+balto-server-prod  | [VAD] SEGMENT FINISHED (58 frames)
+balto-server-prod  | [VAD DEBUG] E: 0.0 | Thr: 30.0 | Noise: 8.5 | Triggered: False
+balto-server-prod  | [c5fc0a12-78e9-467f-a26d-abfc2489df68] Transcrição (elevenlabs): Quer a minha opinião?
+balto-server-prod  | [DB] Tentando registrar interação para balcao=c5fc0a12-78e9-467f-a26d-abfc2489df68, TYPE=valid
+balto-server-prod  | [c5fc0a12-78e9-467f-a26d-abfc2489df68] Transcrição (elevenlabs): Ah, sim! A Nancy. É...
+balto-server-prod  | [DB] Tentando registrar interação para balcao=c5fc0a12-78e9-467f-a26d-abfc2489df68, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [VAD DEBUG] E: 26.0 | Thr: 30.0 | Noise: 11.6 | Triggered: True
+balto-server-prod  | [c5fc0a12-78e9-467f-a26d-abfc2489df68] Transcrição (elevenlabs): Tinha, né? Tava tirando...
+balto-server-prod  | [c5fc0a12-78e9-467f-a26d-abfc2489df68] Enviando para NORMALIZE: Quer a minha opinião? Ah, sim! A Nancy. É... Tinha, né? Tava tirando......
+balto-server-prod  | [VAD] SEGMENT FINISHED (77 frames)
+balto-server-prod  | [c5fc0a12-78e9-467f-a26d-abfc2489df68] Transcrição (elevenlabs): Tem vários militares lá.
+balto-server-prod  | [DB] Tentando registrar interação para balcao=c5fc0a12-78e9-467f-a26d-abfc2489df68, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [c5fc0a12-78e9-467f-a26d-abfc2489df68] Transcrição (elevenlabs): Tirando em vários milímetros.
+balto-server-prod  | [c5fc0a12-78e9-467f-a26d-abfc2489df68] Transcrição (elevenlabs): ... militares lá no mundo invertido.
+balto-server-prod  | [c5fc0a12-78e9-467f-a26d-abfc2489df68] Enviando para NORMALIZE: Tem vários militares lá. Tirando em vários milímetros. ... militares lá no mundo invertido....
+balto-server-prod  | [DB] Tentando registrar interação para balcao=c5fc0a12-78e9-467f-a26d-abfc2489df68, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [VAD DEBUG] E: 0.0 | Thr: 30.0 | Noise: 20.7 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (52 frames)
+balto-server-prod  | [VAD DEBUG] E: 36.0 | Thr: 42.6 | Noise: 35.5 | Triggered: False
+balto-server-prod  | [VAD DEBUG] E: 47.0 | Thr: 44.7 | Noise: 37.2 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (45 frames)
+balto-server-prod  | [VAD DEBUG] E: 24.0 | Thr: 30.0 | Noise: 24.2 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (56 frames)
+balto-server-prod  | [c5fc0a12-78e9-467f-a26d-abfc2489df68] Transcrição (elevenlabs): Militares, Laertíde?
+balto-server-prod  | [c5fc0a12-78e9-467f-a26d-abfc2489df68] Transcrição (elevenlabs): Hm-hum.
+balto-server-prod  | [DB] Tentando registrar interação para balcao=c5fc0a12-78e9-467f-a26d-abfc2489df68, TYPE=valid[DB] Tentando registrar interação para balcao=c5fc0a12-78e9-467f-a26d-abfc2489df68, TYPE=valid
+balto-server-prod  | 
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.[DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | 
+balto-server-prod  | [VAD DEBUG] E: 12.0 | Thr: 30.0 | Noise: 20.3 | Triggered: False
+balto-server-prod  | [6c737533-c042-486c-92d5-c1b3fe69bd3e] Transcrição (elevenlabs): Quer a minha opinião?
+balto-server-prod  | [6c737533-c042-486c-92d5-c1b3fe69bd3e] Enviando para NORMALIZE: Quer a minha opinião?...
+balto-server-prod  | [6c737533-c042-486c-92d5-c1b3fe69bd3e] Transcrição (elevenlabs): Ah, sim! A Nancy. É...
+balto-server-prod  | [DB] Tentando registrar interação para balcao=6c737533-c042-486c-92d5-c1b3fe69bd3e, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [VAD DEBUG] E: 54.0 | Thr: 30.0 | Noise: 15.4 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (84 frames)
+balto-server-prod  | [DB] Tentando registrar interação para balcao=c5fc0a12-78e9-467f-a26d-abfc2489df68, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [VAD DEBUG] E: 63.0 | Thr: 30.0 | Noise: 18.3 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (56 frames)
+balto-server-prod  | [VAD DEBUG] E: 73.0 | Thr: 30.0 | Noise: 19.8 | Triggered: True
+balto-server-prod  | [6c737533-c042-486c-92d5-c1b3fe69bd3e] Transcrição (elevenlabs): Tinha, né? Tava tirando...
+balto-server-prod  | [DB] Tentando registrar interação para balcao=6c737533-c042-486c-92d5-c1b3fe69bd3e, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [VAD] SEGMENT FINISHED (49 frames)
+balto-server-prod  | [6c737533-c042-486c-92d5-c1b3fe69bd3e] Transcrição (elevenlabs): Tirando em vários milímetros.
+balto-server-prod  | [6c737533-c042-486c-92d5-c1b3fe69bd3e] Enviando para NORMALIZE: Ah, sim! A Nancy. É... Tinha, né? Tava tirando... Tirando em vários milímetros....
+balto-server-prod  | [VAD DEBUG] E: 33.0 | Thr: 30.0 | Noise: 18.8 | Triggered: False
+balto-server-prod  | [VAD] SEGMENT FINISHED (58 frames)
+balto-server-prod  | [6c737533-c042-486c-92d5-c1b3fe69bd3e] Transcrição (elevenlabs): Tem vários militares lá.
+balto-server-prod  | [DB] Tentando registrar interação para balcao=6c737533-c042-486c-92d5-c1b3fe69bd3e, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [DB] Tentando registrar interação para balcao=c5fc0a12-78e9-467f-a26d-abfc2489df68, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [VAD DEBUG] E: 0.0 | Thr: 30.0 | Noise: 8.5 | Triggered: False
+balto-server-prod  | [6c737533-c042-486c-92d5-c1b3fe69bd3e] Transcrição (elevenlabs): ... militares lá no mundo invertido.
+balto-server-prod  | [6c737533-c042-486c-92d5-c1b3fe69bd3e] Enviando para NORMALIZE: Tem vários militares lá. ... militares lá no mundo invertido....
+balto-server-prod  | [DB] Tentando registrar interação para balcao=6c737533-c042-486c-92d5-c1b3fe69bd3e, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [VAD DEBUG] E: 26.0 | Thr: 30.0 | Noise: 11.6 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (77 frames)
+balto-server-prod  | [DB] Tentando registrar interação para balcao=6c737533-c042-486c-92d5-c1b3fe69bd3e, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [VAD DEBUG] E: 0.0 | Thr: 30.0 | Noise: 20.7 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (52 frames)
+balto-server-prod  | [6c737533-c042-486c-92d5-c1b3fe69bd3e] Transcrição (elevenlabs): Militares, Laertíde?
+balto-server-prod  | [DB] Tentando registrar interação para balcao=6c737533-c042-486c-92d5-c1b3fe69bd3e, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [6c737533-c042-486c-92d5-c1b3fe69bd3e] Transcrição (elevenlabs): Hm-hum.
+balto-server-prod  | [DB] Tentando registrar interação para balcao=6c737533-c042-486c-92d5-c1b3fe69bd3e, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [DB] Tentando registrar interação para balcao=6c737533-c042-486c-92d5-c1b3fe69bd3e, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | Desconectado: c5fc0a12-78e9-467f-a26d-abfc2489df68
+balto-server-prod  | Desconectado: 6c737533-c042-486c-92d5-c1b3fe69bd3e
+balto-server-prod  | Conectado: b6aa4d18-188a-4986-8345-801a098eb464 (DB VAD Preset: {})
+balto-server-prod  | Falha ao carregar WebRTCCleaner: agc. Usando fallback noisereduce.
+balto-server-prod  | [VAD DEBUG] E: 36.0 | Thr: 42.6 | Noise: 35.5 | Triggered: False
+balto-server-prod  | [VAD DEBUG] E: 47.0 | Thr: 44.7 | Noise: 37.2 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (45 frames)
+balto-server-prod  | [VAD DEBUG] E: 24.0 | Thr: 30.0 | Noise: 24.2 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (56 frames)
+balto-server-prod  | [VAD DEBUG] E: 12.0 | Thr: 30.0 | Noise: 20.3 | Triggered: False
+balto-server-prod  | [VAD DEBUG] E: 54.0 | Thr: 30.0 | Noise: 15.4 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (84 frames)
+balto-server-prod  | [VAD DEBUG] E: 63.0 | Thr: 30.0 | Noise: 18.3 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (56 frames)
+balto-server-prod  | [VAD DEBUG] E: 73.0 | Thr: 30.0 | Noise: 19.8 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (49 frames)
+balto-server-prod  | [b6aa4d18-188a-4986-8345-801a098eb464] Transcrição (elevenlabs): Quer a minha opinião?
+balto-server-prod  | [b6aa4d18-188a-4986-8345-801a098eb464] Transcrição (elevenlabs): Ah, sim! A Nancy. É...[DB] Tentando registrar interação para balcao=b6aa4d18-188a-4986-8345-801a098eb464, TYPE=valid
+balto-server-prod  | 
+balto-server-prod  | [DB] Tentando registrar interação para balcao=b6aa4d18-188a-4986-8345-801a098eb464, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.[DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | 
+balto-server-prod  | [VAD DEBUG] E: 33.0 | Thr: 30.0 | Noise: 18.8 | Triggered: False
+balto-server-prod  | [VAD] SEGMENT FINISHED (58 frames)
+balto-server-prod  | [b6aa4d18-188a-4986-8345-801a098eb464] Transcrição (elevenlabs): Tinha, né? Tava tirando...
+balto-server-prod  | [b6aa4d18-188a-4986-8345-801a098eb464] Enviando para NORMALIZE: Quer a minha opinião? Ah, sim! A Nancy. É... Tinha, né? Tava tirando......
+balto-server-prod  | [VAD DEBUG] E: 0.0 | Thr: 30.0 | Noise: 8.5 | Triggered: False
+balto-server-prod  | [b6aa4d18-188a-4986-8345-801a098eb464] Transcrição (elevenlabs): Tirando em vários milímetros.
+balto-server-prod  | [DB] Tentando registrar interação para balcao=b6aa4d18-188a-4986-8345-801a098eb464, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [b6aa4d18-188a-4986-8345-801a098eb464] Transcrição (elevenlabs): Tem vários militares lá.
+balto-server-prod  | [DB] Tentando registrar interação para balcao=b6aa4d18-188a-4986-8345-801a098eb464, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [VAD DEBUG] E: 26.0 | Thr: 30.0 | Noise: 11.6 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (77 frames)
+balto-server-prod  | [b6aa4d18-188a-4986-8345-801a098eb464] Transcrição (elevenlabs): ... militares lá no mundo invertido.
+balto-server-prod  | [b6aa4d18-188a-4986-8345-801a098eb464] Enviando para NORMALIZE: Tirando em vários milímetros. Tem vários militares lá. ... militares lá no mundo invertido....
+balto-server-prod  | [VAD DEBUG] E: 0.0 | Thr: 30.0 | Noise: 20.7 | Triggered: True
+balto-server-prod  | [VAD] SEGMENT FINISHED (52 frames)
+balto-server-prod  | [b6aa4d18-188a-4986-8345-801a098eb464] Transcrição (elevenlabs): Militares, Laertíde?
+balto-server-prod  | [DB] Tentando registrar interação para balcao=b6aa4d18-188a-4986-8345-801a098eb464, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [b6aa4d18-188a-4986-8345-801a098eb464] Transcrição (elevenlabs): Hm-hum.
+balto-server-prod  | [DB] Tentando registrar interação para balcao=b6aa4d18-188a-4986-8345-801a098eb464, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [DB] Tentando registrar interação para balcao=b6aa4d18-188a-4986-8345-801a098eb464, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | [DB] Tentando registrar interação para balcao=b6aa4d18-188a-4986-8345-801a098eb464, TYPE=valid
+balto-server-prod  | [DB] Interação (valid) registrada com sucesso.
+balto-server-prod  | Desconectado: b6aa4d18-188a-4986-8345-801a098eb464

@@ -1,0 +1,14 @@
+ id  |                                    transcricao_completa                                     | transcricao_normalizada |                                transcricao_classificacao                                 | recomendacao_gerada 
+-----+---------------------------------------------------------------------------------------------+-------------------------+------------------------------------------------------------------------------------------+---------------------
+ 207 | Tirando em vários milímetros. Tem vários militares lá. ... militares lá no mundo invertido. | NADA_RELEVANTE | OUTRO  | {"macros_top2": ["OUTRO", "OUTRO"], "micro_categoria": null, "ancoras_para_excluir": []} | OUTRO::fallback
+ 206 | Quer a minha opinião? Ah, sim! A Nancy. É... Tinha, né? Tava tirando...                     | NADA_RELEVANTE | OUTRO  | {"macros_top2": ["OUTRO", "OUTRO"], "micro_categoria": null, "ancoras_para_excluir": []} | OUTRO::fallback
+ 205 | Hm-hum.                                                                                     |                         |                                                                                          | 
+ 204 | Militares, Laertíde?                                                                        |                         |                                                                                          | 
+ 203 | Tem vários militares lá.                                                                    |                         |                                                                                          | 
+ 202 | Tirando em vários milímetros.                                                               |                         |                                                                                          | 
+ 201 | Quer a minha opinião?                                                                       |                         |                                                                                          | 
+ 200 | Ah, sim! A Nancy. É...                                                                      |                         |                                                                                          | 
+ 199 | Tem vários militares lá. ... militares lá no mundo invertido.                               | NADA_RELEVANTE | OUTRO  | {"macros_top2": ["OUTRO", "OUTRO"], "micro_categoria": null, "ancoras_para_excluir": []} | OUTRO::fallback
+ 198 | Hm-hum.                                                                                     |                         |                                                                                          | 
+(10 rows)
+

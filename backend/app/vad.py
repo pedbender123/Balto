@@ -27,7 +27,7 @@ class VAD:
         self.triggered = False
         
         # Configurações de Silêncio para "corte" da frase
-        self.silence_frames_needed = 30 # Aprox 900ms de silêncio (era 20/600ms)
+        self.silence_frames_needed = 30 # Aprox 900ms de silêncio (era 10/300ms)
         self.silence_frames_count = 0
         
         # --- Lógica Adaptativa (EMA) ---
@@ -53,8 +53,8 @@ class VAD:
 
         self.vad_aggressiveness = vad_aggressiveness
         
-        # [MODIFIED] Limit reduzed to 160 frames (~4.8s)
-        self.segment_limit_frames = int(os.environ.get("VAD_SEGMENT_LIMIT_FRAMES", "160"))
+        # [MODIFIED] Limit increased to 266 frames (~8s)
+        self.segment_limit_frames = int(os.environ.get("VAD_SEGMENT_LIMIT_FRAMES", "266"))
 
         # [NEW] Overlap Configuration
         self.overlap_frames = int(os.environ.get("VAD_OVERLAP_FRAMES", "27")) # ~810ms
@@ -67,6 +67,7 @@ class VAD:
         self._seg_energy_sum = 0.0
         self._seg_energy_max = 0.0
         self._seg_energy_count = 0
+        self._debug_frame_count = 0
 
 
     def _calculate_energy(self, frame):
@@ -100,7 +101,9 @@ class VAD:
             is_loud_enough = energy > dynamic_threshold
 
             # [REMOVED] Verbose Frame-by-frame log
-            # print(f"[VAD LOG] ...")
+            self._debug_frame_count += 1
+            if self._debug_frame_count % 30 == 0:
+                print(f"[VAD DEBUG] E: {energy:.1f} | Thr: {dynamic_threshold:.1f} | Noise: {self.noise_level:.1f} | Triggered: {self.triggered}")
             
             is_speech = False
             
@@ -108,6 +111,9 @@ class VAD:
                 try:
                     # Só chama o WebRTC se passou pelo gate de energia
                     is_speech = self.vad.is_speech(frame, self.sample_rate)
+                    # [MOD] Se a energia for MUITO alta, considera fala mesmo se o WebRTC estiver na dúvida
+                    if not is_speech and energy > (dynamic_threshold * 1.5):
+                         is_speech = True
                 except Exception:
                     is_speech = False
             

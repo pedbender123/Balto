@@ -63,6 +63,7 @@ services:
     command: python -u log_monitor.py
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./backend:/backend
     env_file:
       - ./backend/.env
     environment:
