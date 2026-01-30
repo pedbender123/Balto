@@ -128,20 +128,20 @@
     ],
     "BOCA_GARGANTA_ODONTO": [
       {
-        "sugestao": "Enxaguante sem álcool",
-        "explicacao": "Boca sensível irrita com álcool. Enxaguante sem álcool ajuda na higiene sem arder."
-      },
-      {
-        "sugestao": "Gel para afta / barreira protetora (se lesão oral estiver presente)",
-        "explicacao": "Afta dói ao comer e falar. Gel cria barreira e reduz a dor no local."
-      },
-      {
         "sugestao": "Pastilha ou spray para garganta (alívio local)",
         "explicacao": "Garganta irritada precisa de alívio direto. Pastilha/spray reduz dor e arranhado."
       },
       {
         "sugestao": "Zinco (suplemento)",
         "explicacao": "Feridas na boca e imunidade são queixas comuns. Zinco é um suporte frequentemente procurado."
+      },
+      {
+        "sugestao": "Enxaguante sem álcool",
+        "explicacao": "Boca sensível irrita com álcool. Enxaguante sem álcool ajuda na higiene sem arder."
+      },
+      {
+        "sugestao": "Gel para afta / barreira protetora (se lesão oral estiver presente)",
+        "explicacao": "Afta dói ao comer e falar. Gel cria barreira e reduz a dor no local."
       }
     ],
     "SAUDE_INTIMA_URINARIO": [
