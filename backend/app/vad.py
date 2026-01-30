@@ -27,7 +27,7 @@ class VAD:
         self.triggered = False
         
         # Configurações de Silêncio para "corte" da frase
-        self.silence_frames_needed = 10 # Aprox 300ms de silêncio (era 30)
+        self.silence_frames_needed = 30 # Aprox 900ms de silêncio (era 10/300ms)
         self.silence_frames_count = 0
         
         # --- Lógica Adaptativa (EMA) ---
@@ -53,8 +53,8 @@ class VAD:
 
         self.vad_aggressiveness = vad_aggressiveness
         
-        # [MODIFIED] Limit reduzed to 160 frames (~4.8s)
-        self.segment_limit_frames = int(os.environ.get("VAD_SEGMENT_LIMIT_FRAMES", "160"))
+        # [MODIFIED] Limit increased to 266 frames (~8s)
+        self.segment_limit_frames = int(os.environ.get("VAD_SEGMENT_LIMIT_FRAMES", "266"))
 
         # [NEW] Overlap Configuration
         self.overlap_frames = int(os.environ.get("VAD_OVERLAP_FRAMES", "27")) # ~810ms
