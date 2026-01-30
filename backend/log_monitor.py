@@ -18,6 +18,16 @@ PROJECT_NAME = os.getenv('COMPOSE_PROJECT_NAME')
 # Identificação deste container para não ler o próprio log (evita loop infinito)
 MY_HOSTNAME = os.getenv('HOSTNAME', '')
 
+# --- DESLIGAR MONITOR ---
+def is_enabled():
+    val = os.getenv('ENABLE_LOG_MONITOR', 'True').lower()
+    return val in ('true', '1', 'yes', 'on')
+
+if not is_enabled():
+    print("--- LOG MONITOR DESATIVADO POR CONFIGURAÇÃO ---")
+    import sys
+    sys.exit(0)
+
 # Setup basic print/logging
 print(f"--- PREPARANDO LOG MONITOR ---")
 if not API_KEY:
