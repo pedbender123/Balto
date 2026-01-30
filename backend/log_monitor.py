@@ -24,9 +24,10 @@ def is_enabled():
     return val in ('true', '1', 'yes', 'on')
 
 if not is_enabled():
-    print("--- LOG MONITOR DESATIVADO POR CONFIGURAÇÃO ---")
-    import sys
-    sys.exit(0)
+    print("--- LOG MONITOR DESATIVADO POR CONFIGURAÇÃO (Modo Standby) ---")
+    print("O container permanecerá rodando mas sem processar nada para evitar restart loop.")
+    while True:
+        time.sleep(3600)
 
 # Setup basic print/logging
 print(f"--- PREPARANDO LOG MONITOR ---")
