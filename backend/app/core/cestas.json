@@ -1405,10 +1405,6 @@
       ],
       "VITAMINAS_GERAIS_IMUNIDADE": [
         {
-          "sugestao": "Vitamina C",
-          "explicacao": "Cliente busca reforço para imunidade. Vitamina C é a mais pedida para rotina."
-        },
-        {
           "sugestao": "Zinco",
           "explicacao": "Em gripe/resfriado, zinco é muito procurado. Suporte comum para imunidade."
         },
