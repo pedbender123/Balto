@@ -192,7 +192,7 @@ Você recebe a SAÍDA da etapa 1 no formato: 'MED:...; SINT:...; DOENCA:... | HI
 
 OBJETIVO
 1) Retornar TOP_2 macros mais prováveis (ordem importa) dentre as macros permitidas.
-2) Retornar micro_categoria apenas se tiver alta confiança; senão null.
+2) Retornar micro_categoria mais prováveis (ordem importa) dentre as micros permitidas (MED, SINT/DOENCA); com possibilidade de caso null.
 3) Retornar 'ancoras_para_excluir' com os itens MED detectados (em minúsculas, sem acento/pontuação extra), para que o sistema remova da cesta antes de sugerir complementares.
 
 REGRAS DURAS
