@@ -571,6 +571,24 @@
       ]
     },
     "GASTROINTESTINAL": {
+      "VERMINOSE_ANTIPARASITARIO": [
+        {
+          "produto": "sais de reidratacao oral",
+          "explicacao": "para prevenir desidratacao se houver diarreia associada" 
+        },
+        {
+          "produto": "pomada barreira (oxido de zinco)",
+          "explicacao": "para aliviar irritacao e coceira local se houver assadura" 
+        },
+        {
+          "produto": "sabonete neutro",
+          "explicacao": "para higiene adequada durante o quadro" 
+        },
+        {
+          "produto": "lencos umedecidos sem perfume",
+          "explicacao": "para higiene pratica sem irritar a pele"
+        }
+      ],
       "AZIA_REFLUXO_ANTIACIDO_IBP": [
         {
           "sugestao": "Antiácido ação rápida ou IBP",
@@ -695,6 +713,24 @@
       ]
     },
     "PELE_DERMATO": {
+      "PEDICULOSE_PIOLHO": [
+        {
+          "produto": "pente fino",
+          "explicacao": "para remover lendeas e reduzir reinfestacao" 
+        },
+        {
+          "produto": "shampoo neutro",
+          "explicacao": "para lavar apos o tratamento e reduzir irritacao do couro cabeludo" 
+        },
+        {
+          "produto": "saco plastico grande (para roupas/roupa de cama)",
+          "explicacao": "para isolar itens e quebrar o ciclo de reinfestacao" 
+        },
+        {
+          "produto": "alcool 70%",
+          "explicacao": "para higienizar pentes e escovas e reduzir contaminacao indireta"
+        }
+      ],
       "ACNE_PELE_OLEOSA": [
         {
           "sugestao": "Sabonete/gel de limpeza antiacne",
@@ -891,6 +927,24 @@
       ]
     },
     "OLHOS_OUVIDOS_NARIZ": {
+      "CONJUNTIVITE_IRRITACAO": [
+          {
+            "produto": "soro fisiologico",
+            "explicacao": "para lavar o olho e aliviar irritacao leve com seguranca" 
+          },
+          {
+            "produto": "colirio lubrificante (lagrimas artificiais)",
+            "explicacao": "para reduzir ardor e ressecamento ocular" 
+          },
+          {
+            "produto": "compressa esteril / gaze",
+            "explicacao": "para higienizar secrecao com menos atrito" 
+          },
+          {
+            "produto": "lenco de papel",
+            "explicacao": "para higiene sem compartilhar toalhas e reduzir contaminacao"
+          }
+      ],
       "OLHO_SECO_COLIRIO_LUBRIFICANTE": [
         {
           "sugestao": "Colírio lubrificante",
@@ -1075,6 +1129,24 @@
       ]
     },
     "SAUDE_INTIMA_URINARIO": {
+      "DISFUNCAO_ERETIL": [
+        {
+          "produto": "preservativos",
+          "explicacao": "para relacao sexual com protecao e reducao de risco" 
+        },
+        {
+          "produto": "lubrificante intimo a base de agua",
+          "explicacao": "para reduzir atrito e desconforto durante a relacao" 
+        },
+        {
+          "produto": "sabonete intimo suave",
+          "explicacao": "para higiene intima e conforto no dia a dia" 
+        },
+        {
+          "produto": "lencos umedecidos intimos sem perfume",
+          "explicacao": "para higiene pratica sem irritacao"
+        }
+      ],
       "CANDIDIASE_TRATAMENTO": [
         {
           "sugestao": "Sabonete íntimo suave",
@@ -1475,6 +1547,24 @@
       ]
     },
     "HIGIENE_CUIDADOS_PESSOAIS_HPPC": {
+      "REPELENTES_PICADAS": [
+        {
+          "produto": "gel pos-picada (calmante)",
+          "explicacao": "para aliviar coceira e irritacao local apos picadas" 
+        },
+        {
+          "produto": "hidratante calmante (aloe)",
+          "explicacao": "para reduzir ressecamento e desconforto na pele" 
+        },
+        {
+          "produto": "protetor solar",
+          "explicacao": "para protecao ao ar livre junto do uso de repelente" 
+        },
+        {
+          "produto": "repelente de ambiente (tomada/spray)",
+          "explicacao": "para reduzir mosquitos dentro de casa e diminuir novas picadas"
+        }
+      ],
       "PROTETOR_SOLAR_FOTOPROTECAO": [
         {
           "sugestao": "Pós-sol/calmante",
