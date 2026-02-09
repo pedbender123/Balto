@@ -10,6 +10,7 @@ from aiohttp import web, WSMsgType
 from app import db, vad, transcription, speaker_id, audio_processor
 from app.core import config, audio_utils, ai_client, buffer, audio_analysis, capacity_guard, audio_archiver
 from app.core.cestas import resolve_basket_from_classification
+from app.core.cestas_produtos_sintomas_doencas import parse_prompt1, lookup_cesta
 
 try:
     import psutil
@@ -76,6 +77,22 @@ def build_recommendation_payload_from_classification(classification: dict, *, ma
         "comando": "recomendar",
         "itens": filtered
     }
+
+def build_recommendation_payload_from_lookup(items: list[dict], *, max_items: int = 3) -> dict | None:
+    """
+    items: [{"produto": "...", "explicacao": "..."}, ...]
+    Converte pro payload padrão do frontend: {"comando":"recomendar","itens":[{"sugestao":...,"explicacao":...}]}
+    """
+    out = []
+    for it in items[:max_items]:
+        prod = (it.get("produto") or "").strip()
+        exp  = (it.get("explicacao") or "").strip()
+        if not prod:
+            continue
+        out.append({"sugestao": prod, "explicacao": exp})
+    if not out:
+        return None
+    return {"comando": "recomendar", "itens": out}
 
 def _tok(s: str) -> list[str]:
     s = _norm_text(s)
@@ -384,6 +401,7 @@ async def process_speech_pipeline(
         cesta_origem = None
         cesta_itens_raw = None
         cesta_itens_pos = None
+        used_lookup = False
         classif_obj = None
 
 
@@ -511,73 +529,101 @@ async def process_speech_pipeline(
                     if not normalizacao_out:
                         normalizacao_out = "NADA_RELEVANTE | OUTRO"
 
-                    # -------------------------
-                    # LLM #2: CLASSIFICAR
-                    # (entrada é o normalizado: "MED:... | HINT")
-                    # -------------------------
-                    classif = await asyncio.to_thread(
-                        ai_client.ai_client.classificar_cesta,
-                        normalizacao_out
-                    )
-                    ts_ai_response = datetime.now()
+                    # =========================
+                    # [NEW] Lookup (produto+sintoma+doenca) após Prompt 1
+                    # =========================
+                    med, sint, doenca = parse_prompt1(normalizacao_out)
+                    lookup_items = lookup_cesta(med, sint, doenca)
 
-                    if isinstance(classif, dict):
-                        classif_obj = classif
-                    else:
-                        # se vier string JSON por algum motivo
+                    if lookup_items:
+                        used_lookup = True
+
+                        # monta payload e envia (3 primeiros)
+                        payload_out = build_recommendation_payload_from_lookup(lookup_items, max_items=3)
+
+                        if payload_out and (not websocket.closed):
+                            try:
+                                ts_client_sent = datetime.now()
+                                await websocket.send_json(payload_out)
+                            except Exception as e:
+                                print(f"[{balcao_id}] ❌ Falha ao enviar recomendação (lookup): {e}")
+                                ts_client_sent = None
+
+                        # log/telemetria
+                        cesta_key = f"LOOKUP::{med}_{sint or 'default'}_{doenca or 'default'}"
+                        recomendacao_log = cesta_key
+
+                        # opcional: salvar no campo classificacao um json indicando origem
                         try:
-                            classif_obj = json.loads(classif)
+                            classif_obj = {"source": "lookup", "med": med, "sint": sint or None, "doenca": doenca or None}
+                            classificacao_out = json.dumps(classif_obj, ensure_ascii=False)
                         except Exception:
-                            classif_obj = {"_raw": str(classif), "_parse_error": True}
+                            pass
 
-                    # 2) salvar classificacao_out como string JSON (para sua coluna transcricao_classificacao)
-                    try:
-                        classificacao_out = json.dumps(classif_obj, ensure_ascii=False)
-                    except Exception:
-                        classificacao_out = None
+                    # =========================
+                    # Se NÃO achou no lookup, segue o fluxo atual (Prompt 2 -> cestas.json)
+                    # =========================
+                    if not used_lookup:
+                        # -------------------------
+                        # LLM #2: CLASSIFICAR
+                        # -------------------------
+                        classif = await asyncio.to_thread(
+                            ai_client.ai_client.classificar_cesta,
+                            normalizacao_out
+                        )
+                        ts_ai_response = datetime.now()
 
-                    # 3) montar cesta_key (macro::micro ou macro::fallback)
-                    macro = None
-                    micro = None
+                        if isinstance(classif, dict):
+                            classif_obj = classif
+                        else:
+                            try:
+                                classif_obj = json.loads(classif)
+                            except Exception:
+                                classif_obj = {"_raw": str(classif), "_parse_error": True}
 
-                    if isinstance(classif_obj, dict):
-                        macros_top2 = classif_obj.get("macros_top2") or []
-                        macro = macros_top2[0] if len(macros_top2) > 0 else None
-                        micro = classif_obj.get("micro_categoria")
+                        try:
+                            classificacao_out = json.dumps(classif_obj, ensure_ascii=False)
+                        except Exception:
+                            classificacao_out = None
 
-                    if macro and micro:
-                        cesta_key = f"{macro}::{micro}"
-                        cesta_origem = "macro_micro"
-                    elif macro:
-                        cesta_key = f"{macro}::fallback"
-                        cesta_origem = "fallback_macro_default"
-                    else:
-                        cesta_key = "OUTRO::fallback"
-                        cesta_origem = "fallback_macro_default"
+                        macro = None
+                        micro = None
+                        if isinstance(classif_obj, dict):
+                            macros_top2 = classif_obj.get("macros_top2") or []
+                            macro = macros_top2[0] if len(macros_top2) > 0 else None
+                            micro = classif_obj.get("micro_categoria")
 
-                    # 4) envelope JSON completo para debug (vai para grok_raw)
-                    envelope = {
-                        "buffer_content": buffer_content,
-                        "normalizacao_out": normalizacao_out,
-                        "classificacao_out": classif_obj,
-                        "cesta_key": cesta_key,
-                        "cesta_origem": cesta_origem,
-                        "meta": {
-                            "balcao_id": balcao_id,
-                            "funcionario_id": funcionario_id,
-                            "nome_funcionario": nome_funcionario,
-                        },
-                        "timestamps": {
-                            "ts_audio_received": ts_audio_received.isoformat(),
-                            "ts_trans_sent": ts_transcription_sent.isoformat() if ts_transcription_sent else None,
-                            "ts_trans_ready": ts_transcription_ready.isoformat() if ts_transcription_ready else None,
-                            "ts_ai_req": ts_ai_request.isoformat() if ts_ai_request else None,
-                            "ts_ai_res": ts_ai_response.isoformat() if ts_ai_response else None,
+                        if macro and micro:
+                            cesta_key = f"{macro}::{micro}"
+                            cesta_origem = "macro_micro"
+                        elif macro:
+                            cesta_key = f"{macro}::fallback"
+                            cesta_origem = "fallback_macro_default"
+                        else:
+                            cesta_key = "OUTRO::fallback"
+                            cesta_origem = "fallback_macro_default"
+
+                        envelope = {
+                            "buffer_content": buffer_content,
+                            "normalizacao_out": normalizacao_out,
+                            "classificacao_out": classif_obj,
+                            "cesta_key": cesta_key,
+                            "cesta_origem": cesta_origem,
+                            "meta": {
+                                "balcao_id": balcao_id,
+                                "funcionario_id": funcionario_id,
+                                "nome_funcionario": nome_funcionario,
+                            },
+                            "timestamps": {
+                                "ts_audio_received": ts_audio_received.isoformat(),
+                                "ts_trans_sent": ts_transcription_sent.isoformat() if ts_transcription_sent else None,
+                                "ts_trans_ready": ts_transcription_ready.isoformat() if ts_transcription_ready else None,
+                                "ts_ai_req": ts_ai_request.isoformat() if ts_ai_request else None,
+                                "ts_ai_res": ts_ai_response.isoformat() if ts_ai_response else None,
+                            }
                         }
-                    }
 
-                    # 5) recomendacao_log vira a cesta_key (como você pediu)
-                    recomendacao_log = cesta_key
+                        recomendacao_log = cesta_key
 
         # ================================
         # [ADD] Envio para o frontend ANTES de gravar no BD
@@ -585,7 +631,7 @@ async def process_speech_pipeline(
         payload_out = None
 
         # Só tenta montar/enviar payload se houver classificação válida (dict)
-        if isinstance(classif_obj, dict) and classif_obj:
+        if (not used_lookup) and isinstance(classif_obj, dict) and classif_obj:
             payload_out = build_recommendation_payload_from_classification(classif_obj, max_items=3)
 
             if payload_out and (not websocket.closed):
