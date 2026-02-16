@@ -57,21 +57,7 @@ services:
       - ./backend/.env
     restart: unless-stopped
 
-  log-monitor:
-    build: ./backend
-    container_name: balto-log-monitor
-    command: python -u log_monitor.py
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./backend:/backend
-    env_file:
-      - ./backend/.env
-    environment:
-      - APP_UID=0  # Necessário para ler o /var/run/docker.sock
-      - APP_GID=0
-    restart: unless-stopped
-    depends_on:
-      - server
+
 
 volumes:
   balto-dados:
