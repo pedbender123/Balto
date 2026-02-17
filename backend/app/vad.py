@@ -102,8 +102,9 @@ class VAD:
 
             # [REMOVED] Verbose Frame-by-frame log
             self._debug_frame_count += 1
+            # print(f"[VAD DEBUG] E: {energy:.1f} | Thr: {dynamic_threshold:.1f} | Noise: {self.noise_level:.1f} | Triggered: {self.triggered}")
             if self._debug_frame_count % 30 == 0:
-                # print(f"[VAD DEBUG] E: {energy:.1f} | Thr: {dynamic_threshold:.1f} | Noise: {self.noise_level:.1f} | Triggered: {self.triggered}")
+                pass
             
             is_speech = False
             
