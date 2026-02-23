@@ -42,7 +42,7 @@ class AIClient:
 
         try:
             response = self.client.chat.completions.create(
-                model="ft:gpt-4.1-mini-2025-04-14:teste::D9yW6616",
+                model="gpt-4.1-mini",
                 temperature=0,
                 messages=[
                     {"role": "system", "content": prompts.NORMALIZE_INSTRUCTIONS},
