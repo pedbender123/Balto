@@ -751,7 +751,7 @@ async def websocket_handler(request):
             vad_session.overlap_frames = new_overlap
             vad_session.overlap_buffer = deque(maxlen=new_overlap)
         
-        audio_cleaner = audio_processor.AudioCleaner()
+        # [REMOVED] AudioCleaner — noise reduction was too aggressive, cutting speech
         
         # Configure Snapshot for this connection
         current_config_snapshot = {
@@ -799,25 +799,17 @@ async def websocket_handler(request):
                 new_pcm = bytes(pcm_acc[:1920])
                 del pcm_acc[:1920]
 
-                # 1. Archive RAW chunk
+                # Archive RAW chunk (no noise reduction — raw goes straight to VAD)
                 audio_archiver.archiver.archive_chunk(balcao_id, new_pcm, is_processed=False)
 
-                cleaned_pcm = audio_cleaner.process(new_pcm)
-
-                # 2. Archive PROCESSED chunk
-                audio_archiver.archiver.archive_chunk(balcao_id, cleaned_pcm, is_processed=True)
-
-                vad_out = vad_session.process(cleaned_pcm)
+                vad_out = vad_session.process(new_pcm)
                 if not vad_out:
                     continue
 
                 speech, vad_meta = vad_out
 
-                # Add cleaner gain to meta (if your AudioCleaner exposes it)
-                cleaner_gain_db = getattr(audio_cleaner, "last_gain_db", None)
                 if vad_meta is None:
                     vad_meta = {}
-                vad_meta["audio_cleaner_gain_db"] = cleaner_gain_db
 
                 pred_func_id, score, speaker_data_list = voice_tracker.add_segment(balcao_id, speech)
 
