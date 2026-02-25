@@ -1,5 +1,7 @@
 # 1. ARQUIVO DE SEGREDOS - NUNCA SUBIR
 .env
+rclone.conf
+backend/rclone.conf
 docs/CHEATSHEET_COMMANDS.md
 # 2. Banco de dados (não deve ir pro git)
 *.db
