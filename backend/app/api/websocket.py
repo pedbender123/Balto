@@ -268,7 +268,15 @@ async def process_speech_pipeline(
             timestamps = await asyncio.to_thread(svad.process_full_audio, speech_segment)
             if not timestamps:
                 # print(f"[{balcao_id}] SileroVAD: No speech detected (IA Filter). Discarding.")
-                # Log as discarded by IA
+                # Save Audio even if discarded by IA
+                audio_path = await asyncio.to_thread(audio_archiver.archiver.save_interaction_audio, balcao_id, speech_segment)
+                # Classify (likely noise/garbage but let's check features)
+                try:
+                    features = await asyncio.to_thread(audio_analysis.extract_advanced_features, speech_segment)
+                    classification = audio_analysis.classify_audio(features)
+                except:
+                    classification = "desconhecido"
+
                 await asyncio.to_thread(
                     db.registrar_interacao,
                     balcao_id=balcao_id,
@@ -280,7 +288,9 @@ async def process_speech_pipeline(
                     custo=0.0,
                     snr=0.0,
                     ts_audio=ts_audio_received,
-                    interaction_type="discarded_ia"
+                    interaction_type="discarded_ia",
+                    audio_file_path=audio_path,
+                    audio_classification=classification
                 )
                 return
         except Exception as e:
@@ -308,6 +318,12 @@ async def process_speech_pipeline(
     audio_pitch_mean = features.get("pitch_mean", 0.0)
     audio_pitch_std = features.get("pitch_std", 0.0)
     spectral_centroid_mean = features.get("spectral_centroid_mean", 0.0)
+    
+    # Classify Audio Segment
+    audio_classification = audio_analysis.classify_audio(features)
+    
+    # Save Raw WAV for this interaction
+    audio_file_path = await asyncio.to_thread(audio_archiver.archiver.save_interaction_audio, balcao_id, speech_segment)
 
 
     # MOCK VOICE MODE (The "Polite" Mock)
@@ -360,7 +376,9 @@ async def process_speech_pipeline(
             audio_pitch_mean=audio_pitch_mean,
             audio_pitch_std=audio_pitch_std,
             spectral_centroid_mean=spectral_centroid_mean,
-            interaction_type="mock_voice"
+            interaction_type="mock_voice",
+            audio_file_path=audio_file_path,
+            audio_classification=audio_classification
         )
         return
 
@@ -465,7 +483,9 @@ async def process_speech_pipeline(
                 audio_pitch_mean=audio_pitch_mean,
                 audio_pitch_std=audio_pitch_std,
                 spectral_centroid_mean=spectral_centroid_mean,
-                interaction_type=interaction_type
+                interaction_type=interaction_type,
+                audio_file_path=audio_file_path,
+                audio_classification=audio_classification
             )
             return
 
@@ -674,7 +694,9 @@ async def process_speech_pipeline(
             audio_pitch_mean=audio_pitch_mean,
             audio_pitch_std=audio_pitch_std,
             spectral_centroid_mean=spectral_centroid_mean,
-            interaction_type="valid"
+            interaction_type="valid",
+            audio_file_path=audio_file_path,
+            audio_classification=audio_classification
         )
 
 

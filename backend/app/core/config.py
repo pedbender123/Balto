@@ -50,3 +50,7 @@ ASSEMBLYAI_BASE_URL = "https://api.assemblyai.com"
 CAPACITY_MAX_CPU_PERCENT = float(os.environ.get("CAPACITY_MAX_CPU_PERCENT", 90.0))
 CAPACITY_MAX_RAM_PERCENT = float(os.environ.get("CAPACITY_MAX_RAM_PERCENT", 90.0))
 CAPACITY_MAX_LATENCY_RATIO = float(os.environ.get("CAPACITY_MAX_LATENCY_RATIO", 3.0))
+
+# Drive Sync Settings
+DRIVE_SYNC_ENABLED = parse_bool(os.environ.get("DRIVE_SYNC_ENABLED", "True"))
+DRIVE_SYNC_INTERVAL_MINUTES = int(os.environ.get("DRIVE_SYNC_INTERVAL_MINUTES", 30))

@@ -16,6 +16,9 @@ services:
 
       # seu bind do código (ok manter)
       - ./backend:/backend
+      
+      # (3) Configiração do Rclone para Sync no Drive
+      - ./rclone.conf:/backend/rclone.conf:ro
 
     env_file:
       - ./backend/.env

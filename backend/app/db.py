@@ -174,6 +174,10 @@ def inicializar_db():
 
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS transcricao_normalizada TEXT")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS transcricao_classificacao TEXT")
+
+        # New: Audio Archiving & Classification
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS audio_file_path TEXT")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS audio_classification TEXT")
         
         conn.commit()
     except Exception as e:
@@ -476,10 +480,12 @@ def registrar_interacao(
     audio_pitch_mean=0.0,
     audio_pitch_std=0.0,
     spectral_centroid_mean=0.0,
-    interaction_type="valid"
+    interaction_type="valid",
+    audio_file_path=None,
+    audio_classification=None
 ):
     audio_metrics = audio_metrics or {}
-    print(f"[DB] Tentando registrar interação para balcao={balcao_id}, TYPE={interaction_type}")
+    print(f"[DB] Tentando registrar interação para balcao={balcao_id}, TYPE={interaction_type}, Audio={audio_classification}")
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -501,7 +507,9 @@ def registrar_interacao(
             band_energy_low, band_energy_mid, band_energy_high,
             snr_estimate, audio_cleaner_gain_db,
             threshold_multiplier, min_energy_threshold, alpha, vad_aggressiveness,
-            silence_frames_needed, pre_roll_len, segment_limit_frames
+            silence_frames_needed, pre_roll_len, segment_limit_frames,
+            
+            audio_file_path, audio_classification
         )
         VALUES (
             %s, %s, %s, %s, %s,
@@ -520,7 +528,9 @@ def registrar_interacao(
             %s, %s, %s,
             %s, %s,
             %s, %s, %s, %s,
-            %s, %s, %s
+            %s, %s, %s,
+            
+            %s, %s
         )
         """, (
             balcao_id, datetime.now(), transcricao, transcricao_normalizada, transcricao_classificacao, 
@@ -567,6 +577,8 @@ def registrar_interacao(
             audio_metrics.get("silence_frames_needed"),
             audio_metrics.get("pre_roll_len"),
             audio_metrics.get("segment_limit_frames"),
+            
+            audio_file_path, audio_classification
         ))
         conn.commit()
         conn.close()
@@ -631,3 +643,27 @@ def listar_interacoes(limit=50):
                 row[field] = "-"
 
     return rows
+
+def exportar_interacoes_csv(output_path):
+    """
+    Exporta TODA a tabela interacoes para um CSV usando COPY do Postgres.
+    Isso é muito mais rápido que pandas/loop se for muita linha.
+    """
+    import csv
+    print(f"[DB] Exportando interações para {output_path}...")
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Usamos COPY TO STDOUT e lemos no Python para lidar com permissões de arquivo do container
+        query = "COPY (SELECT * FROM interacoes ORDER BY timestamp DESC) TO STDOUT WITH CSV HEADER"
+        
+        with open(output_path, 'w', encoding='utf-8') as f:
+            cursor.copy_expert(query, f)
+            
+        conn.close()
+        print(f"[DB] Exportação concluída com sucesso.")
+        return True
+    except Exception as e:
+        print(f"[DB] Erro ao exportar CSV: {e}")
+        return False

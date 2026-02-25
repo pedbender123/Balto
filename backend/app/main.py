@@ -4,7 +4,7 @@ from aiohttp import web
 from app import db, diagnostics, transcription, speaker_id, silero_vad
 from app.core import config, audio_analysis
 from app.api import websocket, endpoints
-from app.core import system_monitor, audio_archiver
+from app.core import system_monitor, audio_archiver, drive_sync
 
 @web.middleware
 async def cors_middleware(request, handler):
@@ -47,6 +47,11 @@ def main():
         await asyncio.to_thread(audio_analysis.warmup)
         # Start Parallel Audio Archiver
         audio_archiver.archiver.start()
+        
+        # Start Drive Sync Loop if enabled
+        if config.DRIVE_SYNC_ENABLED:
+            asyncio.create_task(drive_sync.drive_sync_loop())
+            
         print("--- Models Ready ---")
         
     app.on_startup.append(on_startup)

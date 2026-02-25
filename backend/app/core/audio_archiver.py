@@ -99,5 +99,26 @@ class AudioArchiver:
         except Exception as e:
             logger.error(f"Erro ao salvar WAV {path}: {e}")
 
+    def save_interaction_audio(self, balcao_id: str, pcm_data: bytes) -> str:
+        """
+        Salva um áudio de uma interação específica e retorna o caminho relativo.
+        Usado para associar o áudio bruto à interação no banco.
+        """
+        date_str = datetime.now().strftime("%Y-%m-%d")
+        time_str = datetime.now().strftime("%H%M%S_%f")[:10] # HHMMSS_mmm
+        
+        # Subpasta por data e balcão
+        rel_dir = os.path.join(date_str, balcao_id)
+        abs_dir = os.path.join(self.base_path, rel_dir)
+        os.makedirs(abs_dir, exist_ok=True)
+        
+        filename = f"segment_{time_str}.wav"
+        filepath = os.path.join(abs_dir, filename)
+        
+        self._write_wav(filepath, pcm_data)
+        
+        # Retorna o caminho relativo (ex: 2024-05-20/balcao_1/segment_123456.wav)
+        return os.path.join(rel_dir, filename)
+
 # Instância Global
 archiver = AudioArchiver()

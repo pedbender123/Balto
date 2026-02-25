@@ -126,6 +126,37 @@ def extract_features(pcm_data: bytes, sample_rate: int = 16000):
 # Alias for backward compatibility
 extract_advanced_features = extract_features
 
+def classify_audio(features: dict) -> str:
+    """
+    Classifica o áudio em: fala, ruido, fala_com_ruido, silencio_com_ruido.
+    Baseado nas heurísticas do Balto 3.0.
+    """
+    snr = features.get("snr_estimate", 0.0)
+    pitch = features.get("pitch_mean", 0.0)
+    zcr = features.get("zcr", 0.0)
+    energy = features.get("energy_rms_mean", 0.0)
+    
+    # Heurística:
+    # 1. Fala Limpa: SNR alto e Pitch detectado
+    if snr > 12.0 and pitch > 0:
+        return "fala"
+    
+    # 2. Fala com Ruído: SNR moderado mas Pitch detectado
+    if snr > 5.0 and pitch > 0:
+        return "fala_com_ruido"
+    
+    # 3. Ruído: ZCR alto ou SNR baixo sem Pitch
+    if zcr > 0.15 or (snr < 5.0 and pitch == 0):
+        # Se tiver energia baixíssima, é silêncio ruidoso
+        if energy < 0.005:
+            return "silencio_com_ruido"
+        return "ruido"
+        
+    # Default fallback
+    if pitch > 0:
+        return "fala"
+    return "ruido"
+
 def warmup():
     """
     Executes a dummy extraction to force library loading (librosa/numba JIT)
