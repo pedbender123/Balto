@@ -267,17 +267,8 @@ async def process_speech_pipeline(
             # SileroVAD.process_full_audio returns a list of timestamps
             timestamps = await asyncio.to_thread(svad.process_full_audio, speech_segment)
             if not timestamps:
-                # print(f"[{balcao_id}] SileroVAD: No speech detected (IA Filter). Discarding.")
-                # Save Audio even if discarded by IA
-                audio_path = await asyncio.to_thread(audio_archiver.archiver.save_interaction_audio, balcao_id, speech_segment)
-                # Classify (likely noise/garbage but let's check features)
-                try:
-                    features = await asyncio.to_thread(audio_analysis.extract_advanced_features, speech_segment)
-                    classification = audio_analysis.classify_audio(features)
-                except:
-                    classification = "desconhecido"
-
-                await asyncio.to_thread(
+                # Save interaction first to get ID
+                interaction_id = await asyncio.to_thread(
                     db.registrar_interacao,
                     balcao_id=balcao_id,
                     transcricao="",
@@ -289,9 +280,15 @@ async def process_speech_pipeline(
                     snr=0.0,
                     ts_audio=ts_audio_received,
                     interaction_type="discarded_ia",
-                    audio_file_path=audio_path,
+                    audio_file_path=None,
                     audio_classification=classification
                 )
+                
+                # Save Audio with ID
+                if interaction_id:
+                    audio_path = await asyncio.to_thread(audio_archiver.archiver.save_interaction_audio, balcao_id, speech_segment, interaction_id)
+                    await asyncio.to_thread(db.update_interaction_audio_path, interaction_id, audio_path)
+                    
                 return
         except Exception as e:
             print(f"[{balcao_id}] SileroVAD Error: {e}")
@@ -322,9 +319,8 @@ async def process_speech_pipeline(
     # Classify Audio Segment
     audio_classification = audio_analysis.classify_audio(features)
     
-    # Save Raw WAV for this interaction
-    audio_file_path = await asyncio.to_thread(audio_archiver.archiver.save_interaction_audio, balcao_id, speech_segment)
-
+    # Save Raw WAV for this interaction is posponed for after DB register to get ID
+    # audio_file_path = await asyncio.to_thread(audio_archiver.archiver.save_interaction_audio, balcao_id, speech_segment)
 
     # MOCK VOICE MODE (The "Polite" Mock)
     if config.MOCK_VOICE:
@@ -353,7 +349,7 @@ async def process_speech_pipeline(
                 print(f"[{balcao_id}] Warning: Connection closed during Mock Latency. Response skipped.")
 
         # Log Interaction even in Mock Mode
-        await asyncio.to_thread(
+        interaction_id = await asyncio.to_thread(
             db.registrar_interacao,
             balcao_id=balcao_id,
             transcricao="[MOCK VOICE] Audio Processed",
@@ -377,9 +373,15 @@ async def process_speech_pipeline(
             audio_pitch_std=audio_pitch_std,
             spectral_centroid_mean=spectral_centroid_mean,
             interaction_type="mock_voice",
-            audio_file_path=audio_file_path,
+            audio_file_path=None,
             audio_classification=audio_classification
         )
+        
+        # Save Audio with ID
+        if interaction_id:
+            audio_file_path = await asyncio.to_thread(audio_archiver.archiver.save_interaction_audio, balcao_id, speech_segment, interaction_id)
+            await asyncio.to_thread(db.update_interaction_audio_path, interaction_id, audio_file_path)
+
         return
 
     # Check Legacy Mock Mode (LLM only mock, usually immediate)
@@ -456,7 +458,7 @@ async def process_speech_pipeline(
             interaction_type = "discarded_empty"
             # We CONTINUE to log interaction, but skip AI/Buffer stuff
             
-            await asyncio.to_thread(
+            interaction_id = await asyncio.to_thread(
                 db.registrar_interacao,
                 balcao_id=balcao_id,
                 transcricao="",
@@ -484,9 +486,15 @@ async def process_speech_pipeline(
                 audio_pitch_std=audio_pitch_std,
                 spectral_centroid_mean=spectral_centroid_mean,
                 interaction_type=interaction_type,
-                audio_file_path=audio_file_path,
+                audio_file_path=None,
                 audio_classification=audio_classification
             )
+            
+            # Save Audio with ID
+            if interaction_id:
+                audio_file_path = await asyncio.to_thread(audio_archiver.archiver.save_interaction_audio, balcao_id, speech_segment, interaction_id)
+                await asyncio.to_thread(db.update_interaction_audio_path, interaction_id, audio_file_path)
+
             return
 
 
@@ -666,7 +674,7 @@ async def process_speech_pipeline(
         if recomendacao_log is None:
             recomendacao_log = ""
 
-        await asyncio.to_thread(
+        interaction_id = await asyncio.to_thread(
             db.registrar_interacao,
             balcao_id=balcao_id,
             transcricao=buffer_content or texto,
@@ -695,9 +703,14 @@ async def process_speech_pipeline(
             audio_pitch_std=audio_pitch_std,
             spectral_centroid_mean=spectral_centroid_mean,
             interaction_type="valid",
-            audio_file_path=audio_file_path,
+            audio_file_path=None,
             audio_classification=audio_classification
         )
+        
+        # Save Audio with ID
+        if interaction_id:
+            audio_file_path = await asyncio.to_thread(audio_archiver.archiver.save_interaction_audio, balcao_id, speech_segment, interaction_id)
+            await asyncio.to_thread(db.update_interaction_audio_path, interaction_id, audio_file_path)
 
 
     except Exception as e:

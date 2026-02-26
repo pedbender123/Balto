@@ -59,3 +59,12 @@ backend/vendor/silero-vad/tests/
 Cadastro de voz balconistas loja Tiago/
 Cadastro de voz balconistas loja Tiago
 Extra&Tools/
+
+# 9. Scripts Paia / Tools Temporárias e VPS
+fetch_vps_csvs.py
+fix_vps_branch.py
+read_excel_error.py
+setup_rclone.py
+vps_*.py
+local_stress/
+response_client.json

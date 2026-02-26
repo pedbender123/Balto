@@ -531,7 +531,7 @@ def registrar_interacao(
             %s, %s, %s,
             
             %s, %s
-        )
+        ) RETURNING id
         """, (
             balcao_id, datetime.now(), transcricao, transcricao_normalizada, transcricao_classificacao, 
             recomendacao, resultado,
@@ -580,13 +580,31 @@ def registrar_interacao(
             
             audio_file_path, audio_classification
         ))
+        interaction_id = cursor.fetchone()[0]
         conn.commit()
         conn.close()
-        print(f"[DB] Interação ({interaction_type}) registrada com sucesso.")
+        print(f"[DB] Interação ({interaction_type}) registrada com sucesso (ID: {interaction_id}).")
+        return interaction_id
     except Exception as e:
         print(f"[DB] ERRO CRÍTICO ao salvar interação: {e}")
         import traceback
         traceback.print_exc()
+        return None
+
+def update_interaction_audio_path(interaction_id: int, audio_file_path: str):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE interacoes
+            SET audio_file_path = %s
+            WHERE id = %s
+        """, (audio_file_path, interaction_id))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"[DB] Erro ao atualizar audio_file_path da interacao {interaction_id}: {e}")
+
 
 def listar_interacoes(limit=50):
     """Retorna as últimas interações para o admin (com tempos extras)."""
