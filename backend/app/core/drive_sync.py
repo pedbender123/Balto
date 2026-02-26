@@ -40,13 +40,27 @@ async def drive_sync_loop():
                 logger.error("DRIVE_SYNC: Falha ao exportar CSV. Abortando ciclo.")
                 continue
 
-            # 2. Executar rclone move
-            # rclone move: transfere os arquivos e deleta os locais após sucesso.
-            # --min-age 5m: evita mover arquivos que ainda estão sendo escritos.
-            # --drive-use-trash=false: apaga permanentemente do Drive se necessário (não aplicável a move geralmente).
+            # 2. Executar rclone copy para o CSV (vai na hora, sem min-age)
+            cmd_csv = [
+                "rclone", "copy", csv_path, f"{remote_name}:{remote_dir}",
+                "--config", rclone_config,
+                "--log-level", "INFO"
+            ]
             
-            cmd = [
-                "rclone", "move", local_dir, f"{remote_name}:{remote_dir}",
+            logger.info(f"DRIVE_SYNC: Copiando CSV para o Drive...")
+            try:
+                process_csv = await asyncio.create_subprocess_exec(
+                    *cmd_csv, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+                )
+                await process_csv.communicate()
+            except Exception as e:
+                logger.error(f"DRIVE_SYNC: Erro ao copiar CSV: {e}")
+
+            # 3. Executar rclone move para os áudios
+            # --min-age 5m: evita mover arquivos de áudio sendo gravados agora
+            archiver_dir = os.path.join(local_dir, "archiver")
+            cmd_audio = [
+                "rclone", "move", archiver_dir, f"{remote_name}:{remote_dir}/archiver",
                 "--config", rclone_config,
                 "--min-age", "5m",
                 "--drive-use-trash=false",
@@ -54,11 +68,10 @@ async def drive_sync_loop():
                 "--log-level", "INFO"
             ]
             
-            logger.info(f"DRIVE_SYNC: Executando rclone move...")
+            logger.info(f"DRIVE_SYNC: Movendo áudios arquivados...")
             
-            # Executa como processo separado
             process = await asyncio.create_subprocess_exec(
-                *cmd,
+                *cmd_audio,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE
             )
