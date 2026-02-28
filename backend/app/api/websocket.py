@@ -260,46 +260,51 @@ async def process_speech_pipeline(
     ram_usage = system_monitor.SYSTEM_METRICS["ram"]
 
     # --- SileroVAD (IA Filter) ---
-    # Double check if this is really speech before expensive transcription
-    svad = getattr(websocket, "_silero_vad", None)
-    if svad:
-        try:
-            # SileroVAD.process_full_audio returns a list of timestamps
-            timestamps = await asyncio.to_thread(svad.process_full_audio, speech_segment)
-            if not timestamps:
-                # Save interaction first to get ID
-                interaction_id = await asyncio.to_thread(
-                    db.registrar_interacao,
-                    balcao_id=balcao_id,
-                    transcricao="",
-                    recomendacao="Recusado (IA Mask)",
-                    resultado="discarded",
-                    funcionario_id=funcionario_id,
-                    modelo_stt="silero_filter",
-                    custo=0.0,
-                    snr=0.0,
-                    ts_audio=ts_audio_received,
-                    interaction_type="discarded_ia",
-                    audio_file_path=None,
-                    audio_classification=classification
-                )
-                
-                # Save Audio with ID
-                if interaction_id:
-                    audio_path = await asyncio.to_thread(audio_archiver.archiver.save_interaction_audio, balcao_id, speech_segment, interaction_id)
-                    await asyncio.to_thread(db.update_interaction_audio_path, interaction_id, audio_path)
+    # [DISABLED in SIMPLE_CHUNK_MODE] Double check if this is really speech before expensive transcription
+    if not config.SIMPLE_CHUNK_MODE:
+        svad = getattr(websocket, "_silero_vad", None)
+        if svad:
+            try:
+                # SileroVAD.process_full_audio returns a list of timestamps
+                timestamps = await asyncio.to_thread(svad.process_full_audio, speech_segment)
+                if not timestamps:
+                    # Save interaction first to get ID
+                    interaction_id = await asyncio.to_thread(
+                        db.registrar_interacao,
+                        balcao_id=balcao_id,
+                        transcricao="",
+                        recomendacao="Recusado (IA Mask)",
+                        resultado="discarded",
+                        funcionario_id=funcionario_id,
+                        modelo_stt="silero_filter",
+                        custo=0.0,
+                        snr=0.0,
+                        ts_audio=ts_audio_received,
+                        interaction_type="discarded_ia",
+                        audio_file_path=None,
+                        audio_classification=classification
+                    )
                     
-                return
-        except Exception as e:
-            print(f"[{balcao_id}] SileroVAD Error: {e}")
-            # Keep going as fallback
+                    # Save Audio with ID
+                    if interaction_id:
+                        audio_path = await asyncio.to_thread(audio_archiver.archiver.save_interaction_audio, balcao_id, speech_segment, interaction_id)
+                        await asyncio.to_thread(db.update_interaction_audio_path, interaction_id, audio_path)
+                        
+                    return
+            except Exception as e:
+                print(f"[{balcao_id}] SileroVAD Error: {e}")
+                # Keep going as fallback
 
     # Audio Analysis (Feature Extraction)
-    try:
-        # [MODIFIED] Use Advanced Features
-        features = await asyncio.to_thread(audio_analysis.extract_advanced_features, speech_segment)
-    except Exception as e:
-        print(f"[{balcao_id}] Audio Analysis Failed: {e}")
+    # [DISABLED in SIMPLE_CHUNK_MODE]
+    if not config.SIMPLE_CHUNK_MODE:
+        try:
+            # [MODIFIED] Use Advanced Features
+            features = await asyncio.to_thread(audio_analysis.extract_advanced_features, speech_segment)
+        except Exception as e:
+            print(f"[{balcao_id}] Audio Analysis Failed: {e}")
+            features = {}
+    else:
         features = {}
 
 
@@ -317,7 +322,10 @@ async def process_speech_pipeline(
     spectral_centroid_mean = features.get("spectral_centroid_mean", 0.0)
     
     # Classify Audio Segment
-    audio_classification = audio_analysis.classify_audio(features)
+    if config.SIMPLE_CHUNK_MODE:
+        audio_classification = "simple_chunk"
+    else:
+        audio_classification = audio_analysis.classify_audio(features)
     
     # Save Raw WAV for this interaction is posponed for after DB register to get ID
     # audio_file_path = await asyncio.to_thread(audio_archiver.archiver.save_interaction_audio, balcao_id, speech_segment)
@@ -762,29 +770,30 @@ async def websocket_handler(request):
         
         print(f"Conectado: {balcao_id} (DB VAD Preset: {db_vad_cfg})")
         
-        # Instantiate VAD with merged config
+        # Instantiate VAD with merged config (only if not in simple chunk mode)
         # Default < Env < DB
         
-        vad_session = vad.VAD(
-            threshold_multiplier=db_vad_cfg.get("threshold_multiplier"),
-            min_energy_threshold=db_vad_cfg.get("min_energy_threshold")
-        )
-        
-        # Apply extra params not in __init__ signatures sometimes or requiring custom logic
-        if "alpha" in db_vad_cfg:
-            vad_session.alpha = float(db_vad_cfg["alpha"])
+        if not config.SIMPLE_CHUNK_MODE:
+            vad_session = vad.VAD(
+                threshold_multiplier=db_vad_cfg.get("threshold_multiplier"),
+                min_energy_threshold=db_vad_cfg.get("min_energy_threshold")
+            )
             
-        if "silence_frames_needed" in db_vad_cfg:
-            vad_session.silence_frames_needed = int(db_vad_cfg["silence_frames_needed"])
-            
-        if "segment_limit_frames" in db_vad_cfg:
-            vad_session.segment_limit_frames = int(db_vad_cfg["segment_limit_frames"])
-            
-        if "overlap_frames" in db_vad_cfg:
-            from collections import deque
-            new_overlap = int(db_vad_cfg["overlap_frames"])
-            vad_session.overlap_frames = new_overlap
-            vad_session.overlap_buffer = deque(maxlen=new_overlap)
+            # Apply extra params not in __init__ signatures sometimes or requiring custom logic
+            if "alpha" in db_vad_cfg:
+                vad_session.alpha = float(db_vad_cfg["alpha"])
+                
+            if "silence_frames_needed" in db_vad_cfg:
+                vad_session.silence_frames_needed = int(db_vad_cfg["silence_frames_needed"])
+                
+            if "segment_limit_frames" in db_vad_cfg:
+                vad_session.segment_limit_frames = int(db_vad_cfg["segment_limit_frames"])
+                
+            if "overlap_frames" in db_vad_cfg:
+                from collections import deque
+                new_overlap = int(db_vad_cfg["overlap_frames"])
+                vad_session.overlap_frames = new_overlap
+                vad_session.overlap_buffer = deque(maxlen=new_overlap)
         
         # [REMOVED] AudioCleaner — noise reduction was too aggressive, cutting speech
         
@@ -793,8 +802,12 @@ async def websocket_handler(request):
             "MOCK_MODE": config.MOCK_MODE,
             "MOCK_VOICE": config.MOCK_VOICE,
             "SMART_ROUTING": config.SMART_ROUTING_ENABLE,
-            "VAD_SOURCE": "DB_PRESET" if db_vad_cfg else "ENV_DEFAULT",
-            "VAD_CONFIG": {
+            "SIMPLE_CHUNK_MODE": config.SIMPLE_CHUNK_MODE,
+        }
+        
+        if not config.SIMPLE_CHUNK_MODE:
+            current_config_snapshot["VAD_SOURCE"] = "DB_PRESET" if db_vad_cfg else "ENV_DEFAULT"
+            current_config_snapshot["VAD_CONFIG"] = {
                 "threshold_multiplier": vad_session.threshold_multiplier,
                 "min_energy_threshold": vad_session.min_energy_threshold,
                 "alpha": vad_session.alpha,
@@ -802,14 +815,17 @@ async def websocket_handler(request):
                 "segment_limit_frames": vad_session.segment_limit_frames,
                 "overlap_frames": vad_session.overlap_frames
             }
-        }
+        else:
+            current_config_snapshot["CHUNK_DURATION_S"] = 5.0
+            current_config_snapshot["CHUNK_OVERLAP_S"] = 0.8
 
         decoder = FFmpegWebMToPCMStream(sample_rate=16000)
         await decoder.start()
 
         pcm_acc = bytearray()
 
-        voice_tracker = speaker_id.StreamVoiceIdentifier()
+        if not config.SIMPLE_CHUNK_MODE:
+            voice_tracker = speaker_id.StreamVoiceIdentifier()
         funcionario_id_atual = None
         nome_funcionario_atual = "Desconhecido"
         
@@ -821,6 +837,40 @@ async def websocket_handler(request):
     async def pcm_consumer_loop():
         nonlocal pcm_acc, funcionario_id_atual, nome_funcionario_atual
 
+        # --- SIMPLE_CHUNK_MODE: Fixed-duration chunks with overlap ---
+        if config.SIMPLE_CHUNK_MODE:
+            # PCM 16-bit mono 16kHz = 32000 bytes/sec
+            bytes_per_second = 16000 * 2
+            chunk_bytes = int(5.0 * bytes_per_second)    # 5s chunks
+            overlap_bytes = int(0.8 * bytes_per_second)  # 0.8s overlap
+            stride_bytes = chunk_bytes - overlap_bytes    # ~4.2s advance
+
+            print(f"[{balcao_id}] SIMPLE_CHUNK_MODE: chunk=5.0s ({chunk_bytes}B), overlap=0.8s ({overlap_bytes}B), stride={stride_bytes}B")
+
+            while True:
+                pcm_chunk = await decoder.read_pcm()
+                if pcm_chunk == b"":
+                    break
+                pcm_acc.extend(pcm_chunk)
+
+                while len(pcm_acc) >= chunk_bytes:
+                    fixed_chunk = bytes(pcm_acc[:chunk_bytes])
+                    # Advance by stride (not full chunk) to keep overlap for next chunk
+                    del pcm_acc[:stride_bytes]
+
+                    audio_archiver.archiver.archive_chunk(balcao_id, fixed_chunk, is_processed=False)
+
+                    asyncio.create_task(
+                        process_speech_pipeline(
+                            ws, fixed_chunk, balcao_id, transcript_buffer,
+                            None, "Desconhecido", None,
+                            vad_meta=None,
+                            config_snapshot=current_config_snapshot
+                        )
+                    )
+            return
+
+        # --- Original Flow: VAD + Speaker ID ---
         while True:
             pcm_chunk = await decoder.read_pcm()
 

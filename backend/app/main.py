@@ -32,19 +32,32 @@ def main():
         asyncio.create_task(system_monitor.start_monitor_task(app))
         
         # Init Models (Prevent Latency on First Request)
-        print("--- Pre-loading Models ---")
-        await asyncio.to_thread(speaker_id.initialize_model)
+        # [DISABLED in SIMPLE_CHUNK_MODE] — Speaker ID not needed
+        if not config.SIMPLE_CHUNK_MODE:
+            print("--- Pre-loading Models ---")
+            await asyncio.to_thread(speaker_id.initialize_model)
+        else:
+            print("--- SIMPLE_CHUNK_MODE: Skipping Speaker ID model ---")
         
         # Init SileroVAD (IA layer)
-        try:
-            from app import silero_vad
-            app['silero_vad'] = await asyncio.to_thread(silero_vad.SileroVAD)
-            print("--- SileroVAD Loaded ---")
-        except Exception as e:
-            print(f"[WARN] Failed to load SileroVAD: {e}")
+        # [DISABLED in SIMPLE_CHUNK_MODE] — IA filter not needed
+        if not config.SIMPLE_CHUNK_MODE:
+            try:
+                from app import silero_vad
+                app['silero_vad'] = await asyncio.to_thread(silero_vad.SileroVAD)
+                print("--- SileroVAD Loaded ---")
+            except Exception as e:
+                print(f"[WARN] Failed to load SileroVAD: {e}")
+                app['silero_vad'] = None
+        else:
             app['silero_vad'] = None
+            print("--- SIMPLE_CHUNK_MODE: Skipping SileroVAD ---")
 
-        await asyncio.to_thread(audio_analysis.warmup)
+        # [DISABLED in SIMPLE_CHUNK_MODE] — Audio feature extraction not needed
+        if not config.SIMPLE_CHUNK_MODE:
+            await asyncio.to_thread(audio_analysis.warmup)
+        else:
+            print("--- SIMPLE_CHUNK_MODE: Skipping AudioAnalysis warmup ---")
         # Start Parallel Audio Archiver
         audio_archiver.archiver.start()
         
@@ -84,6 +97,10 @@ def main():
 
     print("---------------------------------------")
     print(f"Balto Server 3.0 (Modular) Running on port {config.PORT}")
+    print(f"SIMPLE_CHUNK_MODE: {config.SIMPLE_CHUNK_MODE}")
+    if config.SIMPLE_CHUNK_MODE:
+        print(f" -> CHUNK_DURATION: 5.0s")
+        print(f" -> CHUNK_OVERLAP: 0.8s")
     print(f"MOCK_MODE: {config.MOCK_MODE}")
     print(f"SAVE_AUDIO_DUMPS: {config.SAVE_AUDIO}")
     print(f"SMART_ROUTING_ENABLE: {config.SMART_ROUTING_ENABLE}")

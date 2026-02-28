@@ -54,3 +54,8 @@ CAPACITY_MAX_LATENCY_RATIO = float(os.environ.get("CAPACITY_MAX_LATENCY_RATIO", 
 # Drive Sync Settings
 DRIVE_SYNC_ENABLED = parse_bool(os.environ.get("DRIVE_SYNC_ENABLED", "True"))
 DRIVE_SYNC_INTERVAL_MINUTES = int(os.environ.get("DRIVE_SYNC_INTERVAL_MINUTES", 30))
+
+# Simple Chunk Mode: bypasses VAD, SileroVAD, Speaker ID, AudioAnalysis
+# Sends fixed-duration 5s chunks directly to transcription with 0.8s overlap
+# To revert to VAD-based flow, set SIMPLE_CHUNK_MODE = False
+SIMPLE_CHUNK_MODE = True
