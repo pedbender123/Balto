@@ -597,37 +597,82 @@ async def process_speech_pipeline(
                             pass
 
                     # =========================
-                    # Se NÃO achou no lookup, segue o fluxo atual (Prompt 2 -> cestas.json)
+                    # Se NÃO achou no lookup, usamos o HINT para inferir a Macro diretamente
                     # =========================
                     if not used_lookup:
-                        # -------------------------
-                        # LLM #2: CLASSIFICAR
-                        # -------------------------
-                        classif = await asyncio.to_thread(
-                            ai_client.ai_client.classificar_cesta,
-                            normalizacao_out
-                        )
-                        ts_ai_response = datetime.now()
-
-                        if isinstance(classif, dict):
-                            classif_obj = classif
+                        # Extrai HINT ("SINT:tosse | RESP")
+                        partes = normalizacao_out.split("|")
+                        hint_extraido = partes[-1].strip().upper() if len(partes) > 1 else "OUTRO"
+                        
+                        # Mapeia o HINT para a Macro correta
+                        HINT_TO_MACRO = {
+                            "DOR": "DOR_FEBRE_INFLAMACAO",
+                            "RESP": "RESPIRATORIO_GRIPE",
+                            "ALERGIA": "ALERGIAS",
+                            "GASTRO": "GASTROINTESTINAL",
+                            "DERMATO": "PELE_DERMATO",
+                            "FERIDAS": "FERIDAS_CURATIVOS",
+                            "ORL": "OLHOS_OUVIDOS_NARIZ",
+                            "BOCA": "BOCA_GARGANTA_ODONTO",
+                            "INTIMO": "SAUDE_INTIMA_URINARIO",
+                            "FEMININA": "SAUDE_FEMININA_MENSTRUACAO",
+                            "PEDIATRIA": "PEDIATRIA",
+                            "CARDIO": "CARDIO_PRESSAO",
+                            "SUPLEMENTOS": "SUPLEMENTOS",
+                            "NEURO": "NEURO_PSIQUIATRIA_SONO",
+                            "HIGIENE": "HIGIENE_CUIDADOS_PESSOAIS_HPPC",
+                            "OUTRO": "OUTRO"
+                        }
+                        
+                        macro_inferida = HINT_TO_MACRO.get(hint_extraido)
+                        
+                        # Extrair âncoras para evitar reciclar o mesmo remédio (apenas os MEDs do normalizado)
+                        ancoras_locais = []
+                        if med:
+                            ancoras_locais.append(med)
+                        
+                        classif_obj = None
+                        macro = None
+                        micro = None
+                        
+                        if macro_inferida:
+                            # HINT válido mapeado! Pula o LLM 2
+                            macro = macro_inferida
+                            classif_obj = {
+                                "source": "hint_fast_path", 
+                                "macros_top2": [macro, "OUTRO"], 
+                                "micro_categoria": None,
+                                "ancoras_para_excluir": ancoras_locais
+                            }
+                            # ts_ai_response is same as request since we skipped LLM 2
+                            ts_ai_response = ts_ai_request 
                         else:
-                            try:
-                                classif_obj = json.loads(classif)
-                            except Exception:
-                                classif_obj = {"_raw": str(classif), "_parse_error": True}
+                            # -------------------------
+                            # LLM #2: CLASSIFICAR (FALLBACK FINAL se o HINT for algo muito estranho)
+                            # -------------------------
+                            classif = await asyncio.to_thread(
+                                ai_client.ai_client.classificar_cesta,
+                                normalizacao_out
+                            )
+                            ts_ai_response = datetime.now()
+
+                            if isinstance(classif, dict):
+                                classif_obj = classif
+                            else:
+                                try:
+                                    classif_obj = json.loads(classif)
+                                except Exception:
+                                    classif_obj = {"_raw": str(classif), "_parse_error": True}
+
+                            if isinstance(classif_obj, dict):
+                                macros_top2 = classif_obj.get("macros_top2") or []
+                                macro = macros_top2[0] if len(macros_top2) > 0 else None
+                                micro = classif_obj.get("micro_categoria")
 
                         try:
                             classificacao_out = json.dumps(classif_obj, ensure_ascii=False)
                         except Exception:
                             classificacao_out = None
-
-                        macro = None
-                        micro = None
-                        if isinstance(classif_obj, dict):
-                            macros_top2 = classif_obj.get("macros_top2") or []
-                            macro = macros_top2[0] if len(macros_top2) > 0 else None
-                            micro = classif_obj.get("micro_categoria")
 
                         if macro and micro:
                             cesta_key = f"{macro}::{micro}"
