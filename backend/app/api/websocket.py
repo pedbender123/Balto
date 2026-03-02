@@ -569,10 +569,41 @@ async def process_speech_pipeline(
                     # [NEW] Lookup (produto+sintoma+doenca) após Prompt 1
                     # =========================
                     med, sint, doenca = parse_prompt1(normalizacao_out)
-                    lookup_items = lookup_cesta(med, sint, doenca)
 
-                    if lookup_items:
-                        used_lookup = True
+                    if not med and not sint and not doenca:
+                        print(f"[{balcao_id}] 🚫 Nenhuma entidade extraída (NADA_RELEVANTE). Abortando pipelines seguintes.")
+                        used_lookup = True # Flag para pular Classificação e HINT mapping
+                        recomendacao_log = "🚫 NORMALIZE: NADA_RELEVANTE"
+                        classificacao_out = None
+                        cesta_key = "OUTRO::fallback"
+                        cesta_origem = "nada_identificado"
+                        classif_obj = None
+                        ts_ai_response = datetime.now()
+                        
+                        envelope = {
+                            "buffer_content": buffer_content,
+                            "normalizacao_out": normalizacao_out,
+                            "classificacao_out": classif_obj,
+                            "cesta_key": cesta_key,
+                            "cesta_origem": cesta_origem,
+                            "meta": {
+                                "balcao_id": balcao_id,
+                                "funcionario_id": funcionario_id,
+                                "nome_funcionario": nome_funcionario,
+                            },
+                            "timestamps": {
+                                "ts_audio_received": ts_audio_received.isoformat(),
+                                "ts_trans_sent": ts_transcription_sent.isoformat() if ts_transcription_sent else None,
+                                "ts_trans_ready": ts_transcription_ready.isoformat() if ts_transcription_ready else None,
+                                "ts_ai_req": ts_ai_request.isoformat() if ts_ai_request else None,
+                                "ts_ai_res": ts_ai_response.isoformat() if ts_ai_response else None,
+                            }
+                        }
+                    else:
+                        lookup_items = lookup_cesta(med, sint, doenca)
+
+                        if lookup_items:
+                            used_lookup = True
 
                         # monta payload e envia (3 primeiros)
                         payload_out = build_recommendation_payload_from_lookup(lookup_items, max_items=3)

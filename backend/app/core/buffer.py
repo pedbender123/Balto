@@ -19,7 +19,7 @@ class TranscriptionBuffer:
         self.last_segment_word_count = 0
         
     def add_text(self, text: str):
-        # Lista expandida de termos irrelevantes ou alucinações de ruído
+        # Lista expandida de termos irrelevantes ou alucinações de ruído (ASR)
         ignored_substrings = [
             "(sons de passos)", 
             "(ruído)", 
@@ -28,28 +28,59 @@ class TranscriptionBuffer:
             "(som de fundo)",
             "(música)",
             "(respiração)",
-            "(tosse)", # Tosse isolada sem fala pode ser ignorada no buffer se for recorrente como ruído
-            "(vento)"
+            "(tosse)",
+            "(vento)",
+            "leggendas",
+            "legendas",
+            "inscreva-se",
+            "deixe seu like",
+            "obrigado por assistir"
+        ]
+        
+        # Alucinações comuns curtas (Whisper/ASR) que não devem engatilhar a IA se aparecerem sozinhas
+        hallucinations_exact = [
+            "obrigado.", "obrigada.", "obrigado", "obrigada",
+            "tchau.", "tchau",
+            "amém.", "amem.", "amém",
+            "olá.", "ola.", "olá",
+            "e aí.",
+            "até mais.", "ate a proxima",
+            "silêncio", "(silêncio)"
         ]
         
         clean = text.strip()
         
-        # Filtro simples: se o texto for exatamente um dos ignorados ou muito curto/vazio
+        # Filtro simples: se o texto for vazio
         if not clean:
             return
 
-        # Verifica se o texto contém algum dos termos ignorados (normalizado para lower)
         clean_lower = clean.lower()
+        
+        # Filtro 1: Match exato de alucinações comuns (case-insensitive)
+        if clean_lower in hallucinations_exact:
+            return
+            
+        # Filtro 2: Verifica se o texto contém algum dos termos ignorados (substrings)
         if any(ign in clean_lower for ign in ignored_substrings):
              # Se for APENAS o ruído, ignora. Se tiver fala junto, mantemos (mas o prompt vai limpar)
-             if len(clean) < 20: # Heuristica: texto curto que match com ruído é lixo
+             if len(clean) < 30: # Heuristica: texto curto que match com ruído/legenda é lixo
                  return
+                 
+        # Filtro 3: Textos extremamente curtos (1 palavra) que não significam nada sozinhos ("é.", "tá.", "ah.")
+        words = clean.split()
+        if len(words) == 1 and len(clean) <= 4:
+            return
+            
+        # Filtro 4: Repetições bizarras de ASR (ex: "obrigado obrigado obrigado obrigado")
+        unique_words = set(words)
+        if len(unique_words) <= 2 and len(words) >= 4:
+            return
 
         # Capture gap BEFORE adding
         now = time.time()
         self.last_gap = now - self.last_update_time
         self.last_update_time = now
-        self.last_segment_word_count = len(clean.split())
+        self.last_segment_word_count = len(words)
 
         self.buffer.append(clean)
 
