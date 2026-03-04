@@ -443,6 +443,7 @@ async def process_speech_pipeline(
         modelo_usado = transcricao_resultado["modelo"]
         custo_estimado = transcricao_resultado["custo"]
         snr_calculado = transcricao_resultado.get("snr", 0.0)
+        speech_ranges = transcricao_resultado.get("speech_ranges")
 
         # ----------------------------
         # Audio metrics (telemetria)
@@ -495,7 +496,8 @@ async def process_speech_pipeline(
                 spectral_centroid_mean=spectral_centroid_mean,
                 interaction_type=interaction_type,
                 audio_file_path=None,
-                audio_classification=audio_classification
+                audio_classification=audio_classification,
+                speech_ranges=speech_ranges
             )
             
             # Save Audio with ID
@@ -788,7 +790,8 @@ async def process_speech_pipeline(
             spectral_centroid_mean=spectral_centroid_mean,
             interaction_type="valid",
             audio_file_path=None,
-            audio_classification=audio_classification
+            audio_classification=audio_classification,
+            speech_ranges=speech_ranges
         )
         
         # Save Audio with ID
@@ -900,8 +903,7 @@ async def websocket_handler(request):
 
         pcm_acc = bytearray()
 
-        if not config.SIMPLE_CHUNK_MODE:
-            voice_tracker = speaker_id.StreamVoiceIdentifier()
+        voice_tracker = speaker_id.StreamVoiceIdentifier()
         funcionario_id_atual = None
         nome_funcionario_atual = "Desconhecido"
         
@@ -936,10 +938,19 @@ async def websocket_handler(request):
 
                     audio_archiver.archiver.archive_chunk(balcao_id, fixed_chunk, is_processed=False)
 
+                    # Speaker ID passivo (background, non-blocking)
+                    pred_func_id, score, spk_data = await asyncio.to_thread(
+                        voice_tracker.add_segment, balcao_id, fixed_chunk
+                    )
+                    # Atualiza identidade do balconista se detectado
+                    if pred_func_id is not None and funcionario_id_atual is None:
+                        funcionario_id_atual = pred_func_id
+                        nome_funcionario_atual = (spk_data[0].get("name") if spk_data else None) or "Desconhecido"
+
                     asyncio.create_task(
                         process_speech_pipeline(
                             ws, fixed_chunk, balcao_id, transcript_buffer,
-                            None, "Desconhecido", None,
+                            funcionario_id_atual, nome_funcionario_atual, spk_data,
                             vad_meta=None,
                             config_snapshot=current_config_snapshot
                         )

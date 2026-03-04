@@ -31,13 +31,9 @@ def main():
         print("--- Starting System Monitor ---")
         asyncio.create_task(system_monitor.start_monitor_task(app))
         
-        # Init Models (Prevent Latency on First Request)
-        # [DISABLED in SIMPLE_CHUNK_MODE] — Speaker ID not needed
-        if not config.SIMPLE_CHUNK_MODE:
-            print("--- Pre-loading Models ---")
-            await asyncio.to_thread(speaker_id.initialize_model)
-        else:
-            print("--- SIMPLE_CHUNK_MODE: Skipping Speaker ID model ---")
+        # Init Speaker ID Model (Always — passive mode on fixed chunks)
+        print("--- Pre-loading Speaker ID Model ---")
+        await asyncio.to_thread(speaker_id.initialize_model)
         
         # Init SileroVAD (IA layer)
         # [DISABLED in SIMPLE_CHUNK_MODE] — IA filter not needed

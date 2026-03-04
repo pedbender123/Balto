@@ -264,40 +264,45 @@ def calcular_snr(audio_bytes: bytes) -> float:
         print(f"Erro SNR: {e}")
         return 0.0
 
-def transcrever_elevenlabs(audio_bytes: bytes) -> str:
-    """Modelo Caro e Robusto (ElevenLabs Scribe)."""
+def transcrever_elevenlabs(audio_bytes: bytes) -> tuple:
+    """Modelo Caro e Robusto (ElevenLabs Scribe).
+    Retorna (texto, words_data) onde words_data é lista de dicts com timestamps.
+    """
     client = key_manager.get_client()
-    if not client: return "[Erro: Nenhuma chave ElevenLabs configurada]"
+    if not client: return "[Erro: Nenhuma chave ElevenLabs configurada]", []
     
     # Duração em segundos para tracking
     duration = len(audio_bytes) / 32000.0 # 16k * 2 bytes
     
     try:
-        # Wrap PCM in WAV container
-        wav_buffer = io.BytesIO()
-        with wave.open(wav_buffer, 'wb') as wf:
-            wf.setnchannels(1)
-            wf.setsampwidth(2)
-            wf.setframerate(16000)
-            wf.writeframes(audio_bytes)
-        
-        # Reset pointer for reading
-        wav_buffer.seek(0)
-        wav_buffer.name = "audio.wav"
+        # Enviar PCM direto (sem WAV wrapper) — menor latência
+        pcm_buffer = io.BytesIO(audio_bytes)
+        pcm_buffer.name = "audio.pcm"
         
         result = client.speech_to_text.convert(
-            file=wav_buffer,
+            file=pcm_buffer,
             model_id="scribe_v1",
-            language_code="pt"
+            language_code="pt",
+            timestamps_granularity="word",
+            file_format="pcm_s16le_16",
         )
         
         # Se sucesso, registra uso
         key_manager.register_usage(duration)
         
-        return result.text
+        # Extrair word timestamps
+        words_data = []
+        if hasattr(result, 'words') and result.words:
+            words_data = [
+                {"text": w.text, "start": w.start, "end": w.end, "type": str(w.type)}
+                for w in result.words
+                if w.start is not None and w.end is not None
+            ]
+        
+        return result.text, words_data
     except Exception as e:
         print(f"Erro ElevenLabs: {e}")
-        return f"[ERROR] {e}"
+        return f"[ERROR] {e}", []
 
 def transcrever_assemblyai(audio_bytes: bytes) -> str:
     """
@@ -365,6 +370,56 @@ def transcrever_assemblyai(audio_bytes: bytes) -> str:
         print(f"[AssemblyAI] Erro de requisição: {e}")
         return ""
 
+def _extrair_speech_ranges(words_data: list, chunk_duration: float) -> dict | None:
+    """
+    A partir dos word timestamps, extrai faixas contíguas de fala.
+    Funde faixas com gap < 0.3s. Retorna dict compacto para armazenamento.
+    """
+    if not words_data:
+        return None
+    
+    # Filtra apenas words (não audio_events)
+    speech_words = [
+        w for w in words_data 
+        if w.get("type") in ("word", "SpeechToTextWordResponseModelType.WORD")
+        and w.get("start") is not None 
+        and w.get("end") is not None
+    ]
+    
+    if not speech_words:
+        return {"ranges": [], "speech_pct": 0.0, "silence_pct": 100.0, "word_count": 0}
+    
+    # Ordenar por start
+    speech_words.sort(key=lambda w: w["start"])
+    
+    # Fundir faixas adjacentes (gap < 0.3s)
+    MERGE_GAP = 0.3
+    ranges = []
+    cur_start = speech_words[0]["start"]
+    cur_end = speech_words[0]["end"]
+    
+    for w in speech_words[1:]:
+        if w["start"] - cur_end <= MERGE_GAP:
+            cur_end = max(cur_end, w["end"])
+        else:
+            ranges.append([round(cur_start, 2), round(cur_end, 2)])
+            cur_start = w["start"]
+            cur_end = w["end"]
+    ranges.append([round(cur_start, 2), round(cur_end, 2)])
+    
+    # Calcular percentuais
+    total_speech = sum(r[1] - r[0] for r in ranges)
+    speech_pct = round((total_speech / chunk_duration) * 100, 1) if chunk_duration > 0 else 0.0
+    silence_pct = round(100.0 - speech_pct, 1)
+    
+    return {
+        "ranges": ranges,
+        "speech_pct": speech_pct,
+        "silence_pct": silence_pct,
+        "word_count": len(speech_words)
+    }
+
+
 def transcrever_inteligente(audio_bytes: bytes) -> dict:
     """
     Smart Routing: Decide qual modelo usar baseado na qualidade do áudio.
@@ -375,6 +430,7 @@ def transcrever_inteligente(audio_bytes: bytes) -> dict:
     # Lógica de Decisão (Controlada por Env):
     
     usar_economico = False
+    words_data = []
     
     if SMART_ROUTING_ENABLE:
         # - Áudios Curtos (< MIN_DURATION): AssemblyAI tende a falhar. Vai para ElevenLabs.
@@ -389,8 +445,10 @@ def transcrever_inteligente(audio_bytes: bytes) -> dict:
         texto = transcrever_assemblyai(audio_bytes)
         modelo = "assemblyai"
         custo = 0.005 # Estimativa AssemblyAI
+        # AssemblyAI não retorna word timestamps no nosso flow
+        words_data = []
     else:
-        texto = transcrever_elevenlabs(audio_bytes)
+        texto, words_data = transcrever_elevenlabs(audio_bytes)
         modelo = "elevenlabs"
         custo = 0.05 # Estimativa ElevenLabs
         
@@ -399,9 +457,13 @@ def transcrever_inteligente(audio_bytes: bytes) -> dict:
     if texto and not texto_final:
         print(f"[Transcription] Texto original '{texto}' foi totalmente limpo/descartado.")
 
+    # Extrair speech_ranges dos word timestamps
+    speech_ranges = _extrair_speech_ranges(words_data, duration_sec)
+
     return {
         "texto": texto_final,
         "modelo": modelo,
         "custo": custo,
-        "snr": snr
+        "snr": snr,
+        "speech_ranges": speech_ranges
     }

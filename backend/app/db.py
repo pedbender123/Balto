@@ -2,6 +2,7 @@
 
 import os
 import psycopg2
+import json
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
 import numpy as np
@@ -140,6 +141,7 @@ def inicializar_db():
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS noise_level_start REAL")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS noise_level_end REAL")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS dynamic_threshold_start REAL")
+        cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS speech_ranges TEXT")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS dynamic_threshold_end REAL")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS energy_rms_mean REAL")
         cursor.execute("ALTER TABLE interacoes ADD COLUMN IF NOT EXISTS energy_rms_max REAL")
@@ -482,7 +484,8 @@ def registrar_interacao(
     spectral_centroid_mean=0.0,
     interaction_type="valid",
     audio_file_path=None,
-    audio_classification=None
+    audio_classification=None,
+    speech_ranges=None
 ):
     audio_metrics = audio_metrics or {}
     print(f"[DB] Tentando registrar interação para balcao={balcao_id}, TYPE={interaction_type}, Audio={audio_classification}")
@@ -509,7 +512,7 @@ def registrar_interacao(
             threshold_multiplier, min_energy_threshold, alpha, vad_aggressiveness,
             silence_frames_needed, pre_roll_len, segment_limit_frames,
             
-            audio_file_path, audio_classification
+            audio_file_path, audio_classification, speech_ranges
         )
         VALUES (
             %s, %s, %s, %s, %s,
@@ -530,7 +533,7 @@ def registrar_interacao(
             %s, %s, %s, %s,
             %s, %s, %s,
             
-            %s, %s
+            %s, %s, %s
         ) RETURNING id
         """, (
             balcao_id, datetime.now(), transcricao, transcricao_normalizada, transcricao_classificacao, 
@@ -578,7 +581,8 @@ def registrar_interacao(
             audio_metrics.get("pre_roll_len"),
             audio_metrics.get("segment_limit_frames"),
             
-            audio_file_path, audio_classification
+            audio_file_path, audio_classification,
+            json.dumps(speech_ranges) if speech_ranges else None
         ))
         interaction_id = cursor.fetchone()[0]
         conn.commit()
