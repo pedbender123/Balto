@@ -282,7 +282,8 @@ async def process_speech_pipeline(
                         ts_audio=ts_audio_received,
                         interaction_type="discarded_ia",
                         audio_file_path=None,
-                        audio_classification=classification
+                        audio_classification="ia_filter_discard",
+                        speech_ranges=None
                     )
                     
                     # Save Audio with ID
@@ -382,7 +383,8 @@ async def process_speech_pipeline(
             spectral_centroid_mean=spectral_centroid_mean,
             interaction_type="mock_voice",
             audio_file_path=None,
-            audio_classification=audio_classification
+            audio_classification=audio_classification,
+            speech_ranges=None
         )
         
         # Save Audio with ID
