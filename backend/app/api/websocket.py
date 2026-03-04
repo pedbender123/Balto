@@ -944,15 +944,18 @@ async def websocket_handler(request):
                     pred_func_id, score, spk_data = await asyncio.to_thread(
                         voice_tracker.add_segment, balcao_id, fixed_chunk
                     )
-                    # Atualiza identidade do balconista se detectado
-                    if pred_func_id is not None and funcionario_id_atual is None:
-                        funcionario_id_atual = pred_func_id
-                        nome_funcionario_atual = (spk_data[0].get("name") if spk_data else None) or "Desconhecido"
+                    
+                    if pred_func_id is not None:
+                        funcionario_id_chunk = pred_func_id
+                        nome_funcionario_chunk = (spk_data[0].get("name") if spk_data else None) or "Desconhecido"
+                    else:
+                        funcionario_id_chunk = await asyncio.to_thread(db.get_fallback_funcionario_id, balcao_id)
+                        nome_funcionario_chunk = "Cliente / Desconhecido"
 
                     asyncio.create_task(
                         process_speech_pipeline(
                             ws, fixed_chunk, balcao_id, transcript_buffer,
-                            funcionario_id_atual, nome_funcionario_atual, spk_data,
+                            funcionario_id_chunk, nome_funcionario_chunk, spk_data,
                             vad_meta=None,
                             config_snapshot=current_config_snapshot
                         )
@@ -985,21 +988,22 @@ async def websocket_handler(request):
                 if vad_meta is None:
                     vad_meta = {}
 
-                pred_func_id, score, speaker_data_list = voice_tracker.add_segment(balcao_id, speech)
+                pred_func_id, score, speaker_data_list = await asyncio.to_thread(
+                    voice_tracker.add_segment, balcao_id, speech
+                )
 
-                pred_nome = None
-                if speaker_data_list:
-                    pred_nome = speaker_data_list[0].get("name")
-
-                if pred_func_id is not None and funcionario_id_atual is None:
-                    funcionario_id_atual = pred_func_id
-                    nome_funcionario_atual = pred_nome or "Desconhecido"
-                    print(f"[{balcao_id}] Voice-ID identificado: id={funcionario_id_atual} nome={nome_funcionario_atual} (score={score:.3f})")
+                if pred_func_id is not None:
+                    funcionario_id_chunk = pred_func_id
+                    nome_funcionario_chunk = (speaker_data_list[0].get("name") if speaker_data_list else None) or "Desconhecido"
+                    print(f"[{balcao_id}] Voice-ID identificado: id={funcionario_id_chunk} nome={nome_funcionario_chunk} (score={score:.3f})")
+                else:
+                    funcionario_id_chunk = await asyncio.to_thread(db.get_fallback_funcionario_id, balcao_id)
+                    nome_funcionario_chunk = "Cliente / Desconhecido"
 
                 asyncio.create_task(
                     process_speech_pipeline(
                         ws, speech, balcao_id, transcript_buffer,
-                        funcionario_id_atual, nome_funcionario_atual, speaker_data_list,
+                        funcionario_id_chunk, nome_funcionario_chunk, speaker_data_list,
                         vad_meta=vad_meta,
                         config_snapshot=current_config_snapshot
                     )

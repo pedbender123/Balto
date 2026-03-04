@@ -451,6 +451,47 @@ def listar_funcionarios_por_balcao(balcao_id: str):
     conn.close()
     return rows
 
+def get_fallback_funcionario_id(balcao_id: str) -> int | None:
+    """
+    Retorna o ID de um funcionário 'Cliente / Desconhecido' para este balcão (vinculado ao user_id).
+    Cria automaticamente se não existir. Isso garante que interações com baixa confiança não fiquem vazias.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Descobre o user_id do balcão
+    cursor.execute("SELECT user_id FROM balcoes WHERE balcao_id = %s", (balcao_id,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        return None
+        
+    user_id = row[0]
+    nome_fallback = "Cliente / Desconhecido"
+    
+    # Verifica se já existe
+    cursor.execute("SELECT id FROM funcionarios WHERE user_id = %s AND nome = %s", (user_id, nome_fallback))
+    row_func = cursor.fetchone()
+    if row_func:
+        conn.close()
+        return row_func[0]
+        
+    # Se não existe, cria sem embedding (como placeholder)
+    now = datetime.now()
+    cursor.execute(
+        """
+        INSERT INTO funcionarios (user_id, nome, criado_em)
+        VALUES (%s, %s, %s)
+        RETURNING id
+        """,
+        (user_id, nome_fallback, now)
+    )
+    fallback_id = cursor.fetchone()[0]
+    conn.commit()
+    conn.close()
+    
+    return fallback_id
+
 # =========================
 # Interações / admin (VERSÃO COM TEMPOS EXTRAS)
 # =========================

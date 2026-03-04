@@ -26,8 +26,8 @@ from app import db  # usa db.get_db_connection() e db.upsert_funcionario_por_nom
 SAMPLE_RATE = 16000
 
 DEFAULT_THRESHOLD = 0.75          # threshold padrão (batch)
-SEGMENT_THRESHOLD_DEFAULT = 0.78  # threshold por segmento
-SEGMENT_MARGIN_DEFAULT = 0.06     # gap mínimo top1 - top2
+SEGMENT_THRESHOLD_DEFAULT = 0.60  # threshold por segmento (reduzido para aceitar até 60% conf)
+SEGMENT_MARGIN_DEFAULT = 0.05     # gap mínimo top1 - top2
 
 # Onde salvar cadastros de voz (WAV)
 # Em Docker, você monta ./audio_dumps -> /backend/app/audio_dumps
