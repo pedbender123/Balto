@@ -227,6 +227,49 @@ async def api_cadastro_balcao(request):
         return web.json_response({"error": str(e)}, status=500)
 
 
+async def api_cadastro_turno(request):
+    """
+    POST /cadastro/turno
+    Body (JSON):
+    {
+        "user_codigo": "123456",
+        "funcionario_id": 10,
+        "dias_semana": [0, 1, 2, 3, 4],  # 0=Segunda, 6=Domingo
+        "hora_inicio": "08:00",          # HH:MM
+        "hora_fim": "18:00"              # HH:MM
+    }
+    """
+    try:
+        data = await request.json()
+        user_codigo = data.get("user_codigo")
+        funcionario_id = data.get("funcionario_id")
+        dias_semana = data.get("dias_semana")
+        hora_inicio = data.get("hora_inicio")
+        hora_fim = data.get("hora_fim")
+
+        if not all([user_codigo, funcionario_id is None, dias_semana is None, hora_inicio, hora_fim]) and (funcionario_id is None or dias_semana is None):
+            return web.json_response({"error": "Parâmetros obrigatórios ausentes"}, status=400)
+
+        # Validates user
+        user_id = db.get_user_by_code(user_codigo)
+        if not user_id:
+             return web.json_response({"error": "user_codigo inválido"}, status=404)
+
+        if not isinstance(dias_semana, list):
+             return web.json_response({"error": "dias_semana deve ser uma lista de inteiros"}, status=400)
+
+        # Clear existing shifts before saving the new ones if needed... (Assuming replacing all shifts for this user for simplicity/overwrite).
+        # We will clean the array since it specifies "hora_inicio/fim" and acts as a single block across multiple days.
+        db.limpar_turnos_funcionario(funcionario_id)
+
+        for dia in dias_semana:
+             if 0 <= int(dia) <= 6:
+                  db.cadastrar_turno(funcionario_id, int(dia), hora_inicio, hora_fim)
+
+        return web.json_response({"success": True, "message": f"Turnos atualizados para o funcionário {funcionario_id}"})
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)
+
 async def api_cadastro_voz(request):
     """
     POST multipart/form-data:

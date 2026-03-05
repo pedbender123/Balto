@@ -90,6 +90,18 @@ def inicializar_db():
     # Migração segura (para bancos antigos que não tinham a coluna)
     cursor.execute("ALTER TABLE funcionarios ADD COLUMN IF NOT EXISTS audio_file_name TEXT")
 
+    # 3.1) Turnos de Funcionários
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS funcionario_turnos (
+        id SERIAL PRIMARY KEY,
+        funcionario_id INTEGER,
+        dia_semana INTEGER,
+        hora_inicio TIME,
+        hora_fim TIME,
+        FOREIGN KEY (funcionario_id) REFERENCES funcionarios (id) ON DELETE CASCADE
+    )
+    """)
+
     # 4) Interações
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS interacoes (
@@ -429,6 +441,71 @@ def listar_funcionarios_por_user(user_id: str):
         (user_id,)
     )
     rows = [dict(r) for r in cursor.fetchall()]
+    conn.close()
+    return rows
+
+def cadastrar_turno(funcionario_id: int, dia_semana: int, hora_inicio: str, hora_fim: str):
+    """Cadastra um turno para um dia específico da semana para o funcionário dado."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            """
+            INSERT INTO funcionario_turnos (funcionario_id, dia_semana, hora_inicio, hora_fim)
+            VALUES (%s, %s, %s, %s)
+            """,
+            (funcionario_id, dia_semana, hora_inicio, hora_fim)
+        )
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        conn.close()
+
+def limpar_turnos_funcionario(funcionario_id: int):
+    """Remove todos os turnos de um funcionário (útil para recadastrar os turnos enviados)."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM funcionario_turnos WHERE funcionario_id = %s", (funcionario_id,))
+    conn.commit()
+    conn.close()
+
+def get_funcionarios_disponiveis_agora(balcao_id: str, local_time: datetime):
+    """
+    Retorna a lista de funcionários de um balcão que estão disponíveis no momento 'local_time'.
+    Regra: Se não possui NENHUM turno cadastrado na tabela, assume-se sempre disponível.
+    Se possui turnos, é retornado apenas se o local_time se encaixar em algum deles.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    dia_semana_python = local_time.weekday() # 0 = Seg, 6 = Dom
+    hora_atual = local_time.time().strftime("%H:%M:%S")
+
+    query = """
+    SELECT f.id, f.nome, f.audio_file_name, f.embedding
+    FROM funcionarios f
+    JOIN balcoes b ON f.user_id = b.user_id
+    WHERE b.balcao_id = %s
+      AND (
+          -- Condição 1: Funcionário NÃO TEM NENHUM turno cadastrado no sistema
+          NOT EXISTS (
+              SELECT 1 FROM funcionario_turnos ft WHERE ft.funcionario_id = f.id
+          )
+          OR
+          -- Condição 2: Funcionário TEM um turno cujo dia e hora englobam o momento atual
+          EXISTS (
+              SELECT 1 FROM funcionario_turnos ft
+              WHERE ft.funcionario_id = f.id
+                AND ft.dia_semana = %s
+                AND ft.hora_inicio <= %s
+                AND ft.hora_fim >= %s
+          )
+      )
+    """
+    cursor.execute(query, (balcao_id, dia_semana_python, hora_atual, hora_atual))
+    rows = [dict(row) for row in cursor.fetchall()]
     conn.close()
     return rows
 

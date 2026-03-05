@@ -238,7 +238,13 @@ class StreamVoiceIdentifier:
         if balcao_id in self.profiles_cache and balcao_id in self.names_cache:
             return self.profiles_cache[balcao_id], self.names_cache[balcao_id]
 
-        rows = db.listar_funcionarios_por_balcao(balcao_id)
+        import zoneinfo
+        from datetime import datetime
+        sp_tz = zoneinfo.ZoneInfo("America/Sao_Paulo")
+        now_sp = datetime.now(sp_tz)
+
+        # Alterado para pegar APENAS os disponíveis agora no fuso SP
+        rows = db.get_funcionarios_disponiveis_agora(balcao_id, now_sp)
 
         profiles: Dict[int, np.ndarray] = {}
         names: Dict[int, str] = {}
